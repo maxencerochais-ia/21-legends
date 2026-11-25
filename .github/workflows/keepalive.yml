@@ -1,0 +1,35 @@
+# Garde le projet Supabase gratuit éveillé : il se met en pause après 7 jours sans activité.
+# Tous les 2 jours, GitHub lit une ligne de la petite table « keepalive » (lecture seule, publique).
+name: Garder Supabase éveillé
+
+on:
+  schedule:
+    - cron: '23 5 */2 * *'   # tous les 2 jours vers 6 h (heure de Paris)
+  workflow_dispatch:          # bouton « Run workflow » pour lancer à la main
+
+permissions:
+  actions: write              # pour réactiver cette tâche (GitHub coupe les tâches après 60 jours sans commit)
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lire la base Supabase
+        env:
+          SUPABASE_URL: https://subxyiyfapnwgejtzpwp.supabase.co
+          SUPABASE_KEY: sb_publishable_I6RSZNVblCOiLxAzg6VkBA_hxEr6gxi   # clé publique, déjà visible dans config.js
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o out.json -w '%{http_code}' "$SUPABASE_URL/rest/v1/keepalive?select=id&limit=1" -H "apikey: $SUPABASE_KEY")
+            echo "Tentative $i : HTTP $code $(cat out.json)"
+            [ "$code" = "200" ] && exit 0
+            sleep 30
+          done
+          echo "Supabase ne répond pas : le projet est peut-être en pause (Restore dans le tableau de bord)."
+          exit 1
+
+      - name: Empêcher GitHub de désactiver cette tâche
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/keepalive.yml/enable"
