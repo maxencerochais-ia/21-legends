@@ -827,11 +827,14 @@ body{width:100%;height:min(100%,100vw / 1.55);max-width:calc(100dvh * 2.4);margi
 #layer .res{transform:translate(-50%,-50%);top:auto;animation:popc .35s var(--ease)}
 #layer .res.sm{font-size:9px;padding:3px 7px;letter-spacing:.14em}
 @keyframes popc{from{transform:translate(-50%,-50%) scale(.4);opacity:0}70%{transform:translate(-50%,-50%) scale(1.08)}}
-.botchip{transform:translate(-50%,-70%)}
-.spot3{width:calc(var(--s)*1.5);height:calc(var(--s)*1.1)}
+.botchip{transform:none;width:0;height:0;display:block}
+.botchip .chipstack,.spot3 .chipstack{position:absolute;left:50%;top:50%;width:0;height:0}
+.botchip .chipstack{left:0;top:0}
+.botchip .chipstack img,.spot3 .chipstack img{left:calc(var(--s) * -.5);max-width:none}
+.botchip .nm{position:absolute;left:0;top:calc(var(--s) * .62);transform:translateX(-50%);margin:0}
+.spot3{width:calc(var(--s)*1.6);height:calc(var(--s)*1.2)}
 .spot3.empty::after{display:none}
-.spot3 .chipstack{height:calc(var(--s)*.8)}
-.spot3 .amt{bottom:auto;top:50%;right:100%;transform:translateY(-50%);margin-right:2px}
+.spot3 .amt{bottom:auto;top:50%;right:calc(50% + var(--s) * .6);transform:translateY(-50%)}
 .tablescreen .shead{right:0;z-index:9}
 .tablescreen .dock{left:auto;right:0;top:0;bottom:0;width:var(--dw);justify-content:flex-end;padding:74px var(--gut-r) calc(14px + env(safe-area-inset-bottom,0px)) 26px;
   background:linear-gradient(90deg,rgba(8,6,5,0),rgba(8,6,5,.82) 22%,rgba(8,6,5,.95))}
@@ -924,6 +927,20 @@ body{width:100%;height:min(100%,100vw / 1.55);max-width:calc(100dvh * 2.4);margi
   .rotate small{font-size:13px;color:var(--text-2);max-width:260px;line-height:1.5}
 }
 @keyframes turn{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+
+/* Vue agrandie de la main d'un voisin ou du croupier */
+.peek{position:absolute;transform:translate(-50%,-50%);z-index:4;border-radius:14px;background:transparent;cursor:zoom-in}
+.peek:active{background:rgba(246,218,140,.08)}
+#peek{position:absolute;inset:0;z-index:12;pointer-events:none}
+#peek:not(:empty){pointer-events:auto;background:rgba(0,0,0,.25)}
+.peekpop{position:absolute;left:calc((100% - var(--dw)) / 2);top:max(56px,14%);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 16px 8px;border-radius:16px;
+  background:linear-gradient(180deg,#221c18,#141110);border:1px solid rgba(214,176,100,.55);box-shadow:0 20px 40px -10px rgba(0,0,0,.9);animation:pop2 .2s var(--ease);--cw:62px}
+.peekpop .pk-h{display:flex;align-items:center;gap:8px}
+.peekpop .pk-h b{font-family:var(--f-display);font-weight:600;font-size:17px}
+.peekpop .pk-h .res{position:static;transform:none;animation:none}
+.peekpop .cards .card+.card{margin-left:calc(var(--cw)*-.3)}
+.peekpop small{font-size:9.5px;color:var(--text-3);letter-spacing:.08em}
+@media (max-height:430px){.peekpop{--cw:54px;gap:6px;padding:8px 14px 6px}}
 
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
@@ -2506,7 +2523,7 @@ function openTable(def, mode = 'career') {
   }
   const el = document.createElement('div'); el.className = 'screen tablescreen'; el.id = 'table';
   el.innerHTML = `<div class="scene" id="scene"><img class="room" id="room" alt=""><div class="vign"></div><div id="felt" class="felt3"></div><div id="layer"></div><div id="shoe" class="shoepos"></div></div>
-    <div id="tmain" style="display:contents"></div><div id="tover"></div><div id="tfx" style="position:absolute;inset:0;pointer-events:none;z-index:9"></div>`;
+    <div id="tmain" style="display:contents"></div><div id="tover"></div><div id="peek"></div><div id="tfx" style="position:absolute;inset:0;pointer-events:none;z-index:9"></div>`;
   document.body.appendChild(el);
   document.addEventListener('keydown', tableKeys);
   TB.onResize = () => { clearTimeout(TB.rz); TB.rz = setTimeout(() => TB && drawTable(), 80); }; window.addEventListener('resize', TB.onResize);
@@ -2549,7 +2566,7 @@ function headHTML() {
    POV_ANCHORS donne la projection du plan du tapis ; un calque « tapis » épouse ce plan (matrix3d) :
    les cartes y sont posées à plat, en vraie perspective. Jetons, totaux et étiquettes restent à l'écran. */
 const SEAT_A = [212, 231, 251, 270, 289, 309, 328], SEAT_R = 1.55, FS = 400;   // FS : pixels par unité dans le calque
-const CARD_U = .21;
+const CARD_U = .24;
 const HAND_R = [1.34, 1.06, 1.17, 1.2, 1.17, 1.06, 1.34];   // rayon des cartes par place : en quinconce sur les côtés, où la perspective écrase la profondeur   // largeur d'une carte sur le tapis (unités de table)
 const seatXY = (k, r = SEAT_R) => [r * Math.cos(SEAT_A[k] * Math.PI / 180), r * Math.sin(SEAT_A[k] * Math.PI / 180)];
 const spotSeats = n => n === 1 ? [3] : n === 2 ? [3, 4] : [2, 3, 4];
@@ -2600,27 +2617,30 @@ function drawTable() {
   const felt = $('#felt'); felt.style.cssText = `width:${(4.6 * FS)}px;height:${(2.6 * FS)}px;transform:${g.css}`;
   const dInfo = handInfo(TB.dealer), betting = TB.phase === 'bet', flat = [], out = [];
   // croupier : cartes côte à côte devant le rack
-  const dn = TB.dealer.length, dx0 = -(Math.max(dn, 2) - 1) * .17 / 2, dcw = `--cw:${(CARD_U * 1.08 * FS).toFixed(0)}px;transform:translate(-50%,-50%)`;
+  const dn = TB.dealer.length, dx0 = -(Math.max(dn, 2) - 1) * .17 / 2, dcw = `--cw:${(CARD_U * 1.04 * FS).toFixed(0)}px;transform:translate(-50%,-50%)`;
   flat.push(TB.dealer.map((cd, k) => `<div class="fc" style="${atL(g, dx0 + k * .17, -.6, dcw)}">${cardHTML(cd)}</div>`).join(''));
   if (dn === 1 && TB.phase !== 'done') flat.push(`<div class="fc" style="${atL(g, dx0 + .17, -.6, dcw)}"><div class="card ghost" aria-hidden="true"><span>2<sup>e</sup> carte<br>après vous</span></div></div>`);
-  if (dn) { const dp = g.P(dx0 + (Math.max(dn, 2) - 1) * .17 + .22, -.62); out.push(`<span class="dtotal" style="${at(dp)}">${dInfo.soft && dInfo.total < 21 && dn > 1 ? `${dInfo.total - 10} / ${dInfo.total}` : dInfo.total}</span>`); }
+  if (dn) { const pc = g.P(dx0 + (dn - 1) * .085, -.6), kk = g.k(0, -.6); out.push(`<button class="peek" data-peek="d" aria-label="Voir les cartes du croupier" style="${at(pc, `width:${(kk * (.3 + .17 * dn)).toFixed(0)}px;height:${(kk * .4).toFixed(0)}px`)}"></button>`); }
+  if (dn) { const dp = g.P(dx0 + (Math.max(dn, 2) - 1) * .17 + .24, -.62); out.push(`<span class="dtotal" style="${at(dp)}">${dInfo.soft && dInfo.total < 21 && dn > 1 ? `${dInfo.total - 10} / ${dInfo.total}` : dInfo.total}</span>`); }
   // voisins
   for (const b of TB.bots) {
     const [x, y] = seatXY(b.seat, HAND_R[b.seat]), [bx, by] = seatXY(b.seat), bp = g.P(bx, by), bi = handInfo(b.cards), rot = SEAT_A[b.seat] - 270;
-    flat.push(flatCards(g, b.cards, x - .05, y + .03, { w: CARD_U * .92, rot: rot * .6 }));
-    out.push(`<div class="botchip" style="${at(bp, `--s:${(.21 * g.k(bx, by)).toFixed(1)}px`)}">${chipStack3(25)}<span class="nm">${b.name}${b.cards.length ? ' · ' + bi.total : ''}</span></div>`);
+    flat.push(flatCards(g, b.cards, x - .05, y + .03, { w: CARD_U * .9, rot: rot * .6 }));
+    out.push(`<div class="botchip" style="${at(bp, `--s:${(.26 * g.k(bx, by)).toFixed(1)}px`)}">${chipStack3(25)}<span class="nm">${b.name}${b.cards.length ? ' · ' + bi.total : ''}</span></div>`);
+    if (b.cards.length) { const n = b.cards.length, pc = g.P(x - .05 + .0275 * (n - 1), y + .03 + .025 * (n - 1)), kk = g.k(x, y);
+      out.push(`<button class="peek" data-peek="b${TB.bots.indexOf(b)}" aria-label="Voir les cartes de ${b.name}" style="${at(pc, `width:${(kk * .46).toFixed(0)}px;height:${(kk * .42).toFixed(0)}px`)}"></button>`); }
     if (b.res) { const rp = g.P(x, y + .25); out.push(`<div class="res sm ${b.res.c}" style="${at(rp)}">${b.res.t}</div>`); }
   }
   // vos places
   const seats = spotSeats(c.spots);
   for (let sp = 0; sp < c.spots; sp++) {
-    const seat = seats[sp], [sx, sy] = seatXY(seat, 1.47), hs = TB.hands.map((h, i) => [h, i]).filter(([h]) => h.spot === sp);
-    const bet = betting ? TB.bets[sp] : (hs[0] ? hs[0][0].bet : 0), bp = g.P(sx, sy), cs = .22 * g.k(sx, sy);
+    const seat = seats[sp], [sx, sy] = seatXY(seat), hs = TB.hands.map((h, i) => [h, i]).filter(([h]) => h.spot === sp);
+    const bet = betting ? TB.bets[sp] : (hs[0] ? hs[0][0].bet : 0), bp = g.P(sx, sy), cs = .26 * g.k(sx, sy);
     out.push(`<button class="spot3 ${bet ? '' : 'empty'} ${c.bet && betting && TB.sel === sp && c.spots > 1 ? 'sel' : ''}" data-spot="${sp}" aria-label="Place ${sp + 1}" style="${at(bp, `--s:${cs.toFixed(1)}px`)}">${bet ? chipStack3(bet) + `<span class="amt">${fmtN(bet)}</span>` : ''}</button>`);
     hs.forEach(([h, i], j) => {
       const tang = (SEAT_A[seat] - 270) * Math.PI / 180, off = (j - (hs.length - 1) / 2) * .27;
       const [hx0, hy0] = seatXY(seat, HAND_R[seat]), hx = hx0 + off * Math.cos(tang) - .05, hy = hy0 + off * Math.sin(tang) + .02;
-      const on = TB.active === i && TB.phase === 'play', w = CARD_U * (c.spots === 3 ? .92 : 1), n = h.cards.length;
+      const on = TB.active === i && TB.phase === 'play', w = CARD_U * [0, 1.12, 1.04, .96][c.spots], n = h.cards.length;
       flat.push(`<div class="handf ${on ? 'on' : ''}" data-hand="${i}" style="${atL(g, hx + .0275 * (n - 1), hy + .025 * (n - 1), `width:${((w + .07 + .055 * (n - 1)) * FS).toFixed(0)}px;height:${((w * 1.4 + .07 + .05 * (n - 1)) * FS).toFixed(0)}px`)}"></div>`
         + flatCards(g, h.cards, hx, hy, { w, rot: (SEAT_A[seat] - 270) * .5, dbl: h.doubled }));
       const tp = g.P(hx - .22, hy + .04), tot = handTotal(h.cards, h);
@@ -2637,9 +2657,23 @@ function drawTable() {
   $('#tmain').innerHTML = headHTML() + `${c.race ? raceHUD() : ''}${c.showCount ? `<div class="hud"><span>Compte</span><b>${signed(sh.rc)}</b><span>Vrai</span><b>${signed(sh.tc())}</b></div>` : ''}
     <div class="decks" style="${at(sp)}">${(sh.cards.length / 52).toFixed(1).replace('.', ',')} jeux</div>
     <div class="dock" id="dock">${dockHTML()}</div>`;
-  bindTable(); animateNew(g);
+  bindTable(); animateNew(g); drawPeek();
 }
-function chipStack3(a) { return `<div class="chipstack">${chipsFor(a).map((v, k) => `<img src="${img('chipT_' + v) || chipImg(v)}" alt="" style="bottom:calc(var(--s) * ${(k * .082).toFixed(3)})">`).join('')}</div>`; }
+/* Pile de jetons : la base du premier jeton tombe pile sur le point d'ancrage (centre de l'anneau) */
+function chipStack3(a) { return `<div class="chipstack">${chipsFor(a).map((v, k) => `<img src="${img('chipT_' + v) || chipImg(v)}" alt="" style="bottom:calc(var(--s) * ${(k * .076 - .35).toFixed(3)})">`).join('')}</div>`; }
+/* Toucher la main d'un voisin ou du croupier : vue agrandie de ses cartes */
+function peekData(id) {
+  if (id === 'd') { const i = handInfo(TB.dealer); return TB.dealer.length ? { name: 'Croupière · ' + (TB.dealerName || ''), cards: TB.dealer, total: i.soft && i.total < 21 && TB.dealer.length > 1 ? `${i.total - 10} / ${i.total}` : i.total, res: null } : null; }
+  const b = TB.bots[+id.slice(1)]; if (!b || !b.cards.length) return null;
+  return { name: b.name, cards: b.cards, total: handTotal(b.cards), res: b.res };
+}
+function drawPeek() {
+  const host = $('#peek'); if (!host) return;
+  const d = TB && TB.peek ? peekData(TB.peek) : null;
+  if (!d) { TB && (TB.peek = null); host.innerHTML = ''; return; }
+  host.innerHTML = `<div class="peekpop" role="dialog" aria-label="Cartes de ${d.name}"><div class="pk-h"><b>${d.name}</b>${d.res ? `<span class="res sm ${d.res.c}">${d.res.t}</span>` : ''}</div>
+    <div class="cards">${d.cards.map(c => cardHTML(c)).join('')}</div><span class="htotal">${d.total}</span><small>Touchez pour fermer</small></div>`;
+}
 function dockHTML() {
   const p = TB.phase, c = TB.cfg;
   if (p === 'bet') {
@@ -2667,6 +2701,8 @@ function bindTable() {
   el.querySelectorAll('[data-chip]').forEach(b => b.onclick = () => { if (!TB.betTouched) { TB.bets = TB.bets.map(() => 0); TB.betTouched = true; } TB.bets[TB.sel] += +b.dataset.chip; SFX.chip(); drawTable(); });
   const bc = $('#bclear'); if (bc) bc.onclick = () => { TB.bets[TB.sel] = 0; TB.betTouched = true; drawTable(); };
   const dl = $('#deal'); if (dl) dl.onclick = () => playRound();
+  el.querySelectorAll('[data-peek]').forEach(b => b.onclick = e => { e.stopPropagation(); TB.peek = TB.peek === b.dataset.peek ? null : b.dataset.peek; SFX.tick(); drawPeek(); });
+  const pk = $('#peek'); if (pk) pk.onclick = () => { TB.peek = null; drawPeek(); };
   el.querySelectorAll('[data-ins]').forEach(b => b.onclick = () => TB.resolver && TB.resolver(b.dataset.ins === '1'));
   el.querySelectorAll('#dock [data-a]').forEach(b => b.onclick = () => TB.resolver && TB.resolver(b.dataset.a));
   const ch = $('#cheat'); if (ch) ch.onclick = () => { TB.assist = true; chartSheet(TB.cfg.rules, TB.hands[TB.active], TB.dealer[0]); };
