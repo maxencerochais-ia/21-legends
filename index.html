@@ -1923,6 +1923,47 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
 .fld input[type=password]{letter-spacing:.08em}
 .pprev .linkbtn{align-self:center}
 
+/* ================= v23 : lancement direct, boutons « i », classement visible ================= */
+/* Un bouton désactivé l'est vraiment, quelle que soit sa couleur (Doubler restait jaune) */
+.act.D:disabled,.act.P:disabled,.act.S:disabled,.act.H:disabled,.act:disabled{background:rgba(225,232,255,.04);color:var(--text-3);box-shadow:none;text-shadow:none;border-color:var(--hair);opacity:.6}
+.act:disabled i{background:transparent;box-shadow:none}
+/* Pastille de classement dans l'en-tête */
+.rankpill{display:flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 8px;border-radius:18px;background:rgba(9,12,24,.72);border:1px solid rgba(var(--gold-rgb),.45);color:var(--text);margin-left:auto}
+.rankpill svg{width:18px;height:18px;color:var(--gold)}
+.rankpill b{font-family:var(--f-display);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.hud-top .rankpill+.money{margin-left:8px}
+/* Bouton « i » dans le coin des modes */
+.ibtn.info{position:absolute;top:4px;right:4px;z-index:2;width:36px;height:36px;color:var(--text-2)}
+.ibtn.info svg{width:18px;height:18px}
+.mw,.mw3{position:relative;display:grid;min-width:0}
+.mw>.mcard,.mw>.feature{height:100%}
+.mw3>.mcard3,.mw3>.mfeat{width:100%;height:100%}
+.mw3 .mtick{top:8px;left:8px;right:auto}
+.modes3>.mw3{min-height:0}
+.mw3.on>.mcard3,.mw3.on>.mfeat{box-shadow:inset 0 0 0 2px var(--gold),0 4px 0 #080b17}
+.mw3.feat{grid-template-rows:minmax(0,1fr) auto;border-radius:18px;background:linear-gradient(180deg,#26306a,#151b3c);border:1px solid rgba(var(--gold-rgb),.4);overflow:hidden}
+.mw3.feat>.mfeat{background:transparent;border:0;box-shadow:none;border-radius:0}
+.mw3.feat.on{box-shadow:inset 0 0 0 2px var(--gold)}
+.mw3.feat.on>.mfeat{box-shadow:none}
+.mstakes{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:0 8px 8px}
+.mstakes button{display:flex;flex-direction:column;align-items:center;gap:1px;min-height:44px;padding:4px 2px;border-radius:10px;background:rgba(9,12,24,.45);border:1px solid var(--hair);color:var(--text)}
+.mstakes button small{font-size:10px;font-weight:600;color:var(--text-2)}
+.mstakes button b{display:inline-flex;align-items:center;gap:3px;font-family:var(--f-display);font-size:12px;font-weight:600}
+.mstakes button b img{width:13px;height:13px}
+.mstakes button[aria-pressed=true]{background:#2c3770;border-color:var(--gold)}
+.mstakes button:disabled{opacity:.4}
+.mfeat>img{height:clamp(40px,calc(100vh - 330px),96px)}
+/* Règles */
+.infobody{max-width:560px;margin:0 auto 12px;width:100%}
+.infobody p{font-size:15px;line-height:1.5;color:var(--text)}
+.infol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.infol li{display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:start;font-size:15px;line-height:1.45}
+.infol li>svg{width:20px;height:20px;margin:2px auto 0;color:var(--gold)}
+/* En-tête de table : le bouton règles à côté du retour */
+.tablescreen .shead .tinfo{margin-left:-4px}
+.tablescreen .shead .tinfo svg{width:18px;height:18px}
+@media (max-height:430px){.rankpill{height:32px}.mstakes button{min-height:40px}}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
 <script>
@@ -3349,7 +3390,7 @@ function frOnPeers() {
   if ($('#friends') && FR.status === 'lobby') frRoom();
   if (FR.game && FR.status === 'play') {
     const here = new Set(FR.peers.map(p => p.id));
-    if (FR.game.mode === 'race' && TB && TB.cfg.race && TB.cfg.race.online) { TB.cfg.race.opps.forEach(o => o.gone = !here.has(o.id) && !o.done); frRaceHUD(); }
+    if (FR.game.mode === 'race' && TB && TB.cfg.race && TB.cfg.race.online) { TB.cfg.race.opps.forEach(o => o.gone = !o.bot && !here.has(o.id) && !o.done); /* les IA n'ont pas de présence : jamais « parties » */ frRaceHUD(); }
     if (FR.game.mode === 'race' && FR.waiting) frRaceCheck();
     if (FR.game.mode === 'duel' && FD) { if (!here.has(FR.game.host)) frDuelEnd('L\'hôte a quitté la partie.'); else if (frIsHostOf()) frDuelMaybeClose(); }
   }
@@ -3425,7 +3466,8 @@ function frRaceEnd(quit) {
 function frRaceList() {
   const me = { name: S.pseudo || 'Vous', you: true, color: FR_COLORS[FR.game.players.findIndex(p => p.id === FR.me.id) % 6], ...FR.me.result };
   const list = [me, ...FR.raceOpps].sort(frRaceCmp);
-  const out = list.filter(p => !(p.gone || p.quit)); return out.concat(list.filter(p => p.gone || p.quit)); // les absents finissent derniers
+  const away = p => !p.bot && (p.gone || p.quit);
+  return list.filter(p => !away(p)).concat(list.filter(away)); // les absents finissent derniers
 }
 function frRaceCheck() {
   if (!FR || !FR.waiting || !$('#table')) return;
@@ -3608,7 +3650,7 @@ async function mmMsg(m) {
   const code = cleanCode(g.code); if (code.length !== 5) { mmClose(); render(); return; }
   S.battle.stake = game.st; addCoins(-battleStake()); S.battle.played++; save(); SFX.coin();
   if (FR) frLeave(true);
-  FR = { code, me: { id: netId(), name: S.pseudo, joined: Date.now() }, peers: [], status: 'play', mode: 'race', game, link: null };
+  FR = { code, me: { id: netId(), name: S.pseudo, joined: Date.now() }, peers: [], status: 'play', mode: 'race', game, link: null, t0: Date.now() };
   const f = FR;
   try { f.link = await netConnect(code, f.me.id, x => FR === f && frOnMsg(x), l => { if (FR !== f) return; f.peers = l; frOnPeers(); }); }
   catch (e) { if (mm.el) mm.el.remove(); MM = null; FR = null; addCoins(battleStake()); toast('Connexion perdue : mise remboursée'); render(); return; }
@@ -3616,9 +3658,14 @@ async function mmMsg(m) {
   frTrack(); frStartRace();
 }
 /* IA d'une partie en ligne : un seul appareil les fait jouer (le premier joueur encore présent) et diffuse leurs tapis */
-function botDriver() { if (!FR || !FR.game) return false; const here = new Set(FR.peers.map(p => p.id)); here.add(FR.me.id); return FR.game.players.map(p => p.id).find(id => here.has(id)) === FR.me.id; }
+function botDriver() {
+  if (!FR || !FR.game) return false;
+  const ids = FR.game.players.map(p => p.id), here = new Set(FR.peers.map(p => p.id));
+  if (!FR.peers.some(p => p.id !== FR.me.id) && Date.now() - (FR.t0 || 0) < 8000) return ids[0] === FR.me.id;   // présences pas encore synchronisées : l'hôte pilote
+  here.add(FR.me.id); return ids.find(id => here.has(id)) === FR.me.id;
+}
 function frBotsRemote(m) {
-  if (m.from === FR.me.id || !Array.isArray(m.bots)) return;
+  if (m.from === FR.me.id || !Array.isArray(m.bots) || botDriver()) return;
   const opps = FR.raceOpps || (TB && TB.cfg.race && TB.cfg.race.opps); if (!opps) return;
   m.bots.forEach(b => { const o = opps.find(x => x.bot && x.id === b.id); if (!o) return; o.stack = num(b.stack, 0, 1e6, o.stack); o.last = /^[+−]?\d{1,5}$/.test(b.last) ? b.last : ''; o.lastT = Date.now(); });
   frRaceHUD();
@@ -3712,6 +3759,8 @@ async function syncProfile(force) {
       const r = await c.from('profiles').update({ ...row, updated_at: new Date().toISOString() }).eq('id', CL.me).select().single(); if (r.error) throw r.error; CL.prof = r.data;
     }
     await loadClan();
+    const rk = await c.from('profiles').select('id', { count: 'exact', head: true }).gt('crowns', CL.prof.crowns);
+    if (!rk.error && rk.count != null) CL.rank = rk.count + 1;
   })();
   try { await CL.syncing; } finally { CL.syncing = null; }
 }
@@ -3988,7 +4037,11 @@ function cloudQueue() {
 async function cloudPush() {
   clearTimeout(ACC.timer); if (!accPerm() || ACC.busy) return;
   ACC.busy = true;
-  try { const c = await sbAuth(), r = await c.rpc('put_save', { p_data: S }); if (r.error) throw r.error; ACC.cloudT = Date.parse(r.data) || Date.now(); ACC.err = ''; }
+  try {
+    const c = await sbAuth(); let r = await c.rpc('put_save', { p_data: S });
+    if (r.error && /Compte requis/.test(r.error.message || '')) { await c.auth.refreshSession(); r = await c.rpc('put_save', { p_data: S }); }
+    if (r.error) throw r.error; ACC.cloudT = Date.parse(r.data) || Date.now(); ACC.err = '';
+  }
   catch (e) { ACC.err = sbErr(e); }
   ACC.busy = false;
   const el = $('#accstate'); if (el) el.outerHTML = accStateHTML();
@@ -4070,6 +4123,7 @@ function accountSheet(mode, then) {
       if (create) {
         const r = await c.auth.updateUser({ email, password: pw });
         if (r.error) throw r.error;
+        await c.auth.refreshSession();   // le jeton doit perdre la marque « anonyme » avant la première sauvegarde
         await accRefresh(); await cloudPush(); syncProfile(true).catch(() => { });
         m.remove(); toast('Compte créé : progression sauvegardée');
       } else {
@@ -4285,7 +4339,8 @@ function openTable(def, mode = 'career') {
   TB.onResize = () => { clearTimeout(TB.rz); TB.rz = setTimeout(() => TB && drawTable(), 80); }; window.addEventListener('resize', TB.onResize);
   ambience(true);
   drawTable();
-  if (mode !== 'free') briefing(def, intro); else if (intro) note('info', 'Sabot entamé', intro, 4000);
+  if (intro) note('info', 'Sabot entamé', intro, 4000);
+  else if (!S.intro) { S.intro = true; save(); note('info', 'Comment jouer', 'Misez, touchez <b>Distribuer</b>, puis <b>Tirer</b>, <b>Rester</b>, <b>Doubler</b> ou <b>Séparer</b>. Les règles sont derrière le bouton i', 6000); }
 }
 function briefing(def, intro) {
   const first = !S.intro, cas = CASINOS.find(c => c.theme === TB.theme);
@@ -4296,7 +4351,7 @@ function briefing(def, intro) {
     ${intro ? `<div class="rule hot">${intro}</div>` : ''}
     <div class="goal-tags">${TB.mode === 'race' ? '' : TB.mode === 'cash' ? `<span>Mise ${fmtN(def.cash.min)} – ${fmtN(def.cash.max)}</span><span>Vos jetons</span><span>Sans coach</span>` : TB.mode === 'sudden' ? '<span>Une seule erreur et c\'est fini</span>' : `${tableTags(def).map(t => `<span>${t}</span>`).join('')}<span class="g">${icon('target')} ${Math.round(TB.cfg.pass * 100)} % de bons coups</span>`}</div>
     ${first ? `<p class="hint">Touchez <b>Distribuer</b>, puis choisissez <b>Tirer</b>, <b>Rester</b>, <b>Doubler</b> ou <b>Séparer</b>. Ici, le croupier ne reçoit qu'une carte : il tire la seconde après vous. Les bons coups d'affilée font monter votre combo.</p>` : ''}
-    <button class="btn gold shine" data-close>${icon('play')} S'asseoir</button></div>`, { locked: true, onClose: () => { S.intro = true; save(); } });
+    <button class="btn gold" data-close>Compris</button></div>`);
 }
 function speedMs() { return SPEEDS[TB.cfg.speed] || 450; }
 function closeTable() { if (!TB) return; TB.token++; clearInterval(TB.clock); ambience(false); window.removeEventListener('resize', TB.onResize); setTheme(LOBBY_THEME()); document.removeEventListener('keydown', tableKeys); const el = $('#table'); if (el) el.remove(); TB = null; render(); }
@@ -4312,7 +4367,7 @@ function comboMult() { return Math.min(4, 1 + Math.floor(TB.combo / 5)); }
 function headHTML() {
   const c = TB.cfg, s = TB.sess, mult = comboMult();
   const prog = isFinite(c.hands) ? Math.min(1, s.rounds / c.hands) : 0;
-  return `<div class="shead"><button class="iconbtn" id="tquit" aria-label="Quitter la table">${icon('back')}</button>
+  return `<div class="shead"><button class="iconbtn" id="tquit" aria-label="Quitter la table">${icon('back')}</button><button class="iconbtn tinfo" id="tinfo" aria-label="Règles de cette table">${icon('info')}</button>
     <div class="ttl"><b>${TB.def.name}</b>${isFinite(c.hands) ? `<div class="pbar"><i style="width:${prog * 100}%"></i></div><small class="mono">Tour ${Math.min(s.rounds + 1, c.hands)} / ${c.hands}</small>` : `<small class="mono">${s.ok} bon${s.ok > 1 ? 's' : ''} coup${s.ok > 1 ? 's' : ''}</small>`}</div>
     <div class="combo ${mult > 1 ? 'hot' : ''}" id="combo" title="Combo">${icon('flame')}<span>${TB.combo}${mult > 1 ? `<em>×${mult}</em>` : ''}</span></div>
     <div class="stack-pill" title="Votre tapis"><img src="${chipImg('gold')}" alt="">${fmtN(TB.stack)}</div></div>
@@ -4463,6 +4518,7 @@ function dockHTML() {
 function bindTable() {
   const el = $('#table');
   $('#tquit').onclick = () => leaveTable();
+  const ti = $('#tinfo'); if (ti) ti.onclick = () => briefing(TB.def, null);
   el.querySelectorAll('[data-spot]').forEach(b => b.onclick = () => { if (TB.phase !== 'bet') return; TB.sel = +b.dataset.spot; drawTable(); });
   el.querySelectorAll('[data-chip]').forEach(b => b.onclick = () => {
     if (!TB.betTouched) { TB.bets = TB.bets.map(() => 0); TB.betTouched = true; }
@@ -4950,12 +5006,14 @@ function render() {
         <span class="who"><b>${esc(S.pseudo || r.name)}</b><span class="xpbar"><i style="width:${(r.pct * 100).toFixed(1)}%"></i></span></span></button>
         ${canSocial() ? `<button class="clanpill" data-tab-go="clan" aria-label="Clan">${CL.clan ? `<span class="cemb sm" style="--cc:${cleanCol(CL.clan.color) || '#ffc23d'}"><img src="${img(avKey(CL.clan.emblem) || 'chip_P')}" alt=""></span><b>${esc(cleanTag(CL.clan.tag))}</b>` : `${icon('users')}<b>Clan</b>`}${CL.unread ? `<i class="bdg">${CL.unread}</i>` : ''}</button>` : ''}`
       : `<button class="backbtn" data-tab-go="salle" aria-label="Retour à la salle">${icon('back')}</button><h1 class="ptitle">${title}</h1>`}
+      <button class="rankpill" data-lb aria-label="Classement${CL.rank ? ', vous êtes ' + CL.rank + 'e' : ''}">${icon('trophy')}<b>${CL.rank ? '#' + fmtN(CL.rank) : 'Classement'}</b></button>
       <span class="money crowns" data-go="road" role="button" tabindex="0" aria-label="${fmtN(S.crowns)} couronnes : route des couronnes"><img src="${crownImg()}" alt="">${fmtN(S.crowns)}</span>
       <button class="money coins" data-caisse aria-label="Caisse : ${fmtN(S.coins)} jetons"><img src="${chipImg('1000')}" alt="">${fmtN(S.coins)}<span class="plus">${icon('plus')}</span></button>
     </header>
     <main class="scroll ${NOANIM ? 'still' : ''} v-${TAB}" id="main">${home ? salleView(pending) : TAB === 'tournee' ? tourneeView() : TAB === 'compet' ? competView() : TAB === 'ecole' ? ecoleView() : TAB === 'boutique' ? shopView() : TAB === 'clan' ? clanView() : profileView()}</main>`;
   app.querySelectorAll('[data-tab],[data-tab-go]').forEach(b => b.onclick = () => go(b.dataset.tab || b.dataset.tabGo));
   app.querySelectorAll('[data-caisse]').forEach(b => b.onclick = () => caisseSheet());
+  app.querySelectorAll('[data-lb]').forEach(b => b.onclick = () => leaderboardSheet());
   app.querySelectorAll('.hud-top [data-go="road"]').forEach(b => b.onclick = () => crownRoadSheet());
   bindView();
 }
@@ -4994,7 +5052,7 @@ function salleView() {
   return `<section class="home2">
       <img class="h2bg" src="${venueImg(sa.theme)}" alt="${sa.name}, ${sa.city}">
       <nav class="h2side" aria-label="Menu">
-        ${rb('data-tab-go="tournee"', ico3('map', 'route'), 'Tournée', 0)}
+        ${rb('data-go="friends"', `<span class="rbi">${icon('users')}</span>`, 'Amis', 0)}
         ${rb('data-go="missions"', ico3('dart', 'target'), 'Missions', T.mDone)}
         ${rb('data-tab-go="boutique"', ico3('bag', 'bag'), 'Boutique', 0)}
         ${rb('data-tab-go="ecole"', ico3('books', 'cap'), 'École', 0)}
@@ -5009,31 +5067,70 @@ function salleView() {
       </div>
     </section>`;
 }
-/* ----- Modes : JOUER lance le mode choisi, le bouton Mode le change ----- */
+/* ----- Modes : JOUER lance directement le mode choisi ; les règles sont derrière le bouton « i » ----- */
 const MODES = {
-  battle: { name: 'Bataille', pic: () => img('trophy'), sub: () => `<img src="${chipImg('1000')}" alt="">${fmtN(SALLES[salleIdx()].fee)}` },
+  battle: { name: 'Bataille', pic: () => img('trophy'), sub: () => `<img src="${chipImg('1000')}" alt="">${fmtN(battleStake())}` },
   cash: { name: 'Table', pic: () => img('stack'), sub: () => { const [a, b] = CASH[salleIdx()]; return `${fmtN(a)}–${fmtN(b)}`; } },
   asc: { name: 'Ascension', pic: () => img('ic_medal'), sub: () => 'Étage ' + S.asc.floor },
   duel: { name: 'Duel', pic: () => img('bolt'), sub: () => '1 contre 1' },
 };
 const curMode = () => MODES[S.mode] ? S.mode : 'battle';
+/* Règles de chaque mode, affichées à la demande */
+const MODE_INFO = {
+  battle: () => ['Bataille', `<ul class="infol"><li>${icon('user')}<span><b>4 joueurs</b>, de vrais joueurs en ligne quand il y en a, sinon des IA</span></li>
+    <li>${icon('timer')}<span><b>3 minutes</b>. Tout le monde part avec 1 000 jetons et mise librement</span></li>
+    <li>${icon('trophy')}<span>Au gong, <b>le plus gros tapis gagne</b> : 3 fois la mise, des couronnes et une mallette</span></li>
+    <li>${icon('crown')}<span>Les couronnes ouvrent les salles suivantes de la tournée</span></li></ul>`],
+  cash: () => { const [a, b] = CASH[salleIdx()]; return ['Table', `<ul class="infol"><li>${icon('coin')}<span>Vous jouez <b>vos propres jetons</b>, mises de ${fmtN(a)} à ${fmtN(b)}</span></li>
+    <li>${icon('hand')}<span>Pas de coach ni de limite de temps : vous partez quand vous voulez</span></li>
+    <li>${icon('check')}<span>Vos gains sont gardés en sortant</span></li></ul>`]; },
+  asc: () => { const f = ascFloor(S.asc.floor); return ['Ascension', `<ul class="infol"><li>${icon('stairs')}<span>Chaque étage est une table de <b>${f.hands} mains</b> ; l'entrée (${fmtN(f.fee)} jetons) devient votre tapis</span></li>
+    <li>${icon('target')}<span>Jouez au moins <b>${Math.round(f.pass * 100)} % de bons coups</b> pour monter et toucher la prime</span></li>
+    <li>${icon('crown')}<span>Tous les 5 étages, un patron : plus de mains et une mallette à la clé</span></li></ul><p class="small muted">Record : étage ${S.asc.best}</p>`]; },
+  duel: () => ['Duel', `<ul class="infol"><li>${icon('bolt')}<span><b>10 situations</b> en direct contre un adversaire</span></li>
+    <li>${icon('timer')}<span>Le premier à trouver le bon coup marque <b>3 points</b>, le second 1</span></li>
+    <li>${icon('x')}<span>Une erreur coûte 1 point</span></li></ul>`],
+  sprint: () => ['Éclair', '<p>60 secondes pour jouer un maximum de bons coups. Une situation s’affiche, vous choisissez le bon coup, la suivante arrive aussitôt. Votre record est gardé.</p>'],
+  sudden: () => ['Mort subite', '<p>Une vraie table, un vrai sabot. Jouez parfaitement le plus longtemps possible : la première erreur met fin à la partie.</p>'],
+  deck: () => ['Paquet chrono', '<p>Les cartes d’un paquet défilent une à une. Tenez le compte (+1 pour 2 à 6, −1 pour 10, figures et As) et donnez-le le plus vite possible.</p>'],
+  review: () => ['Révision', '<p>Rejouez les situations où vous vous êtes trompé, jusqu’à les réussir.</p>'],
+  free: () => ['Table libre', '<p>Une table à vos règles : nombre de mains, voisins, vitesse du croupier, coach, comptage et mises libres.</p>'],
+  daily: () => { const d = dailyToday(); return ['Défi du jour · ' + d.name, `<p>${d.desc}</p>`]; },
+};
+function modeInfo(id) {
+  const f = MODE_INFO[id]; if (!f) return; const [t, html] = f();
+  sheet(`<div class="shtop"><h3>${t}</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div><div class="infobody">${html}</div><button class="btn ghost" data-close>Compris</button>`);
+}
+const infoBtn = id => `<button class="ibtn info" data-info="${id}" aria-label="Règles : ${MODE_INFO[id] ? MODE_INFO[id]()[0] : ''}">${icon('info')}</button>`;
+function bindInfo(root) { root.querySelectorAll('[data-info]').forEach(b => b.onclick = e => { e.stopPropagation(); modeInfo(b.dataset.info); }); }
+function playBattle() {
+  const fee = battleStake(); if (S.coins < fee) { toast(`Il vous faut ${fmtN(fee)} jetons`); return; }
+  netMode() ? mmSearch() : matchmaking('race');
+}
 function playMode() {
   const k = curMode();
-  if (k === 'battle') battleSheet(); else if (k === 'cash') openCash(salleIdx()); else if (k === 'asc') ascSheet(); else duelSheet();
+  if (k === 'battle') playBattle();
+  else if (k === 'cash') openCash(salleIdx());
+  else if (k === 'asc') { const f = ascFloor(S.asc.floor); if (S.coins < f.fee) toast(`Il vous faut ${fmtN(f.fee)} jetons`); else startAscension(); }
+  else duelSheet();
 }
 function modeSheet() {
   const k = curMode(), on = id => k === id ? 'on' : '', tick = id => k === id ? `<span class="mtick">${icon('check')}</span>` : '';
-  const card = id => `<button class="mcard3 ${on(id)}" data-mode="${id}"><img src="${MODES[id].pic()}" alt=""><b>${MODES[id].name}</b><small>${MODES[id].sub()}</small>${tick(id)}</button>`;
+  const sa = SALLES[salleIdx()], st = Math.min(S.battle.stake || 0, 2);
+  const card = id => `<div class="mw3 ${on(id)}"><button class="mcard3" data-mode="${id}" aria-pressed="${k === id}"><img src="${MODES[id].pic()}" alt=""><b>${MODES[id].name}</b><small>${MODES[id].sub()}</small></button>${tick(id)}${infoBtn(id)}</div>`;
   const m = sheet(`<div class="shtop"><h3>Mode de jeu</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
     <div class="modes3">
-      <button class="mfeat ${on('battle')}" data-mode="battle"><img src="${img('trophy')}" alt=""><span class="mft"><b>Bataille</b>
-        <span class="brow"><span>${icon('user')}4</span><span>${icon('timer')}3 min</span></span>
-        <span class="mgain"><img src="${crownImg()}" alt="">Couronnes</span></span>${tick('battle')}</button>
+      <div class="mw3 feat ${on('battle')}"><button class="mfeat" data-mode="battle" aria-pressed="${k === 'battle'}"><img src="${img('trophy')}" alt=""><span class="mft"><b>Bataille</b>
+        <span class="brow"><span>${icon('user')}4</span><span>${icon('timer')}3 min</span></span></span></button>
+        <div class="mstakes" role="group" aria-label="Mise de la bataille">${STAKES.map(([x, l], i) => `<button data-stake="${i}" aria-pressed="${st === i}" ${S.coins < sa.fee * x ? 'disabled' : ''}><small>${l}</small><b><img src="${chipImg('1000')}" alt="">${fmtN(sa.fee * x)}</b></button>`).join('')}</div>
+        ${tick('battle')}${infoBtn('battle')}</div>
       ${card('cash')}${card('asc')}${card('duel')}
     </div>
-    <div class="mfoot"><button class="btn ghost sm" data-m2="friends">${icon('user')}Entre amis</button><button class="btn ghost sm" data-m2="lb">${icon('trophy')}Classement</button></div>`);
+    <div class="mfoot"><button class="btn ghost sm" data-m2="friends">${icon('users')}Entre amis</button><button class="btn ghost sm" data-m2="lb">${icon('trophy')}Classement</button></div>`);
   m.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { S.mode = b.dataset.mode; save(); m.remove(); quietRender(); });
+  m.querySelectorAll('[data-stake]').forEach(b => b.onclick = () => { S.mode = 'battle'; S.battle.stake = +b.dataset.stake; save(); m.remove(); quietRender(); });
   m.querySelectorAll('[data-m2]').forEach(b => b.onclick = () => { m.remove(); if (b.dataset.m2 === 'lb') leaderboardSheet(); else friendsSheet(); });
+  bindInfo(m);
 }
 /* ----- Mallettes : les 4 emplacements ----- */
 function malSheet() {
@@ -5046,7 +5143,7 @@ function malSheet() {
         ${rd ? '<span class="st go">Ouvrir</span>' : `<span class="st"><span class="pbar"><i style="width:${x.prog / d.need * 100}%"></i></span><span class="mono">${i === act ? `${x.prog}/${d.need}` : 'En attente'}</span></span>`}</button>`;
     }).join('')}</div>
     <p class="bnote">S'ouvre avec des bons coups</p>`);
-  m.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { const i = +b.dataset.slot; m.remove(); if (S.mallettes[i]) openMallette(i); else { S.mode = 'battle'; save(); battleSheet(); } });
+  m.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { const i = +b.dataset.slot; m.remove(); if (S.mallettes[i]) openMallette(i); else { S.mode = 'battle'; save(); playBattle(); } });
   m.addEventListener('click', e => { if (e.target.closest('[data-close]')) quietRender(); });
 }
 /* Le compte à rebours du coffre reste juste ; à minuit, l'accueil se redessine */
@@ -5135,11 +5232,11 @@ function missionsPanel() {
 function quickModes() {
   const nm = Object.keys(S.mistakes).length;
   return [
-    `<button class="mcard" data-go="sprint" style="--mc:255,182,72"><img src="${img('bolt')}" alt="">${S.best.sprint ? `<span class="rec">Record ${S.best.sprint}</span>` : ''}<b>Éclair</b><small>60 secondes, un max de bons coups</small></button>`,
-    `<button class="mcard" data-go="sudden" style="--mc:255,92,97"><img src="${img('heart')}" alt="">${S.best.sudden ? `<span class="rec">Record ${S.best.sudden}</span>` : ''}<b>Mort subite</b><small>Une seule erreur et c'est fini</small></button>`,
-    `<button class="mcard" data-go="deck" style="--mc:232,194,106"><img src="${img('watch')}" alt="">${S.best.deck ? `<span class="rec">${String(S.best.deck).replace('.', ',')} s</span>` : ''}<b>Paquet chrono</b><small>Comptez 51 cartes au chrono</small></button>`,
-    `<button class="mcard" data-go="review" style="--mc:90,169,255"><img src="${img('cards')}" alt="">${nm ? `<span class="rec">${nm} à revoir</span>` : ''}<b>Révision</b><small>${nm ? 'Rejouez vos coups ratés' : 'Vos coups ratés reviendront ici'}</small></button>`,
-    `<button class="mcard" data-go="free" style="--mc:47,208,143"><img src="${img('stack')}" alt=""><b>Table libre</b><small>Vos règles : mains, voisins, vitesse, comptage</small></button>`,
+    `<div class="mw"><button class="mcard" data-go="sprint" style="--mc:255,182,72"><img src="${img('bolt')}" alt="">${S.best.sprint ? `<span class="rec">Record ${S.best.sprint}</span>` : ''}<b>Éclair</b><small>60 secondes, un max de bons coups</small></button>${infoBtn('sprint')}</div>`,
+    `<div class="mw"><button class="mcard" data-go="sudden" style="--mc:255,92,97"><img src="${img('heart')}" alt="">${S.best.sudden ? `<span class="rec">Record ${S.best.sudden}</span>` : ''}<b>Mort subite</b><small>Une seule erreur et c'est fini</small></button>${infoBtn('sudden')}</div>`,
+    `<div class="mw"><button class="mcard" data-go="deck" style="--mc:232,194,106"><img src="${img('watch')}" alt="">${S.best.deck ? `<span class="rec">${String(S.best.deck).replace('.', ',')} s</span>` : ''}<b>Paquet chrono</b><small>Comptez 51 cartes au chrono</small></button>${infoBtn('deck')}</div>`,
+    `<div class="mw"><button class="mcard" data-go="review" style="--mc:90,169,255"><img src="${img('cards')}" alt="">${nm ? `<span class="rec">${nm} à revoir</span>` : ''}<b>Révision</b><small>${nm ? 'Rejouez vos coups ratés' : 'Vos coups ratés reviendront ici'}</small></button>${infoBtn('review')}</div>`,
+    `<div class="mw"><button class="mcard" data-go="free" style="--mc:47,208,143"><img src="${img('stack')}" alt=""><b>Table libre</b><small>Vos règles : mains, voisins, vitesse, comptage</small></button>${infoBtn('free')}</div>`,
   ];
 }
 function coinBurst(from, n = 14) {
@@ -5193,8 +5290,8 @@ function modesView() {
   const d = dailyToday(), ds = S.daily[today()] || 0;
   return `<div class="page-h"><div><h1>Entraînement</h1><p>Des parties courtes pour garder la main.</p></div></div>
     <div class="cols"><div class="col">
-    <button class="feature" data-go="daily"><img src="${img('ticket')}" alt=""><span class="kick">Défi du jour</span><h2>${d.name}</h2><p>${d.desc}</p>
-      <div class="st">${ds ? `${starsHTML(ds)} Réussi aujourd'hui` : `${icon('timer')} Nouveau défi dans ${untilMidnight()}`}</div></button>
+    <div class="mw feat"><button class="feature" data-go="daily"><img src="${img('ticket')}" alt=""><span class="kick">Défi du jour</span><h2>${d.name}</h2><p>${d.desc}</p>
+      <div class="st">${ds ? `${starsHTML(ds)} Réussi aujourd'hui` : `${icon('timer')} Nouveau défi dans ${untilMidnight()}`}</div></button>${infoBtn('daily')}</div>
     <section class="panel rulesbox"><div class="sec-h"><h2>Règles européennes</h2></div>
       <ul>
         <li>${icon('cards')}<span><b>Une seule carte au croupier.</b> Il tire la seconde après que tous les joueurs ont joué.</span></li>
@@ -5315,6 +5412,7 @@ function bindView() {
   main.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { const i = +b.dataset.slot; if (S.mallettes[i]) openMallette(i); else battleSheet(); });
   bindClaims(main, quietRender);
   if (TAB === 'boutique') bindShop(main);
+  bindInfo(main);
   if (TAB === 'clan') bindClan(main);
   if (TAB === 'moi') bindAccount(main);
   if (TAB === 'moi') main.querySelectorAll('[data-coll]').forEach(b => b.onclick = () => collSheet(b.dataset.coll));
