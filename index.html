@@ -1595,6 +1595,52 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
   .modes3{grid-template-columns:1.3fr 1fr 1fr 1fr;gap:8px}.mft>b{font-size:20px}
 }
 
+/* ================= v19 : bataille lisible =================
+   En haut au centre : votre place et le chrono. À gauche : le classement en direct, qui bouge pendant que les IA jouent. */
+.rtop{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 5px);transform:translateX(-50%);z-index:9;display:flex;align-items:center;gap:6px}
+.rpos,.rclock2{height:44px;display:flex;align-items:center;border-radius:14px;background:rgba(9,12,24,.84);border:1px solid rgba(150,170,240,.22);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.rpos{gap:2px;padding:0 12px;color:var(--text)}
+.rpos b{font-family:var(--f-display);font-size:24px;font-weight:700;line-height:1}
+.rpos sup{font-size:11px;margin-left:1px}
+.rpos small{font-size:12px;font-weight:700;color:var(--text-2);align-self:flex-end;margin-bottom:9px}
+.rpos.first{background:var(--brass);border-color:transparent;color:var(--gold-ink);box-shadow:0 3px 0 #b87a00}
+.rpos.first small{color:var(--gold-ink);opacity:.7}
+.rclock2{position:relative;overflow:hidden;gap:8px;padding:0 16px 0 12px;min-width:112px}
+.rclock2 svg{width:20px;height:20px;color:var(--gold)}
+.rclock2>span{font-family:var(--f-display);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.rclock2>i{position:absolute;left:0;bottom:0;height:4px;background:var(--gold);transition:width .4s linear}
+.rclock2.hot{background:linear-gradient(180deg,#b8392f,#741f19);border-color:rgba(255,200,190,.45)}
+.rclock2.hot svg,.rclock2.hot>i{color:#fff;background-color:transparent}
+.rclock2.hot>i{background:#ffd2c8}
+.rclock2.last>span{animation:rtick 1s steps(1) infinite}
+@keyframes rtick{0%{transform:scale(1.18)}50%{transform:scale(1)}}
+.rclock2.ping{animation:rping .7s var(--ease)}
+@keyframes rping{0%{transform:scale(1)}30%{transform:scale(1.25)}100%{transform:scale(1)}}
+.tablescreen .racehud{display:none}
+.rank2{position:absolute;left:max(10px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 58px);z-index:8;width:142px;display:flex;flex-direction:column;gap:4px}
+.rr{display:grid;grid-template-columns:14px 24px minmax(0,1fr) auto;align-items:center;gap:6px;height:34px;padding:0 8px 0 6px;border-radius:10px;
+  background:rgba(9,12,24,.8);border:1px solid rgba(150,170,240,.14);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.rr[data-mv]{animation:rkmove .6s var(--ease)}
+@keyframes rkmove{from{transform:translateY(calc(var(--d) * 38px))}to{transform:none}}
+.rr .av{width:24px;height:24px;font-size:11px}
+.rn{font-family:var(--f-display);font-size:14px;font-weight:700;color:var(--text-2);text-align:center}
+.rr:first-child .rn{color:var(--gold)}
+.rt{min-width:0;display:flex;flex-direction:column;line-height:1.1}
+.rt b{font-size:10px;font-weight:600;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rt b em{font-style:normal;font-size:9px;opacity:.8}
+.rt .mono{font-size:13px;font-weight:700;color:var(--text)}
+.rr.me{background:rgba(64,46,10,.92);border-color:rgba(var(--gold-rgb),.7)}
+.rr.me .rt b{color:var(--gold)}
+.rr.me.fl-up{border-color:var(--ok)}.rr.me.fl-dn{border-color:var(--ko)}
+.rarrow{font-size:11px}.rarrow.up{color:var(--ok)}.rarrow.dn{color:var(--ko)}
+.rr .delta{font-size:10px;font-weight:700;color:var(--text-3)}
+.rr .delta.up{color:var(--ok)}.rr .delta.dn{color:var(--ko)}
+.rr .delta.fresh{animation:rping .6s var(--ease)}
+.rgap{margin-top:2px;padding:3px 8px;border-radius:8px;background:rgba(9,12,24,.7);font-size:11px;font-weight:700;color:var(--text-2);text-align:center}
+.rgap.up{color:var(--ok)}.rgap.dn{color:#ff9b8f}
+@media (prefers-reduced-motion:reduce){.rr[data-mv],.rclock2.last>span,.rclock2.ping,.rr .delta.fresh{animation:none}}
+.tablescreen:has(.rank2) .plate{display:none}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
 <script>
@@ -2680,7 +2726,7 @@ function battleEndHTML(title, rankList, r, s, scoreLabel) {
 
 /* Course au magot : table en miroir, jouée sur la vraie table immersive */
 function startRace(opps, s) {
-  opps.forEach(o => { o.stack = 1000; o.time = 0; o.last = ''; o.style = pick([.06, .1, .15, .22]); });
+  opps.forEach(o => { o.stack = 1000; o.time = 0; o.last = ''; o.style = pick([.06, .1, .15, .22]); o.pace = 5500 + o.rt * 1.5 + rnd(0, 2000); o.nextAt = 0; o.lastT = 0; });
   openTable({ name: 'Course au magot', spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 25, freeBet: true, race: { opps, salle: s, target: 2000, dur: 180 }, theme: s.theme,
     rule: 'Tout le monde part avec <b>1 000 jetons</b>. Au bout de 3 minutes, <b>le plus gros tapis gagne</b>.' }, 'race');
   TB.bets = [100]; drawTable();
@@ -2727,15 +2773,56 @@ function aiBet(o, R) {
 }
 function raceHUD() {
   const R = TB.cfg.race; if (!R) return '';
-  const list = raceRanking();
-  return `<div class="racehud">${list.map((p, i) => `<div class="${p.you ? 'me' : ''}">${avatarHTML(p)}<div><b>${esc(p.name)}${p.ai ? ' <em>IA</em>' : ''}${p.remote ? ` <em>${p.gone ? 'parti' : p.done ? 'fini' : 'main ' + ((p.hand || 0) + 1)}</em>` : ''}</b><div class="pbar"><i style="width:${Math.min(100, Math.max(0, p.stack / R.target * 100))}%"></i></div></div><span class="mono">${fmtN(p.stack)}</span>${p.last && !p.you ? `<span class="delta ${p.last[0] === '+' ? 'up' : p.last[0] === '−' ? 'dn' : ''}" title="${p.lastAct}">${p.last}</span>` : ''}</div>`).join('')}</div>`;
+  return `${R.dur ? `<div class="rtop">${posHTML()}<span class="rclock2 ${raceLeft() <= 30 ? 'hot' : ''}" id="rclock">${icon('timer')}<span>${fmtClock(raceLeft())}</span><i style="width:${(Math.max(0, raceLeft()) / R.dur * 100).toFixed(1)}%"></i></span></div>` : ''}${rankHTML()}`;
+}
+/* Votre place, en gros, à côté du chrono */
+function posHTML() {
+  const list = raceRanking(), me = list.findIndex(p => p.you);
+  return `<span class="rpos ${me === 0 ? 'first' : ''}" id="rpos" aria-label="Vous êtes ${me + 1}e sur ${list.length}"><b>${me + 1}<sup>${me ? 'e' : 'er'}</sup></b><small>/${list.length}</small></span>`;
+}
+/* Classement en direct : les lignes glissent quand les places changent */
+function rankHTML() {
+  const list = raceRanking(), key = list.map(p => p.name).join('|'), me = list.findIndex(p => p.you), now = Date.now(), moved = {};
+  if (TB.rk && TB.rk.key !== key) {
+    const prev = TB.rk.key.split('|');
+    list.forEach((p, i) => { const j = prev.indexOf(p.name); if (j >= 0 && j !== i) moved[p.name] = j - i; });
+    if (TB.rk.me !== me) { TB.rkFlash = { dir: me < TB.rk.me ? 'up' : 'dn', t: now }; if (me < TB.rk.me) SFX.ok(); }
+  }
+  TB.rk = { key, me };
+  const fl = TB.rkFlash && now - TB.rkFlash.t < 2600 ? TB.rkFlash.dir : '';
+  const my = list[me], ref = me === 0 ? list[1] : list[0], diff = ref ? my.stack - ref.stack : 0;
+  return `<div class="rank2" id="rk" aria-label="Classement en direct">${list.map((p, i) => {
+      const fresh = p.lastT && now - p.lastT < 1800, tag = p.remote ? ` <em>${p.gone ? 'parti' : p.done ? 'fini' : 'main ' + ((p.hand || 0) + 1)}</em>` : '';
+      const side = p.you ? (fl ? `<span class="rarrow ${fl}">${fl === 'up' ? '▲' : '▼'}</span>` : '')
+        : p.last ? `<span class="delta ${p.last[0] === '+' ? 'up' : p.last[0] === '−' ? 'dn' : ''} ${fresh ? 'fresh' : ''}">${p.last}</span>` : '';
+      return `<div class="rr ${p.you ? 'me' : ''} ${p.you && fl ? 'fl-' + fl : ''}" ${moved[p.name] ? `style="--d:${moved[p.name]}" data-mv` : ''}><span class="rn">${i + 1}</span>${avatarHTML(p)}<span class="rt"><b>${p.you ? 'Vous' : esc(p.name)}${tag}</b><span class="mono">${fmtN(p.stack)}</span></span>${side}</div>`;
+    }).join('')}
+    ${ref ? `<div class="rgap ${diff > 0 ? 'up' : diff < 0 ? 'dn' : ''}">${diff === 0 ? 'À égalité avec le ' + (me === 0 ? '2e' : '1er') : me === 0 ? `+${fmtN(diff)} d'avance` : `${fmtN(-diff)} derrière le 1er`}</div>` : ''}</div>`;
+}
+function refreshRank() {
+  const a = $('#rk'); if (a) a.outerHTML = rankHTML();
+  const b = $('#rpos'); if (b) b.outerHTML = posHTML();
+}
+/* Les IA jouent à leur propre rythme, avec leur propre sabot, que vous jouiez ou non */
+function aiTick() {
+  const R = TB && TB.cfg.race; if (!R || R.online || !TB.raceT0 || TB.timeUp) return;
+  const now = Date.now(); let moved = false;
+  R.opps.forEach(o => {
+    if (!o.nextAt) o.nextAt = TB.raceT0 + o.pace * (.5 + Math.random() * .6);
+    if (now < o.nextAt || o.stack < 25) return;
+    const sh = R.aiShoe || (R.aiShoe = new Shoe(TB.cfg.rules.decks, 1));
+    const start = [sh.draw(), sh.draw()], up = sh.draw(), dealer = [up], draws = [];
+    for (let k = 0; k < 8; k++) draws.push(sh.draw());
+    while (handInfo(dealer).total < 17) dealer.push(sh.draw());
+    mirrorPlay(o, start, draws, dealer, up, TB.cfg.rules, aiBet(o, R));
+    o.lastT = now; o.nextAt = now + o.pace * (.75 + Math.random() * .5); moved = true;
+  });
+  if (moved) refreshRank();
 }
 function raceAfterRound() { // appelé après le règlement d'un tour
   const R = TB.cfg.race, h = TB.hands[0]; if (!R || !TB.roundLog) return false;
   if (R.online) return frRaceTick();
-  const L = TB.roundLog;
-  R.opps.forEach(o => mirrorPlay(o, L.start, L.draws.concat(TB.shoe.cards.slice(-8).reverse()), TB.dealer, L.up, TB.cfg.rules, aiBet(o, R)));
-  return false;
+  return false;   // les IA jouent seules, au chrono (aiTick)
 }
 function raceEnd(quit) {
   if (TB.cfg.race.online) return frRaceEnd(quit);
@@ -3354,7 +3441,6 @@ function headHTML() {
   const prog = isFinite(c.hands) ? Math.min(1, s.rounds / c.hands) : 0;
   return `<div class="shead"><button class="iconbtn" id="tquit" aria-label="Quitter la table">${icon('back')}</button>
     <div class="ttl"><b>${TB.def.name}</b>${isFinite(c.hands) ? `<div class="pbar"><i style="width:${prog * 100}%"></i></div><small class="mono">Tour ${Math.min(s.rounds + 1, c.hands)} / ${c.hands}</small>` : `<small class="mono">${s.ok} bon${s.ok > 1 ? 's' : ''} coup${s.ok > 1 ? 's' : ''}</small>`}</div>
-    ${c.race && c.race.dur ? `<div class="stack-pill clock ${raceLeft() <= 30 ? 'hot' : ''}" id="rclock">${icon('timer')}<span>${fmtClock(raceLeft())}</span></div>` : ''}
     <div class="combo ${mult > 1 ? 'hot' : ''}" id="combo" title="Combo">${icon('flame')}<span>${TB.combo}${mult > 1 ? `<em>×${mult}</em>` : ''}</span></div>
     <div class="stack-pill" title="Votre tapis"><img src="${chipImg('gold')}" alt="">${fmtN(TB.stack)}</div></div>
     ${c.heat ? `<div class="heat"><span>${icon('eye')}Surveillance</span><div class="pbar"><i style="width:${TB.heat}%"></i></div></div>` : ''}`;
@@ -3894,8 +3980,17 @@ const fmtClock = t => { const n = Math.max(0, Math.ceil(t)); return `${Math.floo
 function raceLeft() { const R = TB && TB.cfg.race; if (!R || !R.dur) return 0; return TB.raceT0 ? R.dur - (Date.now() - TB.raceT0) / 1000 : R.dur; }
 function raceClock() {
   if (!TB || !TB.cfg.race) return;
-  const left = raceLeft(), el = $('#rclock');
-  if (el) { el.querySelector('span').textContent = fmtClock(left); el.classList.toggle('hot', left <= 30); }
+  aiTick();
+  const R = TB.cfg.race, left = raceLeft(), el = $('#rclock'), sec = Math.ceil(left);
+  if (el) {
+    el.querySelector('span').textContent = fmtClock(left); el.classList.toggle('hot', left <= 30); el.classList.toggle('last', left <= 10 && left > 0);
+    const bar = el.querySelector('i'); if (bar) bar.style.width = (Math.max(0, left) / R.dur * 100).toFixed(1) + '%';
+  }
+  if (TB.raceT0 && sec !== TB.lastSec) {   // repères sonores : 1 minute, 30 secondes, puis les 10 dernières
+    TB.lastSec = sec;
+    if ((sec === 60 || sec === 30) && el) { el.classList.remove('ping'); void el.offsetWidth; el.classList.add('ping'); if (S.settings.sound) tone(980, .14, 'sine', .05); }
+    if (sec <= 10 && sec > 0 && S.settings.sound) tone(1250, .04, 'square', .025);
+  }
   if (left <= 0 && !TB.timeUp && TB.raceT0) {
     TB.timeUp = true; SFX.ko && SFX.ko();
     if (TB.phase === 'bet') endSession(); else note('info', 'Temps écoulé', 'Cette main est la dernière.', 2400);
