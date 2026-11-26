@@ -1522,6 +1522,79 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
 .hcircle path{fill:none;stroke:var(--gold);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:520;stroke-dashoffset:520;animation:inkdraw .8s var(--ease) .2s forwards;vector-effect:non-scaling-stroke}
 @media (prefers-reduced-motion:reduce){.ink path,.hcircle path{stroke-dashoffset:0}}
 
+/* ================= v18 : emplacements et choix du mode =================
+   Coffre et mallettes ont leur propre case ; JOUER lance le mode choisi, le bouton Mode le change. */
+.h2loot{gap:10px}
+.slot{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;width:104px;padding:6px 8px 8px;border-radius:16px;
+  background:rgba(14,19,40,.84);border:1px solid rgba(150,170,240,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 3px 0 #080b17}
+.slot:active{transform:translateY(2px);box-shadow:0 1px 0 #080b17}
+.slot>small{align-self:flex-start;font-size:10px;font-weight:700;color:var(--text-2);line-height:14px}
+.slot>img{width:60px;height:46px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.slot.chest:not(.ready)>img{filter:saturate(.55) brightness(.8) drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.slot .st{display:inline-flex;align-items:center;gap:4px;height:20px;font-size:12px;font-weight:700;color:var(--text)}
+.slot .st svg{width:13px;height:13px;color:var(--text-2)}
+.slot .st .pbar{width:40px;height:5px;border-radius:3px}
+.st.go{padding:0 12px;border-radius:8px;background:var(--brass);color:var(--gold-ink);font-family:var(--f-display);font-size:12px;box-shadow:0 2px 0 #b87a00}
+.slot.ready{border-color:rgba(var(--gold-rgb),.7)}
+.pips{position:absolute;top:26px;right:8px;display:flex;flex-direction:column;gap:3px}
+.pips i{width:6px;height:6px;border-radius:2px;background:rgba(150,170,240,.22)}
+.pips i.h{background:#c9d2f0}
+.pips i.r{background:var(--gold)}
+.mplus{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;border:2px dashed rgba(150,170,240,.3);color:var(--text-2)}
+.mplus svg{width:20px;height:20px}
+.modebtn{display:flex;align-items:center;gap:8px;min-height:76px;padding:0 10px 0 8px;border-radius:18px;text-align:left;color:var(--text);
+  background:var(--lac);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 0 #080b17}
+.modebtn:active{transform:translateY(3px);box-shadow:0 1px 0 #080b17}
+.modebtn>img{width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.modebtn small{display:block;font-size:11px;font-weight:700;color:var(--text-2)}
+.modebtn b{display:block;font-family:var(--f-display);font-size:16px;font-weight:700;line-height:1.15}
+.modebtn>svg{width:16px;height:16px;color:var(--text-2);margin-left:2px}
+.h2play{align-items:stretch}
+/* la feuille des modes */
+.modes3{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;grid-template-rows:minmax(0,1fr);gap:12px;height:clamp(150px,calc(100vh - 160px),250px)}
+.modes3>*{min-height:0;overflow:hidden}
+.mfeat,.mcard3{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:18px;text-align:center;color:var(--text);
+  background:var(--lac);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 0 #080b17}
+.mfeat{background:linear-gradient(180deg,#26306a,#151b3c);border:1px solid rgba(var(--gold-rgb),.4)}
+.mfeat>img{width:auto;height:clamp(52px,calc(100vh - 290px),112px);max-width:80%;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+.mft{display:flex;flex-direction:column;align-items:center;gap:6px}
+.mft>b{font-family:var(--f-display);font-size:24px;font-weight:700;line-height:1}
+.mgain{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--gold)}
+.mgain img{width:18px;height:16px;object-fit:contain}
+.mcard3>img{width:auto;height:clamp(40px,calc(100vh - 310px),84px);max-width:70%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+.mcard3>b{font-family:var(--f-display);font-size:15px;font-weight:600}
+.mcard3>small{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--text-2)}
+.mcard3>small img{width:14px;height:14px}
+.mfeat:active,.mcard3:active{transform:translateY(3px);box-shadow:0 1px 0 #080b17}
+.mfeat.on,.mcard3.on{box-shadow:inset 0 0 0 2px var(--gold),0 4px 0 #080b17}
+.mtick{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:11px;display:grid;place-items:center;background:var(--gold);color:var(--gold-ink)}
+.mtick svg{width:14px;height:14px;stroke-width:2.6}
+.mfoot{display:flex;justify-content:center;gap:10px;margin-top:14px}
+.mfoot .btn{width:auto}
+/* la feuille des mallettes */
+.mslots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.mslot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:clamp(150px,calc(100vh - 170px),220px);padding:14px 10px;border-radius:18px;color:var(--text);
+  background:var(--lac);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 0 #080b17}
+.mslot>img{width:84px;height:clamp(48px,calc(100vh - 320px),70px);object-fit:contain;filter:drop-shadow(0 5px 8px rgba(0,0,0,.5))}
+.mslot>b{font-family:var(--f-display);font-size:15px;font-weight:600}
+.mslot>small{font-size:12px;color:var(--text-2)}
+.mslot .st{display:inline-flex;align-items:center;gap:6px;height:22px;font-size:12px;font-weight:700}
+.mslot .st .pbar{width:56px;height:6px;border-radius:3px}
+.mslot.cur{box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),.45),0 4px 0 #080b17}
+.mslot.ready{box-shadow:inset 0 0 0 2px var(--gold),0 4px 0 #080b17}
+.mslot.empty{background:transparent;box-shadow:none;border:2px dashed rgba(150,170,240,.22)}
+.mslot:active{transform:translateY(3px)}
+@media (max-height:430px){
+  .h2loot{gap:8px}
+  .slot{width:96px;padding:4px 6px 6px}.slot>img{width:52px;height:38px}.pips{top:22px}
+  .rb>img,.rb .rbi{width:44px;height:44px}.rb{width:58px}
+  .modebtn{min-height:68px}.modebtn>img{width:44px;height:44px}.modebtn b{font-size:14px}
+}
+@media (max-width:700px){
+  .h2venue .pl{display:none}
+  .modes3{grid-template-columns:1.3fr 1fr 1fr 1fr;gap:8px}.mft>b{font-size:20px}
+}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
 <script>
@@ -1948,7 +2021,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const DEFAULTS = {
-  v: 4, xp: 0, coins: 1000, crowns: 0, chestDay: null, streak: 0, lastStreakDay: null, days: {}, stars: {}, daily: {}, intro: false, missions: null,
+  v: 4, xp: 0, coins: 1000, crowns: 0, chestDay: null, streak: 0, lastStreakDay: null, days: {}, stars: {}, daily: {}, intro: false, missions: null, mode: 'battle',
   mallettes: [{ kind: 'classique', prog: 0 }, null, null, null], shop: { backs: ['bordeaux'], felts: ['cercle'], back: 'bordeaux', felt: 'cercle' },
   asc: { floor: 1, best: 1 }, battle: { played: 0, won: 0, streak: 0 },
   stats: { dec: 0, ok: 0, cat: { hard: [0, 0], soft: [0, 0], pair: [0, 0], euro: [0, 0], dev: [0, 0], ins: [0, 0], count: [0, 0], bet: [0, 0] } },
@@ -3937,29 +4010,80 @@ function salleView() {
   const pct = nx ? Math.min(1, (S.crowns - sa.min) / (nx.min - sa.min)) : 1;
   const badge = n => n ? `<i class="bdg">${n}</i>` : '';
   const rb = (attr, inner, label, n) => `<button class="rb" ${attr} aria-label="${label}">${inner}${badge(n)}<small>${label}</small></button>`;
-  const malReady = S.mallettes.filter(m => m && m.prog >= MAL[m.kind].need).length;
+  /* Emplacements : le coffre du jour (prêt ou compte à rebours) et la mallette en cours (4 places) */
+  const ready = m => m && m.prog >= MAL[m.kind].need;
+  const rI = S.mallettes.findIndex(ready), aI = malActive(), show = S.mallettes[rI >= 0 ? rI : aI];
+  const chestSlot = `<button class="slot chest ${T.chest ? 'ready' : ''}" data-go="chest" aria-label="Coffre du jour${T.chest ? ', prêt' : ', dans ' + untilMidnight()}">
+        <small>Coffre</small><img src="${img('chest')}" alt="">
+        ${T.chest ? '<span class="st go">Ouvrir</span>' : `<span class="st">${icon('timer')}<span class="mono" data-cd>${untilMidnight()}</span></span>`}</button>`;
+  const malSlot = `<button class="slot mal ${rI >= 0 ? 'ready' : ''} ${show ? '' : 'empty'}" data-go="mal" aria-label="Mallettes : ${T.held} sur 4">
+        <small>Mallettes</small><span class="pips" aria-hidden="true">${S.mallettes.map(m => `<i class="${ready(m) ? 'r' : m ? 'h' : ''}"></i>`).join('')}</span>
+        ${show ? `<img src="${img('mallette_' + show.kind)}" alt="">` : `<span class="mplus">${icon('plus')}</span>`}
+        ${rI >= 0 ? '<span class="st go">Ouvrir</span>' : show ? `<span class="st"><span class="pbar"><i style="width:${(show.prog / MAL[show.kind].need * 100).toFixed(1)}%"></i></span><span class="mono">${show.prog}/${MAL[show.kind].need}</span></span>` : '<span class="st">Vide</span>'}</button>`;
+  const mk = curMode(), MD = MODES[mk];
   return `<section class="home2">
       <img class="h2bg" src="${venueImg(sa.theme)}" alt="${sa.name}, ${sa.city}">
       <nav class="h2side" aria-label="Menu">
         ${rb('data-tab-go="tournee"', ico3('map', 'route'), 'Tournée', 0)}
-        ${rb('data-tab-go="compet"', ico3('medal', 'swords'), 'Défis', 0)}
+        ${rb('data-go="missions"', ico3('dart', 'target'), 'Missions', T.mDone)}
         ${rb('data-tab-go="boutique"', ico3('bag', 'bag'), 'Boutique', 0)}
         ${rb('data-tab-go="ecole"', ico3('books', 'cap'), 'École', 0)}
       </nav>
-      <div class="h2loot">
-        ${rb('data-go="missions"', ico3('dart', 'target'), 'Missions', T.mDone)}
-        ${rb('data-go="chest"', `<img src="${img('chest')}" alt="">`, 'Coffre', T.chest ? 1 : 0)}
-        ${rb('data-tab-go="compet"', `<img src="${img('mallette_classique')}" alt="">`, 'Mallettes', malReady)}
-      </div>
+      <div class="h2loot">${chestSlot}${malSlot}</div>
       <button class="h2venue" data-tab-go="tournee" aria-label="Tournée : ${fmtN(S.crowns)} couronnes">
         <img class="vc" src="${vchip(si)}" alt=""><span><b>${sa.name}${INK}</b>
         <span class="pl"><img src="${crownImg()}" alt=""><span class="pbar"><i style="width:${(pct * 100).toFixed(1)}%"></i></span><em class="mono">${nx ? `${fmtN(S.crowns)}/${fmtN(nx.min)}` : fmtN(S.crowns)}</em>${nx ? `<img class="vn" src="${vchip(si + 1)}" alt="Prochaine salle : ${nx.name}">` : ''}</span></span></button>
       <div class="h2play">
-        <button class="btn lac bat" data-go="battle">${icon('swords')}<span>Bataille</span><em><img src="${chipImg('1000')}" alt="">${fmtN(sa.fee)}</em></button>
-        <button class="btn gold jouer" data-cash="${si}">${icon('play')}<span>Jouer</span><em>${fmtN(mn)}–${fmtN(mx)}</em></button>
+        <button class="modebtn ${mk}" data-go="modes" aria-label="Changer de mode, mode actuel : ${MD.name}"><img src="${MD.pic()}" alt=""><span><small>Mode</small><b>${MD.name}</b></span>${icon('chev')}</button>
+        <button class="btn gold jouer" data-go="play">${icon('play')}<span>Jouer</span><em>${MD.sub()}</em></button>
       </div>
     </section>`;
 }
+/* ----- Modes : JOUER lance le mode choisi, le bouton Mode le change ----- */
+const MODES = {
+  battle: { name: 'Bataille', pic: () => img('trophy'), sub: () => `<img src="${chipImg('1000')}" alt="">${fmtN(SALLES[salleIdx()].fee)}` },
+  cash: { name: 'Table', pic: () => img('stack'), sub: () => { const [a, b] = CASH[salleIdx()]; return `${fmtN(a)}–${fmtN(b)}`; } },
+  asc: { name: 'Ascension', pic: () => img('ic_medal'), sub: () => 'Étage ' + S.asc.floor },
+  duel: { name: 'Duel', pic: () => img('bolt'), sub: () => '1 contre 1' },
+};
+const curMode = () => MODES[S.mode] ? S.mode : 'battle';
+function playMode() {
+  const k = curMode();
+  if (k === 'battle') battleSheet(); else if (k === 'cash') openCash(salleIdx()); else if (k === 'asc') ascSheet(); else duelSheet();
+}
+function modeSheet() {
+  const k = curMode(), on = id => k === id ? 'on' : '', tick = id => k === id ? `<span class="mtick">${icon('check')}</span>` : '';
+  const card = id => `<button class="mcard3 ${on(id)}" data-mode="${id}"><img src="${MODES[id].pic()}" alt=""><b>${MODES[id].name}</b><small>${MODES[id].sub()}</small>${tick(id)}</button>`;
+  const m = sheet(`<div class="shtop"><h3>Mode de jeu</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
+    <div class="modes3">
+      <button class="mfeat ${on('battle')}" data-mode="battle"><img src="${img('trophy')}" alt=""><span class="mft"><b>Bataille</b>
+        <span class="brow"><span>${icon('user')}4</span><span>${icon('timer')}3 min</span></span>
+        <span class="mgain"><img src="${crownImg()}" alt="">Couronnes</span></span>${tick('battle')}</button>
+      ${card('cash')}${card('asc')}${card('duel')}
+    </div>
+    <div class="mfoot"><button class="btn ghost sm" data-m2="friends">${icon('user')}Entre amis</button><button class="btn ghost sm" data-m2="lb">${icon('trophy')}Classement</button></div>`);
+  m.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { S.mode = b.dataset.mode; save(); m.remove(); quietRender(); });
+  m.querySelectorAll('[data-m2]').forEach(b => b.onclick = () => { m.remove(); if (b.dataset.m2 === 'lb') leaderboardSheet(); else friendsSheet(); });
+}
+/* ----- Mallettes : les 4 emplacements ----- */
+function malSheet() {
+  const act = malActive();
+  const m = sheet(`<div class="shtop"><h3>Mallettes</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
+    <div class="mslots">${S.mallettes.map((x, i) => {
+      if (!x) return `<button class="mslot empty" data-slot="${i}"><span class="mplus">${icon('plus')}</span><b>Libre</b><small>Gagnez une bataille</small></button>`;
+      const d = MAL[x.kind], rd = x.prog >= d.need;
+      return `<button class="mslot ${rd ? 'ready' : ''} ${i === act ? 'cur' : ''}" data-slot="${i}"><img src="${img('mallette_' + x.kind)}" alt=""><b>${d.name.replace('Mallette c', 'C').replace('Mallette p', 'P').replace('Mallette r', 'R')}</b>
+        ${rd ? '<span class="st go">Ouvrir</span>' : `<span class="st"><span class="pbar"><i style="width:${x.prog / d.need * 100}%"></i></span><span class="mono">${i === act ? `${x.prog}/${d.need}` : 'En attente'}</span></span>`}</button>`;
+    }).join('')}</div>
+    <p class="bnote">S'ouvre avec des bons coups</p>`);
+  m.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { const i = +b.dataset.slot; m.remove(); if (S.mallettes[i]) openMallette(i); else { S.mode = 'battle'; save(); battleSheet(); } });
+  m.addEventListener('click', e => { if (e.target.closest('[data-close]')) quietRender(); });
+}
+/* Le compte à rebours du coffre reste juste ; à minuit, l'accueil se redessine */
+setInterval(() => {
+  document.querySelectorAll('[data-cd]').forEach(e => e.textContent = untilMidnight());
+  if (TAB === 'salle' && S && S.chestDay !== today() && document.querySelector('.slot.chest:not(.ready)') && !document.querySelector('.modal,.screen')) quietRender();
+}, 30000);
 /* ----- Tournée : les 4 salles sur une même route ----- */
 function tourneeView() {
   const si = salleIdx(), last = SALLES[SALLES.length - 1];
@@ -4007,7 +4131,7 @@ function caisseSheet() {
     </div>`);
   m.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
     const k = b.dataset.k; m.remove();
-    if (k === 'chest') openChest(); else if (k === 'missions') missionsSheet(); else if (k === 'mal') go('compet'); else go('boutique');
+    if (k === 'chest') openChest(); else if (k === 'missions') missionsSheet(); else if (k === 'mal') malSheet(); else go('boutique');
   });
   m.addEventListener('click', e => { if (e.target.closest('[data-close]')) quietRender(); });
 }
@@ -4209,6 +4333,9 @@ function bindView() {
     else if (g === 'battle') battleSheet();
     else if (g === 'friends') friendsSheet();
     else if (g === 'duel') duelSheet();
+    else if (g === 'modes') modeSheet();
+    else if (g === 'play') playMode();
+    else if (g === 'mal') malSheet();
   });
   main.querySelectorAll('[data-cash]').forEach(b => b.onclick = () => openCash(+b.dataset.cash));
   main.querySelectorAll('[data-ecole]').forEach(b => b.onclick = () => { ECOLE = b.dataset.ecole; NOANIM = true; render(); NOANIM = false; $('#main').scrollTop = 0; });
