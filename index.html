@@ -1902,6 +1902,27 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
 }
 @media (prefers-reduced-motion:reduce){.ctabs [role=tab],.ibtn{transition:none}}
 
+/* ================= v22 : compte et sauvegarde ================= */
+.acccard{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:4px 12px;padding:12px 16px}
+.acccard .accic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(150,170,240,.1);color:var(--text-2)}
+.acccard .accic svg{width:20px;height:20px}
+.acccard.ok .accic{color:var(--ok);background:rgba(87,196,149,.12)}
+.acccard.warn{border-color:rgba(var(--gold-rgb),.45)}
+.acccard.warn .accic{color:var(--gold);background:rgba(var(--gold-rgb),.12)}
+.acct{display:flex;flex-direction:column;gap:2px;min-width:0}
+.acct b{font-size:14px;font-weight:600}
+.acct small,.accstate{font-size:12px;color:var(--text-2)}
+.accstate.ko{color:#ff8f80}
+.acccard .btn{width:auto;min-height:44px}
+.acccard .linkbtn{grid-column:2/4;justify-self:start;min-height:36px;padding:0}
+.accform{display:flex;flex-direction:column;gap:12px;max-width:440px;margin:0 auto;width:100%}
+.accform .btn{width:100%}
+.accform .linkbtn{align-self:center}
+.showpw{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;color:var(--text-2)}
+.showpw input{width:20px;height:20px;accent-color:var(--gold)}
+.fld input[type=password]{letter-spacing:.08em}
+.pprev .linkbtn{align-self:center}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
 <script>
@@ -2339,7 +2360,14 @@ const DEFAULTS = {
     free: { spots: 1, bots: 2, speed: 'normal', coach: true, count: false, bet: false } }
 };
 let S;
+/* Réinitialisation générale : quand EPOCH change, chaque appareil repart de zéro à sa prochaine ouverture
+   (progression locale et session en ligne). 2 = remise à zéro du 26/11/2026. */
+const EPOCH = 2;
+function wipeIfOld() {
+  try { if (localStorage.getItem('bj-epoch') !== String(EPOCH)) { [KEY, 'bjacademie-v1', 'bj-auth'].forEach(k => localStorage.removeItem(k)); localStorage.setItem('bj-epoch', String(EPOCH)); } } catch (e) { }
+}
 function load() {
+  wipeIfOld();
   let d = null;
   try { d = JSON.parse(localStorage.getItem(KEY)); } catch (e) { }
   S = structuredClone(DEFAULTS);
@@ -2370,7 +2398,7 @@ function setTheme(theme) {
   r.setProperty('--venue-rgb', THEME_RGB[theme] || THEME_RGB.cercle);
 }
 function addCoins(n) { S.coins = Math.max(0, Math.round(S.coins + n)); save(); }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
+function save() { S.savedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } if (typeof cloudQueue === 'function') cloudQueue(); }
 /* Blackjack européen : une seule carte au croupier avant les joueurs, il reste sur tous les 17,
    double sur deux cartes (aussi après séparation), séparation jusqu'à 3 mains, pas d'abandon.
    Un blackjack du croupier prend toutes les mises, doublements et séparations compris. */
@@ -3638,7 +3666,8 @@ function profileSheet(opts = {}) {
         <div class="pprev">${avatarHTML({ you: true, av: pick.av, fr: pick.fr, preview: true }, 'xxl')}
           <label class="fld"><span>Pseudo</span><input id="pname" maxlength="14" autocomplete="nickname" placeholder="Ex. : Max" value="${esc(S.pseudo || '')}"></label>
           <p class="small" id="perr"></p>
-          <button class="btn gold" id="psave">${opts.first ? 'Continuer' : 'Enregistrer'}</button></div>
+          <button class="btn gold" id="psave">${opts.first ? 'Continuer' : 'Enregistrer'}</button>
+          ${opts.first && canSocial() ? '<button class="linkbtn" id="phave">J’ai déjà un compte</button>' : ''}</div>
         <div class="ppick">
           <div class="eyebrow"><span>Avatar</span></div>
           <div class="avgrid">${AV.map(a => { const ok = avOpen(a);
@@ -3649,6 +3678,7 @@ function profileSheet(opts = {}) {
         </div></div>`;
     m.querySelectorAll('[data-av]').forEach(b => b.onclick = () => { pick.av = b.dataset.av; keep(); });
     m.querySelectorAll('[data-fr]').forEach(b => b.onclick = () => { pick.fr = b.dataset.fr; keep(); });
+    const ph = $('#phave', m); if (ph) ph.onclick = () => { m.remove(); accountSheet('login', opts.then); };
     $('#psave', m).onclick = () => {
       const n = cleanName($('#pname', m).value);
       if (n.length < 2) { $('#perr', m).textContent = 'Choisissez un pseudo de 2 à 14 caractères'; $('#pname', m).focus(); return; }
@@ -3935,6 +3965,134 @@ function bindClan(main) {
   });
 }
 function clanFormKeep() { const n = $('#cname'), t = $('#ctag'); if (CL.form && n) { CL.form.name = cleanName(n.value).slice(0, 20); CL.form.tag = (t.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); } }
+
+
+/* ---------- Compte : identifiant + mot de passe, sauvegarde en ligne automatique ----------
+   Le compte anonyme de l'appareil devient un vrai compte (même identité : profil et clan conservés).
+   L'e-mail Supabase est fabriqué à partir de l'identifiant sur le domaine réservé .invalid : aucun e-mail ne part jamais. */
+const ACC_DOMAIN = 'joueurs.invalid';
+const ACC = { user: null, cloudT: 0, pending: null, timer: null, busy: false, err: '' };
+const accLogin = u => u && u.email && !u.is_anonymous ? u.email.split('@')[0] : null;
+const cleanLogin = t => String(t || '').trim().toLowerCase();
+const loginOk = t => /^[a-z0-9_.-]{3,16}$/.test(t);
+async function accRefresh() {
+  if (!canSocial()) return null;
+  const c = await sbAuth(); const { data } = await c.auth.getUser(); ACC.user = data && data.user; return ACC.user;
+}
+const accPerm = () => !!(ACC.user && !ACC.user.is_anonymous);
+/* Sauvegarde différée : 5 s après la dernière modification, et tout de suite quand l'appli passe en arrière-plan */
+function cloudQueue() {
+  if (!accPerm()) return;
+  clearTimeout(ACC.timer); ACC.timer = setTimeout(cloudPush, 5000);
+}
+async function cloudPush() {
+  clearTimeout(ACC.timer); if (!accPerm() || ACC.busy) return;
+  ACC.busy = true;
+  try { const c = await sbAuth(), r = await c.rpc('put_save', { p_data: S }); if (r.error) throw r.error; ACC.cloudT = Date.parse(r.data) || Date.now(); ACC.err = ''; }
+  catch (e) { ACC.err = sbErr(e); }
+  ACC.busy = false;
+  const el = $('#accstate'); if (el) el.outerHTML = accStateHTML();
+}
+async function cloudPull() {
+  const c = await sbAuth(), r = await c.from('saves').select('data,updated_at').eq('id', CL.me).maybeSingle();
+  if (r.error) throw r.error; return r.data;
+}
+function applySave(data) {
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { }
+  load(); CL.prof = null; CL.ready = false; CL.clan = null; clanUnsub();
+}
+/* Au démarrage : si un autre appareil a joué plus récemment, on reprend sa progression */
+async function accBoot() {
+  try {
+    const u = await accRefresh(); if (!accPerm()) return;
+    const sv = await cloudPull();
+    if (sv && sv.data && (sv.data.savedAt || 0) > (S.savedAt || 0) + 2000) { applySave(sv.data); ACC.cloudT = Date.parse(sv.updated_at); toast('Progression récupérée depuis votre compte'); if (!TB && !$('.screen') && !$('.modal')) render(); }
+    else cloudPush();
+  } catch (e) { }
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && ACC.timer) cloudPush(); });
+function agoTxt(t) { if (!t) return 'jamais'; const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? `il y a ${m} min` : `il y a ${Math.round(m / 60)} h`; }
+function accStateHTML() {
+  return `<span id="accstate" class="accstate ${ACC.err ? 'ko' : ''}" role="status">${ACC.err ? esc(ACC.err) : ACC.busy ? 'Sauvegarde…' : 'Sauvegardé ' + agoTxt(ACC.cloudT)}</span>`;
+}
+/* Carte « Compte » de l'écran Profil */
+function accountCardHTML() {
+  if (!canSocial()) return `<section class="panel acccard"><div class="acct"><b>Sauvegarde de compte</b><small>Disponible sur la version web du jeu</small></div></section>`;
+  if (!ACC.user) { accRefresh().then(() => { if (TAB === 'moi' && !$('.modal')) quietRender(); }).catch(() => { }); }
+  if (accPerm()) return `<section class="panel acccard ok"><span class="accic">${icon('shield')}</span><div class="acct"><b>Compte ${esc(accLogin(ACC.user))}</b>${accStateHTML()}</div>
+      <button class="btn ghost sm" data-acc="push">Sauvegarder</button><button class="linkbtn" data-acc="logout">Se déconnecter</button></section>`;
+  return `<section class="panel acccard warn"><span class="accic">${icon('shield')}</span><div class="acct"><b>Progression non sauvegardée</b><small>Créez un compte pour la retrouver sur un autre appareil</small></div>
+      <button class="btn gold sm" data-acc="create">Créer un compte</button><button class="linkbtn" data-acc="login">J’ai déjà un compte</button></section>`;
+}
+function bindAccount(root) {
+  root.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => {
+    const k = b.dataset.acc;
+    if (k === 'create' || k === 'login') accountSheet(k);
+    else if (k === 'push') { ACC.busy = false; cloudPush(); const el = $('#accstate'); if (el) el.outerHTML = accStateHTML(); }
+    else if (k === 'logout') {
+      const s = sheet(`<h3>Se déconnecter</h3><p class="muted">Votre progression reste dans le compte ${esc(accLogin(ACC.user))}. Cet appareil repartira de zéro jusqu’à la prochaine connexion</p><div class="row"><button class="btn dark" data-close>Annuler</button><button class="btn red" id="lo">Se déconnecter</button></div>`);
+      $('#lo', s).onclick = async () => {
+        s.remove(); await cloudPush();
+        try { const c = await sbAuth(); await c.auth.signOut(); } catch (e) { }
+        ACC.user = null; ACC.cloudT = 0; try { localStorage.removeItem(KEY); } catch (e) { } applySave(structuredClone(DEFAULTS));
+        await accRefresh().catch(() => { }); TAB = 'salle'; render(); toast('Déconnecté');
+      };
+    }
+  });
+}
+/* Feuille de création ou de connexion */
+function accountSheet(mode, then) {
+  const create = mode === 'create';
+  const m = sheet(`<div class="shtop"><h3>${create ? 'Créer un compte' : 'Se connecter'}</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
+    <form class="accform" novalidate>
+      <p class="muted small">${create ? 'Votre progression sera sauvegardée en ligne automatiquement. Aucun e-mail n’est demandé : notez bien votre mot de passe, il ne peut pas être récupéré' : 'La progression du compte remplacera celle de cet appareil'}</p>
+      <label class="fld"><span>Identifiant (3 à 16 lettres, chiffres, . _ -)</span><input id="alog" name="username" maxlength="16" autocomplete="username" autocapitalize="none" spellcheck="false" required aria-describedby="aerr"></label>
+      <label class="fld"><span>Mot de passe (8 caractères minimum)</span><input id="apw" name="password" type="password" minlength="8" maxlength="72" autocomplete="${create ? 'new-password' : 'current-password'}" required aria-describedby="aerr"></label>
+      ${create ? '<label class="fld"><span>Confirmer le mot de passe</span><input id="apw2" type="password" maxlength="72" autocomplete="new-password" required aria-describedby="aerr"></label>' : ''}
+      <label class="showpw"><input type="checkbox" id="ashow"> Afficher le mot de passe</label>
+      <p class="cerr" id="aerr" role="alert"></p>
+      <button class="btn gold" type="submit">${create ? 'Créer le compte' : 'Se connecter'}</button>
+      <button class="linkbtn" type="button" id="aswap">${create ? 'J’ai déjà un compte' : 'Créer un compte'}</button></form>`);
+  const f = $('form', m), err = $('#aerr', m), btn = $('[type=submit]', m);
+  $('#aswap', m).onclick = () => { m.remove(); accountSheet(create ? 'login' : 'create', then); };
+  $('#ashow', m).onchange = e => m.querySelectorAll('input[type=password],input.pwshown').forEach(i => { i.type = e.target.checked ? 'text' : 'password'; i.classList.toggle('pwshown', e.target.checked); });
+  const fail = (t, el) => { err.textContent = t; if (el) { el.setAttribute('aria-invalid', 'true'); el.focus(); } btn.disabled = false; btn.textContent = create ? 'Créer le compte' : 'Se connecter'; };
+  f.onsubmit = async e => {
+    e.preventDefault(); m.querySelectorAll('[aria-invalid]').forEach(i => i.removeAttribute('aria-invalid'));
+    const login = cleanLogin($('#alog', m).value), pw = $('#apw', m).value;
+    if (!loginOk(login)) return fail('Identifiant : 3 à 16 lettres, chiffres, point, tiret ou _', $('#alog', m));
+    if (pw.length < 8) return fail('Le mot de passe fait au moins 8 caractères', $('#apw', m));
+    if (create && pw !== $('#apw2', m).value) return fail('Les deux mots de passe sont différents', $('#apw2', m));
+    btn.disabled = true; btn.textContent = create ? 'Création…' : 'Connexion…';
+    const email = login + '@' + ACC_DOMAIN;
+    try {
+      const c = await sbAuth();
+      if (create) {
+        const r = await c.auth.updateUser({ email, password: pw });
+        if (r.error) throw r.error;
+        await accRefresh(); await cloudPush(); syncProfile(true).catch(() => { });
+        m.remove(); toast('Compte créé : progression sauvegardée');
+      } else {
+        await cloudPush().catch(() => { });
+        const r = await c.auth.signInWithPassword({ email, password: pw });
+        if (r.error) throw r.error;
+        CL.me = r.data.user.id; await accRefresh();
+        const sv = await cloudPull();
+        if (sv && sv.data) { applySave(sv.data); ACC.cloudT = Date.parse(sv.updated_at); } else await cloudPush();
+        m.remove(); toast('Connecté : progression récupérée');
+        syncProfile(true).catch(() => { });
+      }
+      if (then) then(); else quietRender();
+    } catch (x) {
+      const t = String(x && x.message || x);
+      if (/already|registered|exists/i.test(t)) fail('Cet identifiant est déjà pris', $('#alog', m));
+      else if (/invalid login|credentials/i.test(t)) fail('Identifiant ou mot de passe incorrect', $('#apw', m));
+      else if (/weak|password/i.test(t)) fail('Mot de passe trop faible', $('#apw', m));
+      else fail(sbErr(x));
+    }
+  };
+  setTimeout(() => $('#alog', m).focus(), 200);
+}
 
 /* ---------- Classement des joueurs et des clans (vrais joueurs) ---------- */
 async function onlineLeaderboard() {
@@ -5079,6 +5237,7 @@ function profileView() {
   return `<div class="cols"><div class="col"><section class="panel pcard"><button class="pcav" data-go="profile" aria-label="Modifier le profil"><span class="ring pp" style="--p:${r.pct.toFixed(3)}">${avatarHTML({ you: true }, 'xxl')}<b class="lv">${r.lvl}</b></span><span class="pen">${icon('edit')}</span></button>
       <div class="pinfo"><span class="label">Niveau ${r.lvl} · ${r.name} · ${fmtN(S.xp)} XP</span><h2>${esc(S.pseudo || 'Joueur')}${CL.clan ? ` <em class="ctagi">${esc(cleanTag(CL.clan.tag))}</em>` : ''}</h2><div class="pbar"><i style="width:${r.pct * 100}%"></i></div><p>${r.next ? `${fmtN(r.toNext)} XP avant « ${r.next} »` : 'Rang maximum atteint'}</p></div></section>
     <section class="panel week" hidden>${days.map(d => { const on = (S.days[d] || 0) >= S.settings.goal; return `<div><i class="${on ? 'on' : ''} ${d === t ? 'today' : ''}">${on ? icon('flame') : ''}</i>${dn[new Date(d + 'T12:00:00').getDay()]}</div>`; }).join('')}</section>
+    ${accountCardHTML()}
     <section class="kgrid"><div class="kpi"><div class="v">${S.crowns}</div><div class="k">Couronnes</div></div><div class="kpi"><div class="v">${S.battle.won}<small> / ${S.battle.played}</small></div><div class="k">Victoires</div></div>
       <div class="kpi"><div class="v">${acc} %</div><div class="k">Bons coups</div></div></section>
     <section class="row"><button class="btn ghost sm" data-go="chart">${icon('sheet')} Antisèche</button><button class="btn ghost sm" data-go="settings">${icon('gear')} Réglages</button></section></div><div class="col">
@@ -5157,6 +5316,7 @@ function bindView() {
   bindClaims(main, quietRender);
   if (TAB === 'boutique') bindShop(main);
   if (TAB === 'clan') bindClan(main);
+  if (TAB === 'moi') bindAccount(main);
   if (TAB === 'moi') main.querySelectorAll('[data-coll]').forEach(b => b.onclick = () => collSheet(b.dataset.coll));
 }
 function scrollCar(smooth) {
@@ -5183,6 +5343,7 @@ function boot() {
   const h0 = (location.hash || '').slice(1), h = TAB_ALIAS[h0] || h0; if (TAB_ALIAS[h0] === 'ecole' && h0 === 'defis') ECOLE = 'exercices'; if (TABS.some(t => t[0] === h)) TAB = h;
   render();
   frDeepLink();
+  if (canSocial()) accBoot();
   if (canSocial() && S.pseudo) syncProfile().then(() => { if (!TB && !$('.screen') && !$('.modal')) quietRender(); }).catch(() => { });
   window.addEventListener('hashchange', () => { const x = location.hash.slice(1); if (TABS.some(t => t[0] === x) && x !== TAB) go(x); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden && !Q && !TB && !$('.screen') && !$('.modal')) quietRender(); });
