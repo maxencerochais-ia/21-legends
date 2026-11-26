@@ -1641,6 +1641,267 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
 @media (prefers-reduced-motion:reduce){.rr[data-mv],.rclock2.last>span,.rclock2.ping,.rr .delta.fresh{animation:none}}
 .tablescreen:has(.rank2) .plate{display:none}
 
+/* ================= v20 : profils, clans, bataille en ligne ================= */
+/* Avatars : un objet 3D du jeu dans un médaillon, entouré d'un cadre */
+.av.pic{background:radial-gradient(circle at 38% 30%,#2b3668,#121733 70%);box-shadow:inset 0 0 0 1px rgba(150,170,240,.22)}
+.av.pic{position:relative}
+.av.pic img{position:absolute;left:8%;top:8%;width:84%;height:84%;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
+.av.sm{width:28px;height:28px}
+.av.xxl{width:96px;height:96px;font-size:40px}
+.av.f-ink{box-shadow:0 0 0 2px #3a4a8c}
+.av.f-sky{box-shadow:0 0 0 2px #5aa9ff}
+.av.f-mint{box-shadow:0 0 0 2px #5ee7b0}
+.av.f-rose{box-shadow:0 0 0 2px #ff7d9c}
+.av.f-silver{box-shadow:0 0 0 2px #e3e8f5,0 0 0 4px #6d7896}
+.av.f-gold{box-shadow:0 0 0 2px #ffd36b,0 0 0 4px #9a6a00}
+.av.f-venise{box-shadow:0 0 0 2px #ffcf5a,0 0 0 4px #b3262c,0 0 0 5px #ffcf5a}
+.av.f-clan{box-shadow:0 0 0 3px var(--cc,#ffc23d)}
+.av.xxl.f-ink,.av.xxl.f-sky,.av.xxl.f-mint,.av.xxl.f-rose{box-shadow:0 0 0 4px var(--fc)}
+.av.xxl.f-ink{--fc:#3a4a8c}.av.xxl.f-sky{--fc:#5aa9ff}.av.xxl.f-mint{--fc:#5ee7b0}.av.xxl.f-rose{--fc:#ff7d9c}
+.av.xxl.f-silver{box-shadow:0 0 0 3px #e3e8f5,0 0 0 6px #6d7896}
+.av.xxl.f-gold{box-shadow:0 0 0 3px #ffd36b,0 0 0 6px #9a6a00}
+.av.xxl.f-venise{box-shadow:0 0 0 3px #ffcf5a,0 0 0 6px #b3262c,0 0 0 8px #ffcf5a}
+.av.xxl.f-clan{box-shadow:0 0 0 5px var(--cc,#ffc23d)}
+/* Dans l'anneau d'XP : la photo, et le niveau en pastille */
+.ring.pp{overflow:visible}
+.ring.pp::before{display:none}
+.ring.pp .av{position:absolute;inset:4px;width:auto;height:auto}
+.ring.pp .lv{position:absolute;right:-5px;bottom:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;display:grid;place-items:center;
+  background:var(--gold);color:var(--gold-ink);font-family:var(--f-display);font-size:11px;font-weight:700;box-shadow:0 0 0 2px var(--ink)}
+.pcard .ring.pp{width:104px;height:104px}
+.pcard .ring.pp .lv{min-width:28px;height:28px;border-radius:14px;font-size:14px}
+.pcav{position:relative;flex:none}
+.pcav .pen{position:absolute;left:-4px;bottom:-4px;width:30px;height:30px;border-radius:15px;display:grid;place-items:center;background:var(--lac);box-shadow:0 0 0 2px var(--ink),0 2px 0 #080b17;color:var(--text)}
+.pcav .pen svg{width:15px;height:15px}
+.ctagi{font-style:normal;font-size:.55em;padding:2px 7px;border-radius:6px;background:rgba(var(--gold-rgb),.16);color:var(--gold);vertical-align:middle}
+/* Badge de clan dans l'en-tête */
+.clanpill{position:relative;display:flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 5px;border-radius:17px;background:rgba(9,12,24,.72);border:1px solid rgba(150,170,240,.2);color:var(--text);margin-left:10px}
+.clanpill>svg{width:18px;height:18px;margin-left:5px;color:var(--text-2)}
+.clanpill b{font-family:var(--f-display);font-size:12px;font-weight:700}
+.clanpill .bdg{top:-6px;right:-6px}
+.cemb{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;background:radial-gradient(circle at 40% 30%,#2b3668,#121733 70%);box-shadow:inset 0 0 0 2px var(--cc,#ffc23d)}
+.cemb img{width:78%;height:78%;object-fit:contain}
+.cemb.sm{width:24px;height:24px;border-radius:8px}
+.cemb.xl{width:84px;height:84px;border-radius:22px;box-shadow:inset 0 0 0 4px var(--cc,#ffc23d),0 6px 16px rgba(0,0,0,.4)}
+/* Éditeur de profil */
+.pedit{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start}
+.pprev{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:6px}
+.pprev .fld{width:100%}
+.pprev #perr{color:var(--ko);min-height:1em;margin:0}
+.pprev .btn{width:100%}
+.ppick{display:flex;flex-direction:column;gap:10px;min-width:0}
+.avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px}
+.avopt{position:relative;aspect-ratio:1;border-radius:14px;display:grid;place-items:center;background:var(--lac);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 3px 0 #080b17}
+.avopt{overflow:hidden}
+.avopt img{position:absolute;left:11%;top:11%;width:78%;height:78%;object-fit:contain}
+.avopt.on{box-shadow:inset 0 0 0 2px var(--gold),0 3px 0 #080b17}
+.avopt.lock img{filter:grayscale(1) brightness(.45)}
+.avopt .lk{position:absolute;right:4px;bottom:4px;width:18px;height:18px;border-radius:9px;display:grid;place-items:center;background:rgba(0,0,0,.6);color:var(--text-2)}
+.avopt .lk svg{width:11px;height:11px}
+.avopt.sm{width:48px;height:48px;aspect-ratio:auto}
+.frrow{display:flex;flex-wrap:wrap;gap:8px}
+.fropt{display:flex;flex-direction:column;align-items:center;gap:6px;width:62px;padding:10px 4px 8px;border-radius:12px;background:rgba(0,0,0,.25);border:1px solid var(--hair)}
+.fropt.on{border-color:var(--gold);background:rgba(var(--gold-rgb),.1)}
+.fropt:disabled{opacity:.5}
+.fropt small{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:var(--text-2)}
+.fropt small svg{width:11px;height:11px;color:var(--gold)}
+/* Écran Clan */
+.v-clan{padding-top:8px}
+.cwait{display:flex;align-items:center;justify-content:center;gap:10px;padding:28px 0;color:var(--text-2);font-size:13px}
+.cempty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:40px 0;text-align:center}
+.cempty img{width:72px;height:72px;object-fit:contain}
+.cnone{padding:20px 0;text-align:center}
+.cltop{display:flex;justify-content:center;margin-bottom:12px}
+.cltop .seg{width:min(420px,100%)}
+.cltop .seg button,.clanhome .seg button{flex:1}
+.csearch{display:flex;gap:8px;margin-bottom:10px}
+.csearch input,.cinput input{flex:1;min-width:0;height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--hair-2);background:rgba(0,0,0,.3);color:var(--text);font:600 15px var(--f-ui);outline:none;-webkit-user-select:text;user-select:text}
+.csearch input:focus,.cinput input:focus{border-color:var(--gold)}
+.clist{padding:4px 14px}
+.crow,.mrow{display:grid;grid-template-columns:22px auto minmax(0,1fr) auto auto;align-items:center;gap:10px;min-height:56px;border-bottom:1px solid var(--hair)}
+.crow:last-child,.mrow:last-child{border-bottom:0}
+.mrow{grid-template-columns:22px auto minmax(0,1fr) auto auto auto}
+.mrow.me{background:rgba(var(--gold-rgb),.06)}
+.crow .rn,.mrow .rn{font-family:var(--f-display);font-size:13px;font-weight:700;color:var(--text-2);text-align:center}
+.crow:first-child .rn,.mrow:first-child .rn{color:var(--gold)}
+.crow .cemb{width:36px;height:36px;border-radius:11px}
+.ct{display:flex;flex-direction:column;min-width:0}
+.ct b{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct b em{font-style:normal;font-size:11px;font-weight:700;color:var(--gold);margin-left:4px}
+.ct small{font-size:11px;color:var(--text-2)}
+.cr{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-display);font-size:13px;font-weight:600}
+.cr img{width:18px;height:16px;object-fit:contain}
+.crow .btn{width:auto}
+.dot{width:8px;height:8px;border-radius:4px;background:rgba(150,170,240,.25)}
+.dot.on{background:var(--ok)}
+.iconbtn.sm{width:32px;height:32px}
+.iconbtn.sm svg{width:15px;height:15px}
+.ccreate{display:grid;grid-template-columns:140px 1fr;gap:20px;align-items:start;max-width:760px;margin:0 auto}
+.cprev{display:grid;place-items:center;padding-top:12px}
+.cform{display:flex;flex-direction:column;gap:10px}
+.crow2{display:grid;grid-template-columns:1fr 110px;gap:10px}
+.tagf input{text-transform:uppercase;font-family:var(--f-display)}
+.embrow{display:flex;flex-wrap:wrap;gap:8px}
+.colrow{display:flex;gap:8px}
+.sw{width:32px;height:32px;border-radius:16px;background:var(--sw);box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)}
+.sw.on{box-shadow:0 0 0 2px var(--ink),0 0 0 4px var(--sw)}
+#cerr{color:var(--ko);min-height:1em;margin:0}
+.clanhome .col:first-child{max-width:300px}
+.clancard{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px;text-align:center}
+.clancard h2{font-family:var(--f-display);font-size:22px;font-weight:700;line-height:1.1}
+.ctag{font-family:var(--f-display);font-size:12px;font-weight:700;padding:3px 10px;border-radius:8px;background:color-mix(in srgb,var(--cc) 20%,transparent);color:var(--cc)}
+.cstats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;margin:6px 0}
+.cstats span{display:flex;flex-direction:column;align-items:center;gap:2px}
+.cstats b{display:inline-flex;align-items:center;gap:4px;font-family:var(--f-display);font-size:16px;font-weight:700}
+.cstats b img{width:16px;height:14px}
+.cstats small{font-size:10px;color:var(--text-2)}
+.clancard .btn{width:100%}
+.clanhome .seg{margin-bottom:8px}
+.cbody{padding:4px 12px;max-height:calc(100vh - 190px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.cbody.chat{max-height:calc(100vh - 240px);padding:8px 12px}
+.bdg.sm{position:static;display:inline-grid;min-width:16px;height:16px;font-size:9px;margin-left:4px;vertical-align:middle}
+.msg{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:start;padding:6px 0}
+.msg .mb{min-width:0;padding:7px 11px;border-radius:4px 14px 14px 14px;background:rgba(150,170,240,.08)}
+.msg.me .mb{background:rgba(var(--gold-rgb),.12)}
+.msg .mb b{display:flex;align-items:baseline;gap:8px;font-size:12px;font-weight:700;color:var(--text-2)}
+.msg .mb b small{font-size:10px;font-weight:600;color:var(--text-3)}
+.msg .mb p{margin:2px 0 0;font-size:14px;line-height:1.35;overflow-wrap:anywhere;-webkit-user-select:text;user-select:text}
+.msg .mact{display:flex;gap:2px;opacity:.55}
+.cinput{display:flex;gap:8px;margin-top:8px}
+.cinput .btn{width:auto;min-width:52px}
+/* Invitation à une bataille de clan */
+.cinv{position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:120;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;border-radius:16px;
+  background:#151b38;border:1px solid rgba(var(--gold-rgb),.55);box-shadow:0 10px 30px rgba(0,0,0,.5);animation:pop2 .3s var(--ease);max-width:calc(100vw - 24px)}
+.cinv span{font-size:13px}
+.cinv .btn{width:auto}
+/* Recherche de joueurs */
+.mmwait{display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 10px}
+.mmwait small{font-size:12px;color:var(--text-2)}
+.mmp .av.ghost{display:grid;place-items:center}
+.lbon{max-height:calc(100vh - 140px);overflow-y:auto;margin-top:10px}
+@media (max-height:430px){
+  .pedit{grid-template-columns:180px 1fr;gap:16px}.av.xxl{width:76px;height:76px}
+  .avgrid{grid-template-columns:repeat(auto-fill,minmax(48px,1fr))}
+  .pcard .ring.pp{width:84px;height:84px}
+  .cemb.xl{width:64px;height:64px;border-radius:18px}
+  .clancard{gap:6px;padding:12px}.clancard h2{font-size:18px}
+  .crow,.mrow{min-height:48px}
+}
+
+/* ================= v21 : l'onglet Clan, lisible et accessible =================
+   Une seule couleur forte : l'emblème du clan. Le jaune reste à « Bataille de clan ». La plaque de tag est la signature. */
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.v-clan{overflow:hidden;padding-top:4px;padding-bottom:max(12px,env(safe-area-inset-bottom,0px))}
+.v-clan>*{flex:none}
+/* Plaque de tag : comme une plaque de casino, couleur du clan en filet */
+.plaque{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;border:1px solid var(--cc,rgba(150,170,240,.5));
+  font-family:var(--f-display);font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text);background:rgba(9,12,24,.5);font-variant-numeric:tabular-nums}
+.plaque.ghost{color:var(--text-2);border-style:dashed}
+.ct small .plaque{height:18px;font-size:10px;margin-right:8px;vertical-align:middle}
+/* Onglets : une marche de surface et un filet, sans jaune */
+.ctabs{display:flex;gap:4px;padding:4px;border-radius:12px;background:rgba(9,12,24,.6);border:1px solid var(--hair)}
+.ctabs [role=tab]{flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;text-align:center;min-height:40px;padding:0 12px;border-radius:8px;font-family:var(--f-display);font-size:13px;font-weight:600;color:var(--text-2);transition:background-color .15s,color .15s}
+.ctabs [role=tab][aria-selected=true]{background:#252e58;color:var(--text);box-shadow:inset 0 0 0 1px rgba(150,170,240,.28)}
+.ctabs [role=tab]:hover{color:var(--text)}
+.ctabs .bdg.sm{background:var(--ko)}
+/* Panneau : remplit la hauteur, défile à l'intérieur */
+.cpanel{flex:1;min-height:0;display:flex;flex-direction:column;border-radius:16px;background:#121730;border:1px solid var(--hair);overflow:hidden}
+.cpanel>ol,.cpanel>.ccreate{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.cpanel:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.clobby{flex:1!important;min-height:0;display:flex;flex-direction:column;gap:12px;width:100%;max-width:880px;margin:0 auto}
+.clobby .ctabs{align-self:center;width:min(440px,100%)}
+.csearch{display:flex;gap:8px;padding:12px 12px 4px;margin:0}
+.csearch .iconbtn{width:44px;height:44px}
+.clanhome{flex:1!important;min-height:0;display:grid;grid-template-columns:272px minmax(0,1fr);gap:16px}
+.cside{min-height:0;display:flex;flex-direction:column;gap:8px}
+/* Carte du clan */
+.clancard{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;border-radius:16px;background:#121730;border:1px solid var(--hair);text-align:center;overflow-y:auto}
+.clancard h2{font-family:var(--f-display);font-size:20px;font-weight:600;line-height:1.15;margin:4px 0 0}
+.cstats{display:grid;grid-template-columns:repeat(3,1fr);width:100%;margin:8px 0;padding:8px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.cstats>div{display:flex;flex-direction:column-reverse;align-items:center;gap:2px}
+.cstats dt{font-size:12px;color:var(--text-2)}
+.cstats dd{margin:0;font-family:var(--f-display);font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.cstats dd small{font-size:12px;color:var(--text-2);font-weight:500}
+.clancard .btn{width:100%;min-height:48px}
+.linkbtn{min-height:44px;padding:0 12px;font-size:13px;font-weight:600;color:var(--text-2);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(169,177,204,.4)}
+.linkbtn:hover{color:var(--text)}
+/* Listes */
+.clist,.mlist,.chatlog{list-style:none;margin:0;padding:4px 16px}
+.crow,.mrow{display:grid;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--hair)}
+.crow{grid-template-columns:20px 36px minmax(0,1fr) auto auto}
+.mrow{grid-template-columns:20px 32px minmax(0,1fr) auto 64px 44px}
+.crow:last-child,.mrow:last-child{border-bottom:0}
+.crow.me,.mrow.me{background:linear-gradient(90deg,rgba(150,170,240,.07),transparent)}
+.rn{font-family:var(--f-display);font-size:13px;font-weight:600;color:var(--text-2);text-align:center;font-variant-numeric:tabular-nums}
+.crow:first-child .rn,.mrow:first-child .rn{color:var(--text-2)}
+.ct b{font-size:14px;font-weight:600}
+.ct b em{font-style:normal;font-size:12px;font-weight:600;color:var(--text-2);margin-left:6px}
+.ct small{display:flex;align-items:center;font-size:12px;color:var(--text-2);margin-top:2px}
+.cr{justify-content:flex-end;font-size:14px;font-variant-numeric:tabular-nums}
+.quiet{font-size:12px;font-weight:600;color:var(--text-2)}
+.chead{display:flex;align-items:center;justify-content:space-between;margin:0;padding:12px 16px 4px;font-size:12px;color:var(--text-2)}
+.chead b{font-family:var(--f-display);font-size:13px;font-weight:600;color:var(--text)}
+.chead span{display:inline-flex;align-items:center;gap:6px}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+.st.on{color:var(--text)}
+.dot{width:8px;height:8px;border-radius:4px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--text-2)}
+.dot.on{background:var(--ok);box-shadow:none}
+/* Boutons-icônes : 44 px de cible, icône de 18 px, sans fond */
+.ibtn{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;color:var(--text-2);transition:background-color .15s,color .15s}
+.ibtn svg{width:18px;height:18px}
+.ibtn:hover{background:rgba(150,170,240,.1);color:var(--text)}
+.ibtn.ph{visibility:hidden}
+/* Chat : mes messages à droite, une seule bulle par message */
+.chatlog{padding:8px 12px}
+.msg{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:8px;align-items:start;padding:4px 0}
+.msg.me{grid-template-columns:minmax(0,1fr) auto}
+.msg .mb{max-width:min(520px,100%);padding:8px 12px;border-radius:4px 14px 14px 14px;background:#1c2346}
+.msg.me .mb{justify-self:end;border-radius:14px 4px 14px 14px;background:#2a2f4f}
+.msg .mb b{display:flex;align-items:baseline;gap:8px;font-size:12px;font-weight:600;color:var(--text-2)}
+.msg .mb time{font-size:12px;font-weight:500;color:var(--text-2)}
+.msg .mb p{margin:2px 0 0;font-size:14px;line-height:1.4;color:var(--text)}
+.msg .mact{display:flex;opacity:1}
+.msg.me .mact{order:-1;justify-self:end}
+.cinput{display:flex;gap:8px;margin:0;padding:8px 12px 12px;border-top:1px solid var(--hair)}
+.cinput input{height:44px}
+.cinput .btn{width:52px;min-height:44px;padding:0}
+.cinput .btn svg{width:18px;height:18px}
+.cnone{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 0;font-size:13px;color:var(--text-2);text-align:center}
+.cnone .btn{width:auto}
+.cwait{list-style:none}
+.cempty h2{font-family:var(--f-display);font-size:18px;font-weight:600;margin:0}
+.cempty p{font-size:13px;color:var(--text-2);margin:0;max-width:360px}
+/* Création */
+.ccreate{display:grid;grid-template-columns:180px minmax(0,1fr);gap:24px;padding:16px;margin:0;max-width:none}
+.cprev{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:8px;text-align:center}
+.cprev b{font-family:var(--f-display);font-size:15px;font-weight:600;max-width:100%;overflow-wrap:anywhere}
+.cform{gap:12px}
+.cform fieldset{margin:0;padding:0;border:0;display:flex;flex-direction:column;gap:8px}
+.cform legend{padding:0;margin-bottom:8px;font-size:12px;font-weight:600;color:var(--text-2)}
+.fld span{font-size:12px}
+.embrow{gap:8px}
+.avopt.sm{width:44px;height:44px}
+.avopt[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--text),0 3px 0 #080b17}
+.sw{width:36px;height:36px;border-radius:18px}
+.sw[aria-pressed=true]{box-shadow:0 0 0 2px var(--ink),0 0 0 4px var(--text)}
+.cerr{min-height:16px;margin:0;font-size:13px;color:#ff8f80}
+.fld input[aria-invalid=true]{border-color:#ff8f80}
+.cform>.btn{align-self:flex-start;width:auto;min-width:220px}
+@media (max-height:430px){
+  .clanhome{grid-template-columns:240px minmax(0,1fr);gap:12px}
+  .clancard{gap:4px;padding:12px}.clancard h2{font-size:17px}.cemb.xl{width:56px;height:56px;border-radius:16px}
+  .cstats{margin:4px 0;padding:4px 0}.cstats dd{font-size:15px}
+  .clancard .btn{min-height:44px}
+  .crow,.mrow{min-height:52px}
+  .ctabs [role=tab]{min-height:36px}
+}
+@media (max-width:700px){
+  .clanhome{grid-template-columns:200px minmax(0,1fr)}
+  .mrow{grid-template-columns:20px 32px minmax(0,1fr) auto 44px}.mrow .cr{display:none}
+  .ccreate{grid-template-columns:1fr}.cprev{flex-direction:row;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){.ctabs [role=tab],.ibtn{transition:none}}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
 <script>
@@ -2067,7 +2328,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const DEFAULTS = {
-  v: 4, xp: 0, coins: 1000, crowns: 0, chestDay: null, streak: 0, lastStreakDay: null, days: {}, stars: {}, daily: {}, intro: false, missions: null, mode: 'battle',
+  v: 4, xp: 0, coins: 1000, crowns: 0, chestDay: null, streak: 0, lastStreakDay: null, days: {}, stars: {}, daily: {}, intro: false, missions: null, mode: 'battle', profile: { av: 'chip_P', fr: 'none' }, muted: [],
   mallettes: [{ kind: 'classique', prog: 0 }, null, null, null], shop: { backs: ['bordeaux'], felts: ['cercle'], back: 'bordeaux', felt: 'cercle' },
   asc: { floor: 1, best: 1 }, battle: { played: 0, won: 0, streak: 0 },
   stats: { dec: 0, ok: 0, cat: { hard: [0, 0], soft: [0, 0], pair: [0, 0], euro: [0, 0], dev: [0, 0], ins: [0, 0], count: [0, 0], bet: [0, 0] } },
@@ -2288,6 +2549,13 @@ const IC = {
   gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4.9a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.4A7.5 7.5 0 0 0 7 6.4l-2.4-.9-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-.9a7.5 7.5 0 0 0 2.6 1.5l.4 2.4h4l.4-2.4a7.5 7.5 0 0 0 2.6-1.5l2.4.9 2-3.4z"/>',
   trophy: '<path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6"/>',
   brain: '<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>',
+  send: '<path d="M4 12l16-8-6 16-2.5-6.5L4 12z"/>',
+  flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  logout: '<path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/>',
+  userx: '<circle cx="10" cy="8" r="3.5"/><path d="M3.5 20a6.5 6.5 0 0 1 13 0M16.5 7.5l4 4M20.5 7.5l-4 4"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14.5a5 5 0 0 1 4.5 5"/>',
   timer: '<circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v4l2.5 1.5M9.5 2.5h5"/>',
   layers: '<path d="M12 3 2.5 8 12 13l9.5-5zM2.5 12.5 12 17.5l9.5-5M2.5 16.5 12 21.5l9.5-5"/>',
   refresh: '<path d="M20 11a8 8 0 0 0-14.3-4.3L4 9M4 13a8 8 0 0 0 14.3 4.3L20 15M4 4v5h5M20 20v-5h-5"/>',
@@ -2622,7 +2890,12 @@ function makeOpps(n = 3) {
   return names.slice(0, n).map((name, k) => ({ name, ai: true, color: AI_COLORS[k + 1], lvl: Math.max(1, lvl + rnd(-1, 2)), crowns: Math.max(0, S.crowns + rnd(-60, 70)),
     acc: Math.min(.97, .8 + si * .04 + Math.random() * .08 - .03), rt: Math.max(900, 2600 - si * 350 + rnd(-500, 500)), stack: 0, score: 0, time: 0 }));
 }
-function avatarHTML(p, cls = '') { return `<span class="av ${cls}" style="--c:${/^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#e8c26a'}">${p.you ? `<img src="${chipImg('gold')}" alt="">` : esc(String(p.name || '?')[0].toUpperCase())}</span>`; }
+function avatarHTML(p, cls = '') {
+  const me = p.you && !p.remote && !p.preview, av = avKey(me ? S.profile.av : p.av), fr = frKey(me ? S.profile.fr : p.fr);
+  const cc = me ? (CL.clan && cleanCol(CL.clan.color)) : cleanCol(p.cc), col = /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#e8c26a';
+  const inner = av ? `<img src="${img(av)}" alt="">` : p.you ? `<img src="${chipImg('gold')}" alt="">` : esc(String(p.name || '?')[0].toUpperCase());
+  return `<span class="av ${cls}${av ? ' pic' : ''}${fr !== 'none' ? ' f-' + fr : ''}" style="--c:${col}${cc ? ';--cc:' + cc : ''}">${inner}</span>`;
+}
 function esc(t) { return String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 /* ----- Route des couronnes et classement ----- */
@@ -2634,6 +2907,7 @@ function crownRoadSheet() {
     <button class="btn ghost" data-close>Fermer</button>`);
 }
 function leaderboardSheet() {
+  if (canSocial()) return onlineLeaderboard();
   const seed = dayHash('lb' + today()); let h = seed; const rows = [];
   for (let i = 0; i < 14; i++) { h = (h * 1103515245 + 12345) >>> 0; rows.push({ name: AI_NAMES[h % AI_NAMES.length] + (i > 9 ? ' ' + (h % 90 + 10) : ''), crowns: Math.max(0, S.crowns + 420 - i * 60 + (h % 50)), ai: true }); }
   rows.push({ name: 'Vous', crowns: S.crowns, you: true }); rows.sort((a, b) => b.crowns - a.crowns);
@@ -2678,7 +2952,7 @@ function battleSheet() {
     <div class="bstakes">${STAKES.map(([k, l], i) => { const fee = s.fee * k, poor = S.coins < fee;
       return `<button class="bstake ${i === 0 ? 'main' : ''}" data-stake="${i}" ${poor ? 'disabled' : ''}>${i === 0 ? '<svg class="hcircle" viewBox="0 0 200 120" preserveAspectRatio="none" aria-hidden="true"><path d="M30 20 C 80 2, 170 6, 190 50 C 204 90, 150 116, 96 114 C 40 112, 6 92, 10 58 C 13 34, 40 16, 78 12" /></svg>' : ''}<small>${l}</small><span class="bm"><img src="${chipImg('1000')}" alt="">${fmtN(fee)}</span><span class="bg">1<sup>er</sup> : +${fmtN(fee * 3)}</span></button>`; }).join('')}</div>
     <p class="bnote">${S.coins < s.fee ? `Il vous faut ${fmtN(s.fee)} jetons` : 'Touchez une mise pour lancer la partie'}</p>`);
-  m.querySelectorAll('[data-stake]').forEach(b => b.onclick = () => { S.battle.stake = +b.dataset.stake; save(); m.remove(); matchmaking('race'); });
+  m.querySelectorAll('[data-stake]').forEach(b => b.onclick = () => { S.battle.stake = +b.dataset.stake; save(); m.remove(); netMode() ? mmSearch() : matchmaking('race'); });
 }
 function duelSheet() {   // le duel éclair, séparé de la bataille
   const s = SALLES[salleIdx()];
@@ -2782,7 +3056,7 @@ function posHTML() {
 }
 /* Classement en direct : les lignes glissent quand les places changent */
 function rankHTML() {
-  const list = raceRanking(), key = list.map(p => p.name).join('|'), me = list.findIndex(p => p.you), now = Date.now(), moved = {};
+  const R = TB.cfg.race, list = raceRanking(), key = list.map(p => p.name).join('|'), me = list.findIndex(p => p.you), now = Date.now(), moved = {};
   if (TB.rk && TB.rk.key !== key) {
     const prev = TB.rk.key.split('|');
     list.forEach((p, i) => { const j = prev.indexOf(p.name); if (j >= 0 && j !== i) moved[p.name] = j - i; });
@@ -2792,7 +3066,7 @@ function rankHTML() {
   const fl = TB.rkFlash && now - TB.rkFlash.t < 2600 ? TB.rkFlash.dir : '';
   const my = list[me], ref = me === 0 ? list[1] : list[0], diff = ref ? my.stack - ref.stack : 0;
   return `<div class="rank2" id="rk" aria-label="Classement en direct">${list.map((p, i) => {
-      const fresh = p.lastT && now - p.lastT < 1800, tag = p.remote ? ` <em>${p.gone ? 'parti' : p.done ? 'fini' : 'main ' + ((p.hand || 0) + 1)}</em>` : '';
+      const fresh = p.lastT && now - p.lastT < 1800, tag = p.remote ? ` <em>${p.gone ? 'parti' : p.done ? 'fini' : 'main ' + ((p.hand || 0) + 1)}</em>` : p.ai && R.online ? ' <em>IA</em>' : '';
       const side = p.you ? (fl ? `<span class="rarrow ${fl}">${fl === 'up' ? '▲' : '▼'}</span>` : '')
         : p.last ? `<span class="delta ${p.last[0] === '+' ? 'up' : p.last[0] === '−' ? 'dn' : ''} ${fresh ? 'fresh' : ''}">${p.last}</span>` : '';
       return `<div class="rr ${p.you ? 'me' : ''} ${p.you && fl ? 'fl-' + fl : ''}" ${moved[p.name] ? `style="--d:${moved[p.name]}" data-mv` : ''}><span class="rn">${i + 1}</span>${avatarHTML(p)}<span class="rt"><b>${p.you ? 'Vous' : esc(p.name)}${tag}</b><span class="mono">${fmtN(p.stack)}</span></span>${side}</div>`;
@@ -2805,9 +3079,11 @@ function refreshRank() {
 }
 /* Les IA jouent à leur propre rythme, avec leur propre sabot, que vous jouiez ou non */
 function aiTick() {
-  const R = TB && TB.cfg.race; if (!R || R.online || !TB.raceT0 || TB.timeUp) return;
+  const R = TB && TB.cfg.race; if (!R || !TB.raceT0 || TB.timeUp) return;
+  if (R.online && (!R.opps.some(o => o.bot) || !botDriver())) return;
   const now = Date.now(); let moved = false;
   R.opps.forEach(o => {
+    if (R.online && !o.bot) return;
     if (!o.nextAt) o.nextAt = TB.raceT0 + o.pace * (.5 + Math.random() * .6);
     if (now < o.nextAt || o.stack < 25) return;
     const sh = R.aiShoe || (R.aiShoe = new Shoe(TB.cfg.rules.decks, 1));
@@ -2817,7 +3093,7 @@ function aiTick() {
     mirrorPlay(o, start, draws, dealer, up, TB.cfg.rules, aiBet(o, R));
     o.lastT = now; o.nextAt = now + o.pace * (.75 + Math.random() * .5); moved = true;
   });
-  if (moved) refreshRank();
+  if (moved) { refreshRank(); if (R.online) frBotsSend(); }
 }
 function raceAfterRound() { // appelé après le règlement d'un tour
   const R = TB.cfg.race, h = TB.hands[0]; if (!R || !TB.roundLog) return false;
@@ -2914,6 +3190,13 @@ const cleanName = t => String(t || '').replace(/[\u0000-\u001f<>]/g, '').trim().
 const num = (v, lo, hi, d = 0) => { v = Number(v); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d; };
 function loadScript(src) { return new Promise((ok, ko) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => ko(new Error('script')); document.head.appendChild(s); }); }
 
+/* Un seul client Supabase : la session (compte anonyme) est gardée sur l'appareil */
+async function supaClient() {
+  if (!window.supabase) await loadScript(SUPA_JS);
+  const cfg = window.BJ_ONLINE;
+  if (!FR_CLIENT) FR_CLIENT = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, { auth: { persistSession: true, storageKey: 'bj-auth', autoRefreshToken: true }, realtime: { params: { eventsPerSecond: 20 } } });
+  return FR_CLIENT;
+}
 /* ---------- Transport : même interface pour Supabase et le test local ---------- */
 async function netConnect(code, id, onMsg, onPeers) {
   const room = 'vingt-et-un-' + code;
@@ -2928,9 +3211,7 @@ async function netConnect(code, id, onMsg, onPeers) {
     return { send: d => bc.postMessage({ k: 'm', d }), track: s => { mine = { ...s, id }; bc.postMessage({ k: 'p', id, s: mine }); flush(); },
       leave: () => { clearInterval(hb); bc.postMessage({ k: 'bye', id }); bc.close(); } };
   }
-  if (!window.supabase) await loadScript(SUPA_JS);
-  const cfg = window.BJ_ONLINE;
-  if (!FR_CLIENT) FR_CLIENT = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, { auth: { persistSession: false }, realtime: { params: { eventsPerSecond: 20 } } });
+  await supaClient();
   const ch = FR_CLIENT.channel(room, { config: { broadcast: { self: false }, presence: { key: id } } });
   ch.on('broadcast', { event: 'm' }, ({ payload }) => onMsg(payload));
   ch.on('presence', { event: 'sync' }, () => { const st = ch.presenceState(); onPeers(Object.entries(st).map(([k, arr]) => ({ ...arr[arr.length - 1], id: k }))); });
@@ -2942,11 +3223,11 @@ async function netConnect(code, id, onMsg, onPeers) {
 }
 
 /* ---------- Salon ---------- */
-function frState() { return { name: FR.me.name, joined: FR.me.joined, status: FR.status, mode: FR.mode, gid: FR.game ? FR.game.gid : '' }; }
+function frState() { return { ...myPublic(), name: FR.me.name, joined: FR.me.joined, status: FR.status, mode: FR.mode, gid: FR.game ? FR.game.gid : '' }; }
 function frTrack() { if (FR && FR.link) FR.link.track(frState()); }
 function frEmit(m) { if (!FR) return; m.from = FR.me.id; FR.link.send(m); frOnMsg(m); } // Supabase et BroadcastChannel ne renvoient pas à soi-même
 function frPlayers() { // joueurs présents, dans l'ordre d'arrivée ; couleurs attribuées localement
-  return FR.peers.slice().sort((a, b) => a.joined - b.joined || (a.id < b.id ? -1 : 1)).map((p, i) => ({ id: p.id, name: cleanName(p.name) || 'Joueur', status: p.status, mode: p.mode, gid: p.gid, you: p.id === FR.me.id, color: FR_COLORS[i % FR_COLORS.length] }));
+  return FR.peers.slice().sort((a, b) => a.joined - b.joined || (a.id < b.id ? -1 : 1)).map((p, i) => ({ ...cleanPublic(p), id: p.id, status: p.status, mode: p.mode, gid: p.gid, you: p.id === FR.me.id, color: FR_COLORS[i % FR_COLORS.length] }));
 }
 function frHostId() { const l = frPlayers().filter(p => p.status !== 'gone'); return l.length ? l[0].id : FR.me.id; }
 const frIsHost = () => FR && frHostId() === FR.me.id;
@@ -3031,7 +3312,7 @@ function frRoom() {
 }
 function frStart() {
   if (!frIsHost()) return;
-  const players = frPlayers().filter(p => p.status === 'lobby').slice(0, FR_MAX).map(p => ({ id: p.id, name: p.name, color: p.color }));
+  const players = frPlayers().filter(p => p.status === 'lobby').slice(0, FR_MAX).map(p => ({ ...cleanPublic(p), id: p.id, color: p.color }));
   if (players.length < 2) return;
   frEmit({ t: 'start', game: { gid: Math.random().toString(36).slice(2, 9), mode: FR.mode, seed: Math.random().toString(36).slice(2), host: FR.me.id, players } });
 }
@@ -3051,7 +3332,7 @@ function frOnMsg(m) {
     const g = m.game; if (!g || !Array.isArray(g.players) || !g.players.some(p => p.id === FR.me.id) || FR.status === 'play') return;
     if (m.from !== frHostId()) return; // seul l'hôte lance
     FR.game = { gid: String(g.gid), mode: g.mode === 'duel' ? 'duel' : 'race', seed: String(g.seed), host: String(g.host),
-      players: g.players.slice(0, FR_MAX).map((p, i) => ({ id: String(p.id), name: cleanName(p.name) || 'Joueur', color: FR_COLORS[i % FR_COLORS.length] })) };
+      players: g.players.slice(0, FR_MAX).map((p, i) => ({ ...cleanPublic(p), id: String(p.id), color: FR_COLORS[i % FR_COLORS.length] })) };
     FR.status = 'play'; frTrack();
     const el = $('#friends'); if (el) el.remove();
     S.battle.friends = (S.battle.friends || 0) + 1; save();
@@ -3060,6 +3341,7 @@ function frOnMsg(m) {
   }
   if (!FR.game || m.gid !== FR.game.gid) return;
   if (m.t === 'rs') frRaceRemote(m);
+  else if (m.t === 'ai') frBotsRemote(m);
   else if (m.t === 'dq') frDuelQuestion(m);
   else if (m.t === 'da') frDuelRemoteAnswer(m);
   else if (m.t === 'dr') frDuelReveal(m);
@@ -3081,11 +3363,12 @@ function frEndHTML(title, list, pos, rw, scoreLabel, note = '') {
 
 /* ---------- Course au magot entre amis ---------- */
 function frStartRace() {
-  const g = FR.game, opps = g.players.filter(p => p.id !== FR.me.id).map(p => ({ id: p.id, name: p.name, color: p.color, remote: true, stack: 1000, time: 0, hand: 0, reach: 0, last: '', done: false }));
+  const g = FR.game, opps = g.players.filter(p => p.id !== FR.me.id).map(p => ({ ...p, remote: true, stack: 1000, time: 0, hand: 0, reach: 0, last: '', done: false }));
+  (g.bots || []).forEach(b => opps.push({ ...b, ai: true, bot: true, stack: 1000, time: 0, last: '', nextAt: 0 }));
   FR.prevStack = 1000; FR.waiting = false; FR.raceOpps = null; FR.me.result = null;
-  openTable({ name: 'Course au magot', spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 25, freeBet: true, theme: S.shop.felt,
-    race: { opps, salle: { name: 'Table ' + FR.code }, target: 2000, online: true, seed: g.seed, reach: 0, dur: 180 },
-    rule: 'Entre amis : tout le monde reçoit <b>les mêmes cartes</b>, croupier compris. Misez ce que vous voulez : au bout de <b>3 minutes</b>, le plus gros tapis gagne.' }, 'race');
+  openTable({ name: 'Course au magot', spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 25, freeBet: true, theme: g.pub ? SALLES[g.si].theme : S.shop.felt,
+    race: { opps, salle: g.pub ? SALLES[g.si] : { name: 'Table ' + FR.code }, target: 2000, online: true, seed: g.seed, reach: 0, dur: 180 },
+    rule: g.pub ? 'Bataille en ligne : tout le monde reçoit <b>les mêmes cartes</b>. Au bout de <b>3 minutes</b>, le plus gros tapis gagne.' : 'Entre amis : tout le monde reçoit <b>les mêmes cartes</b>, croupier compris. Misez ce que vous voulez : au bout de <b>3 minutes</b>, le plus gros tapis gagne.' }, 'race');
   TB.bets = [100]; drawTable();
 }
 function frRaceCmp(a, b) { // plus gros tapis au gong, puis le plus rapide
@@ -3104,7 +3387,7 @@ function frRaceRemote(m) {
   o.last = /^[+−]?\d{1,5}$/.test(m.last) ? m.last : ''; o.lastAct = ''; if (m.done) o.done = true;
   frRaceHUD(); if (FR.waiting) frRaceCheck();
 }
-function frRaceHUD() { const h = document.querySelector('#table .racehud'); if (h && TB && TB.cfg.race) h.outerHTML = raceHUD(); }
+function frRaceHUD() { if (TB && TB.cfg.race && $('#rk')) refreshRank(); }
 function frRaceEnd(quit) {
   const R = TB.cfg.race; FR.raceOpps = R.opps;
   FR.me.result = { stack: TB.stack, time: TB.decT || 0, reach: R.reach || 0, quit: !!quit };
@@ -3119,8 +3402,8 @@ function frRaceList() {
 function frRaceCheck() {
   if (!FR || !FR.waiting || !$('#table')) return;
   const here = new Set(FR.peers.map(p => p.id));
-  FR.raceOpps.forEach(o => { if (!o.done && !here.has(o.id)) o.gone = true; });
-  const pending = FR.raceOpps.filter(o => !o.done && !o.gone), list = frRaceList();
+  FR.raceOpps.forEach(o => { if (!o.bot && !o.done && !here.has(o.id)) o.gone = true; });
+  const pending = FR.raceOpps.filter(o => !o.bot && !o.done && !o.gone), list = frRaceList();
   const T = $('#table');
   if (pending.length) {
     T.innerHTML = `<div class="end"><div class="label">Course au magot · Table ${FR.code}</div><h2>Votre course est finie</h2><p class="muted">Tapis final : <b>${fmtN(FR.me.result.stack)}</b>. En attente de ${pending.map(o => esc(o.name)).join(', ')}…</p>
@@ -3131,6 +3414,15 @@ function frRaceCheck() {
     return;
   }
   FR.waiting = false;
+  if (FR.game.pub) {
+    const s = SALLES[FR.game.si], r = battleRewards(list, s);
+    T.innerHTML = battleEndHTML('Bataille en ligne', list.map(p => ({ ...p, name: p.you ? (S.pseudo || 'Vous') : p.name })), r, s, p => fmtN(p.stack));
+    if (r.pos === 0) { SFX.big(); say('Victoire'); }
+    syncProfile().catch(() => { });
+    $('#bback').onclick = () => { closeTable(); frLeave(); };
+    $('#bagain').onclick = () => { closeTable(); frLeave(true); mmSearch(); };
+    return;
+  }
   const pos = list.findIndex(p => p.you), rw = frRewards(FR.me.result.quit ? list.length - 1 : pos, list.length);
   T.innerHTML = frEndHTML('Course au magot', list, pos, rw, p => fmtN(p.stack));
   if (pos === 0) { SFX.big(); say('Victoire'); }
@@ -3234,10 +3526,433 @@ function frDuelEnd(note = '') {
   $('#frquit', el).onclick = () => { el.remove(); frLeave(); };
 }
 
+/* ---------- Bataille en ligne : de vrais joueurs de la même salle et de la même mise ----------
+   Chacun annonce sa présence sur le canal de recherche. Le plus ancien en attente forme la table dès qu'il y a 4 joueurs
+   ou après 15 secondes, et complète avec des IA. La partie se joue ensuite comme entre amis : mêmes cartes pour tous. */
+const MM_WAIT = 15000;
+let MM = null;
+async function mmSearch() {
+  if (!netMode()) return matchmaking('race');
+  if (!S.pseudo) return profileSheet({ first: true, then: mmSearch });
+  const si = salleIdx(), st = Math.min(S.battle.stake || 0, 2), fee = battleStake();
+  if (S.coins < fee) { toast(`Il vous faut ${fmtN(fee)} jetons`); return; }
+  mmClose();
+  const el = document.createElement('div'); el.className = 'screen mm'; el.id = 'mmon'; document.body.appendChild(el); setTheme(SALLES[si].theme);
+  const mm = MM = { si, st, fee, el, t0: Date.now(), id: netId(), peers: [], link: null, done: false };
+  mmDraw();
+  try { mm.link = await netConnect('mm-' + si + '-' + st, mm.id, msg => MM === mm && mmMsg(msg), l => { if (MM !== mm) return; mm.peers = l; mmDraw(); }); }
+  catch (e) { if (MM !== mm) return; mmClose(); toast('Hors ligne : partie contre des IA'); return matchmaking('race'); }
+  if (MM !== mm) { mm.link.leave(); return; }
+  mm.link.track({ ...myPublic(), joined: mm.t0, status: 'search' });
+  mm.tick = setInterval(mmTick, 400);
+}
+function mmClose() { if (!MM) return; const m = MM; MM = null; clearInterval(m.tick); try { m.link && m.link.leave(); } catch (e) { } if (m.el) m.el.remove(); }
+function mmList() { return MM.peers.filter(p => p.status === 'search').sort((a, b) => (a.joined || 0) - (b.joined || 0) || (a.id < b.id ? -1 : 1)); }
+function mmDraw() {
+  if (!MM || MM.done) return;
+  const L = mmList().length ? mmList() : [{ id: MM.id, ...myPublic(), joined: MM.t0 }], first = L[0].joined || MM.t0;
+  const left = Math.max(0, Math.ceil((MM_WAIT - (Date.now() - first)) / 1000)), s = SALLES[MM.si];
+  MM.el.innerHTML = `<div class="mmbox"><div class="label">Bataille en ligne · ${s.name}</div><h2>${L.length >= 4 ? 'Table complète' : 'Recherche de joueurs'}</h2>
+    <div class="mmgrid">${[0, 1, 2, 3].map(i => L[i]).map(p => p ? `<div class="mmp in ${p.id === MM.id ? 'me' : ''}">${avatarHTML({ ...cleanPublic(p), color: '#5aa9ff' }, 'xl')}<b>${esc(cleanName(p.name))}${p.id === MM.id ? ' <em>vous</em>' : ''}</b><small>${cleanTag(p.tag) ? esc(p.tag) + ' · ' : ''}Niv. ${num(p.lvl, 1, 999, 1)}</small></div>`
+      : `<div class="mmp"><span class="av xl ghost"><span class="spin"></span></span><small>${left ? 'En attente…' : 'IA'}</small></div>`).join('')}</div>
+    <div class="mmwait"><span class="rclock2">${icon('timer')}<span>0:${String(left).padStart(2, '0')}</span></span><small>${left ? 'Les places libres seront prises par des IA' : 'Lancement…'}</small></div>
+    <button class="btn ghost sm" id="mmx">Annuler</button></div>`;
+  $('#mmx', MM.el).onclick = () => { mmClose(); render(); };
+}
+function mmTick() {
+  if (!MM || MM.done) return;
+  mmDraw();
+  const L = mmList(); if (!L.length || L[0].id !== MM.id) return;   // seul le plus ancien forme la table
+  if (L.length < 4 && Date.now() - MM.t0 < MM_WAIT) return;
+  const players = L.slice(0, 4).map((p, i) => ({ ...cleanPublic(p), id: p.id, color: FR_COLORS[i] }));
+  const bots = makeOpps(4 - players.length).map((o, k) => ({ id: 'ia' + k, name: o.name, color: o.color, lvl: o.lvl, crowns: o.crowns, acc: o.acc, rt: o.rt, style: pick([.06, .1, .15, .22]), pace: 5500 + o.rt * 1.5 + rnd(0, 2000) }));
+  const g = { gid: Math.random().toString(36).slice(2, 9), code: newCode(), seed: Math.random().toString(36).slice(2), host: MM.id, si: MM.si, st: MM.st, players, bots };
+  MM.link.send({ t: 'mmgo', g }); mmMsg({ t: 'mmgo', g, from: MM.id });
+}
+async function mmMsg(m) {
+  if (!MM || MM.done || !m || m.t !== 'mmgo' || !m.g || !Array.isArray(m.g.players)) return;
+  const g = m.g; if (!g.players.some(p => p.id === MM.id)) return;
+  const mm = MM; mm.done = true; clearInterval(mm.tick); try { mm.link.leave(); } catch (e) { }
+  const game = { gid: String(g.gid).slice(0, 12), mode: 'race', pub: true, si: num(g.si, 0, SALLES.length - 1), st: num(g.st, 0, 2), seed: String(g.seed).slice(0, 20), host: String(g.host),
+    players: g.players.slice(0, 4).map((p, i) => ({ ...cleanPublic(p), id: String(p.id), color: FR_COLORS[i] })),
+    bots: (Array.isArray(g.bots) ? g.bots : []).slice(0, 3).map((b, k) => ({ id: 'ia' + k, name: cleanName(b.name) || 'IA', color: cleanCol(b.color) || '#888888', lvl: num(b.lvl, 1, 99, 1), crowns: num(b.crowns, 0, 1e5),
+      acc: num(b.acc, .5, .99, .85), rt: num(b.rt, 500, 4000, 2000), style: num(b.style, .04, .3, .1), pace: num(b.pace, 4000, 16000, 8000) })) };
+  const code = cleanCode(g.code); if (code.length !== 5) { mmClose(); render(); return; }
+  S.battle.stake = game.st; addCoins(-battleStake()); S.battle.played++; save(); SFX.coin();
+  if (FR) frLeave(true);
+  FR = { code, me: { id: netId(), name: S.pseudo, joined: Date.now() }, peers: [], status: 'play', mode: 'race', game, link: null };
+  const f = FR;
+  try { f.link = await netConnect(code, f.me.id, x => FR === f && frOnMsg(x), l => { if (FR !== f) return; f.peers = l; frOnPeers(); }); }
+  catch (e) { if (mm.el) mm.el.remove(); MM = null; FR = null; addCoins(battleStake()); toast('Connexion perdue : mise remboursée'); render(); return; }
+  if (mm.el) mm.el.remove(); MM = null;
+  frTrack(); frStartRace();
+}
+/* IA d'une partie en ligne : un seul appareil les fait jouer (le premier joueur encore présent) et diffuse leurs tapis */
+function botDriver() { if (!FR || !FR.game) return false; const here = new Set(FR.peers.map(p => p.id)); here.add(FR.me.id); return FR.game.players.map(p => p.id).find(id => here.has(id)) === FR.me.id; }
+function frBotsRemote(m) {
+  if (m.from === FR.me.id || !Array.isArray(m.bots)) return;
+  const opps = FR.raceOpps || (TB && TB.cfg.race && TB.cfg.race.opps); if (!opps) return;
+  m.bots.forEach(b => { const o = opps.find(x => x.bot && x.id === b.id); if (!o) return; o.stack = num(b.stack, 0, 1e6, o.stack); o.last = /^[+−]?\d{1,5}$/.test(b.last) ? b.last : ''; o.lastT = Date.now(); });
+  frRaceHUD();
+}
+function frBotsSend() { const R = TB && TB.cfg.race; if (!R || !FR || !FR.game) return; frEmit({ t: 'ai', gid: FR.game.gid, bots: R.opps.filter(o => o.bot).map(o => ({ id: o.id, stack: o.stack, last: o.last })) }); }
+
 /* Lien d'invitation : ?table=CODE ouvre directement la feuille « Entre amis » */
 function frDeepLink() {
   const c = cleanCode(new URLSearchParams(location.search).get('table'));
   if (c.length === 5 && netMode()) setTimeout(() => friendsSheet(c), 1500);
+}
+
+/* ================= PROFIL, CLANS, CLASSEMENTS EN LIGNE =================
+   Un compte anonyme Supabase par appareil (pas d'e-mail ni de mot de passe). Tables : profiles, clans, clan_messages (voir supabase/clans.sql). */
+
+/* ---------- Avatars et cadres ---------- */
+const AV = [   // [clé d'image, condition de déblocage, ce qu'il faut pour le débloquer]
+  ['chip_P', null], ['stack', null], ['cards', null], ['heart', null], ['watch', null], ['ticket', null], ['bolt', null], ['chest', null], ['mallette_classique', null],
+  ['chip_C', () => salleIdx() >= 1, 'Riviera Club'], ['chip_B', () => salleIdx() >= 2, 'Néon Club'], ['chip_V', () => salleIdx() >= 3, 'Salon Rouge'],
+  ['trophy', () => S.battle.won >= 1, '1 victoire'], ['crown', () => S.battle.won >= 10, '10 victoires'],
+  ['mallette_prestige', () => S.crowns >= 300, '300 couronnes'], ['mallette_royale', () => S.crowns >= 800, '800 couronnes'],
+  ...COLL.map(c => ['coll_' + c.id, () => ownedColl(c.id), c.name]),
+];
+const FRAMES = [['none', 'Aucun', null], ['ink', 'Nuit', null], ['sky', 'Ciel', null], ['mint', 'Menthe', null], ['rose', 'Rose', null],
+  ['silver', 'Argent', 300], ['gold', 'Or', 800], ['venise', 'Venise', 1600], ['clan', 'Clan', 'clan']];
+const AV_KEY = new Map(AV.map(a => [a[0].toLowerCase(), a[0]]));   // la base stocke les clés en minuscules
+const FR_KEY = new Set(FRAMES.map(f => f[0]));
+const avKey = k => AV_KEY.get(String(k || '').toLowerCase()) || null;
+const frKey = k => FR_KEY.has(k) ? k : 'none';
+const avOpen = a => !a[1] || a[1]();
+const frOpen = f => f[2] == null || (f[2] === 'clan' ? !!(CL.clan) : S.crowns >= f[2]);
+const cleanTag = t => /^[A-Z0-9]{2,4}$/.test(t || '') ? t : '';
+const cleanCol = c => /^#[0-9a-f]{6}$/i.test(c || '') ? c : '';
+/* Ce que les autres joueurs voient de moi (présence, invitations) */
+function myPublic() { return { name: S.pseudo || 'Joueur', av: S.profile.av, fr: S.profile.fr, tag: CL.clan ? CL.clan.tag : '', cc: CL.clan ? CL.clan.color : '', lvl: rankInfo().lvl, crowns: S.crowns }; }
+function cleanPublic(p) { return { name: cleanName(p.name) || 'Joueur', av: avKey(p.av), fr: frKey(p.fr), tag: cleanTag(p.tag), cc: cleanCol(p.cc), lvl: num(p.lvl, 1, 999, 1), crowns: num(p.crowns, 0, 1e5) }; }
+
+/* Éditeur de profil : pseudo, avatar, cadre. opts.then est appelé après l'enregistrement. */
+function profileSheet(opts = {}) {
+  const pick = { av: avKey(S.profile.av) || 'chip_P', fr: frKey(S.profile.fr) };
+  const m = sheet('');
+  const draw = () => {
+    m.firstChild.innerHTML = `<div class="shtop"><h3>${opts.first ? 'Votre profil de joueur' : 'Profil'}</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
+      <div class="pedit">
+        <div class="pprev">${avatarHTML({ you: true, av: pick.av, fr: pick.fr, preview: true }, 'xxl')}
+          <label class="fld"><span>Pseudo</span><input id="pname" maxlength="14" autocomplete="nickname" placeholder="Ex. : Max" value="${esc(S.pseudo || '')}"></label>
+          <p class="small" id="perr"></p>
+          <button class="btn gold" id="psave">${opts.first ? 'Continuer' : 'Enregistrer'}</button></div>
+        <div class="ppick">
+          <div class="eyebrow"><span>Avatar</span></div>
+          <div class="avgrid">${AV.map(a => { const ok = avOpen(a);
+            return `<button class="avopt ${pick.av === a[0] ? 'on' : ''} ${ok ? '' : 'lock'}" data-av="${a[0]}" ${ok ? '' : 'disabled'} title="${ok ? '' : esc(a[2])}"><img src="${img(a[0])}" alt="">${ok ? '' : `<span class="lk">${icon('lock')}</span>`}</button>`; }).join('')}</div>
+          <div class="eyebrow"><span>Cadre</span></div>
+          <div class="frrow">${FRAMES.map(f => { const ok = frOpen(f);
+            return `<button class="fropt ${pick.fr === f[0] ? 'on' : ''}" data-fr="${f[0]}" ${ok ? '' : 'disabled'}><span class="av sm pic f-${f[0]}" style="--cc:${CL.clan ? cleanCol(CL.clan.color) : '#ffc23d'}"></span><small>${ok ? f[1] : f[2] === 'clan' ? 'En clan' : `${icon('crown')}${fmtN(f[2])}`}</small></button>`; }).join('')}</div>
+        </div></div>`;
+    m.querySelectorAll('[data-av]').forEach(b => b.onclick = () => { pick.av = b.dataset.av; keep(); });
+    m.querySelectorAll('[data-fr]').forEach(b => b.onclick = () => { pick.fr = b.dataset.fr; keep(); });
+    $('#psave', m).onclick = () => {
+      const n = cleanName($('#pname', m).value);
+      if (n.length < 2) { $('#perr', m).textContent = 'Choisissez un pseudo de 2 à 14 caractères'; $('#pname', m).focus(); return; }
+      S.pseudo = n; S.profile = { av: pick.av, fr: pick.fr }; save(); m.remove();
+      syncProfile(true).catch(() => { });
+      if (opts.then) opts.then(); else quietRender();
+    };
+  };
+  const keep = () => { const v = $('#pname', m).value; draw(); $('#pname', m).value = v; };
+  draw();
+}
+
+/* ---------- Connexion et profil public ---------- */
+const CL = { me: null, prof: null, clan: null, members: [], chat: [], list: null, ranking: null, players: null, online: new Set(), chan: null, chanId: null, ready: false, err: '', booting: false, memT: 0, syncing: null };
+const canSocial = () => netMode() === 'supabase';
+async function sbAuth() {
+  const c = await supaClient();
+  let { data } = await c.auth.getSession(); let session = data && data.session;
+  if (!session) { const r = await c.auth.signInAnonymously(); if (r.error) throw r.error; session = r.data.session; }
+  CL.me = session.user.id; return c;
+}
+async function syncProfile(force) {
+  if (!canSocial() || !S.pseudo) return;
+  if (CL.syncing) return CL.syncing;
+  CL.syncing = (async () => {
+    const c = await sbAuth();
+    const row = { name: S.pseudo, avatar: (avKey(S.profile.av) || 'chip_P').toLowerCase(), frame: frKey(S.profile.fr), crowns: Math.max(0, Math.min(100000, S.crowns | 0)), lvl: rankInfo().lvl };
+    if (!CL.prof) { const r = await c.from('profiles').select('*').eq('id', CL.me).maybeSingle(); if (r.error) throw r.error; CL.prof = r.data; }
+    if (!CL.prof) { const r = await c.from('profiles').insert(row).select().single(); if (r.error) throw r.error; CL.prof = r.data; }
+    else if (force || Object.keys(row).some(k => CL.prof[k] !== row[k])) {
+      const r = await c.from('profiles').update({ ...row, updated_at: new Date().toISOString() }).eq('id', CL.me).select().single(); if (r.error) throw r.error; CL.prof = r.data;
+    }
+    await loadClan();
+  })();
+  try { await CL.syncing; } finally { CL.syncing = null; }
+}
+async function loadClan() {
+  const c = await sbAuth(), cid = CL.prof && CL.prof.clan_id;
+  if (!cid) { CL.clan = null; CL.members = []; CL.chat = []; clanUnsub(); return; }
+  const [a, b] = await Promise.all([c.from('clans').select('*').eq('id', cid).maybeSingle(), c.from('profiles').select('id,name,avatar,frame,crowns,lvl,joined_clan_at').eq('clan_id', cid).order('crowns', { ascending: false })]);
+  if (a.error) throw a.error; if (b.error) throw b.error;
+  CL.clan = a.data; CL.members = b.data || []; CL.memT = Date.now();
+  if (CL.clan) await clanSub(); else clanUnsub();
+}
+function sbErr(e) {
+  const t = String((e && (e.message || e.error_description)) || e || '');
+  if (/duplicate key|unique/i.test(t)) return 'Ce nom ou ce tag est déjà pris';
+  if (/Trop rapide/.test(t)) return 'Doucement : un message toutes les 2 secondes';
+  for (const k of ['Déjà dans un clan', 'Clan complet', 'Clan introuvable', 'Exclu de ce clan', 'Réservé au chef', 'Profil manquant']) if (t.includes(k)) return k;
+  if (/anonymous/i.test(t)) return 'Connexion anonyme désactivée sur le serveur';
+  if (/fetch|network|timeout/i.test(t)) return 'Pas de réseau';
+  return 'Erreur du serveur';
+}
+
+/* ---------- Canal du clan : membres en ligne, chat en direct, invitations ---------- */
+async function clanSub() {
+  if (!CL.clan || CL.chanId === CL.clan.id) return;
+  clanUnsub();
+  const c = await supaClient(), id = CL.clan.id;
+  const ch = c.channel('clan-' + id, { config: { presence: { key: CL.me }, broadcast: { self: false } } });
+  const fresh = () => loadClan().then(() => { clanPaint('members'); clanPaint('chat'); }).catch(() => { });   // un nouveau membre est arrivé
+  ch.on('presence', { event: 'sync' }, () => { CL.online = new Set(Object.keys(ch.presenceState())); if ([...CL.online].some(id => !memberOf(id))) fresh(); else clanPaint('members'); });
+  ch.on('broadcast', { event: 'inv' }, ({ payload }) => clanInvite(payload));
+  ch.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'clan_messages', filter: 'clan_id=eq.' + id }, ({ new: r }) => { if (r && !CL.chat.some(x => x.id === r.id)) { CL.chat.push(r); CL.chat = CL.chat.slice(-80); if (!memberOf(r.author)) fresh(); else chatAppend(r); if (r.author !== CL.me && TAB !== 'clan') CL.unread = (CL.unread || 0) + 1; } });
+  ch.on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'clan_messages' }, ({ old: r }) => { if (r && CL.chat.some(x => x.id === r.id)) { CL.chat = CL.chat.filter(x => x.id !== r.id); chatRemove(r.id); } });
+  CL.chan = ch; CL.chanId = id;
+  ch.subscribe(st => { if (st === 'SUBSCRIBED') ch.track({ at: Date.now() }); });
+}
+function clanUnsub() { if (CL.chan) { try { FR_CLIENT.removeChannel(CL.chan); } catch (e) { } } CL.chan = null; CL.chanId = null; CL.online = new Set(); }
+async function loadChat() {
+  if (!CL.clan) return;
+  const c = await sbAuth(), r = await c.from('clan_messages').select('id,author,body,created_at').eq('clan_id', CL.clan.id).order('created_at', { ascending: false }).limit(60);
+  if (r.error) throw r.error; CL.chat = (r.data || []).reverse(); CL.chatLoaded = CL.clan.id;
+}
+/* Invitation à une bataille de clan : bandeau en haut de l'écran, 25 secondes */
+function clanInvite(p) {
+  if (!p || p.id === CL.me || !CL.clan) return;
+  const code = cleanCode(p.code); if (code.length !== 5 || (FR && FR.code === code)) return;
+  document.querySelectorAll('.cinv').forEach(e => e.remove());
+  const el = document.createElement('div'); el.className = 'cinv';
+  el.innerHTML = `${avatarHTML(cleanPublic(p))}<span><b>${esc(cleanName(p.name))}</b> lance une bataille de clan</span><button class="btn gold sm">Rejoindre</button><button class="iconbtn" aria-label="Ignorer">${icon('x')}</button>`;
+  document.body.appendChild(el); SFX.ok();
+  el.querySelector('.btn').onclick = async () => { el.remove(); if (TB) { toast('Terminez votre partie d\'abord'); return; } try { await frJoin(code, S.pseudo); } catch (e) { toast('Connexion impossible'); } };
+  el.querySelector('.iconbtn').onclick = () => el.remove();
+  setTimeout(() => el.remove(), 25000);
+}
+async function clanBattle() {
+  if (!CL.chan || !CL.clan) return;
+  const code = newCode();
+  try { await frJoin(code, S.pseudo); } catch (e) { toast('Connexion impossible'); return; }
+  CL.chan.send({ type: 'broadcast', event: 'inv', payload: { code, id: CL.me, ...myPublic() } });
+  toast('Invitation envoyée au clan');
+}
+
+/* ---------- Écran Clan ----------
+   Accessibilité : onglets au clavier (flèches, Début, Fin), chat annoncé (role=log), listes numérotées,
+   statut en ligne écrit et pas seulement coloré, boutons-icônes de 44 px nommés précisément. */
+let CLTAB = 'membres';
+const EMBLEMS = [['chip_P', 'Jeton de Paris'], ['chip_C', 'Jeton de Cannes'], ['chip_B', 'Jeton de Berlin'], ['chip_V', 'Jeton de Venise'], ['crown', 'Couronne'], ['trophy', 'Trophée'],
+  ['chest', 'Coffre'], ['stack', 'Pile de jetons'], ['bolt', 'Sablier'], ['heart', 'Cœur'], ['cards', 'Cartes'], ['mallette_royale', 'Mallette royale']];
+const CCOLORS = [['#ffc23d', 'Or'], ['#ff6b6b', 'Rouge'], ['#5aa9ff', 'Bleu'], ['#5ee7b0', 'Menthe'], ['#c46bff', 'Violet'], ['#ff9f43', 'Orange'], ['#e8e8f0', 'Argent'], ['#2fd0c4', 'Turquoise']];
+const memberOf = id => CL.members.find(m => m.id === id);
+const plaque = t => cleanTag(t) ? `<span class="plaque">${esc(cleanTag(t))}</span>` : '';
+const sr = t => `<span class="sr">${t}</span>`;
+function clanBoot() {
+  if (CL.booting) return; CL.booting = true; CL.err = '';
+  syncProfile(true).then(() => { CL.ready = true; }).catch(e => { CL.err = sbErr(e); }).finally(() => { CL.booting = false; if (TAB === 'clan') quietRender(); });
+}
+function clanView() {
+  if (!canSocial()) return `<div class="cempty"><img src="${img('chip_P')}" alt=""><h2>Clans en ligne</h2><p>Les clans fonctionnent sur la version web du jeu, celle hébergée sur votre site</p></div>`;
+  if (!S.pseudo) { setTimeout(() => profileSheet({ first: true, then: () => { CL.ready = false; go('clan'); } }), 30); return '<div class="cwait" role="status"><span class="spin"></span>Création du profil</div>'; }
+  if (CL.err) return `<div class="cempty" role="alert"><h2>${esc(CL.err)}</h2><button class="btn ghost sm" data-cl="retry">${icon('refresh')} Réessayer</button></div>`;
+  if (!CL.ready) { clanBoot(); return '<div class="cwait" role="status"><span class="spin"></span>Connexion au serveur</div>'; }
+  return CL.clan ? clanHome() : clanLobby();
+}
+/* Onglets : un vrai tablist, un seul arrêt de tabulation, flèches pour changer */
+function tabsHTML(list, label) {
+  return `<div class="ctabs" role="tablist" aria-label="${label}">${list.map(([k, l, extra]) => `<button role="tab" id="ctab-${k}" data-ctab="${k}" aria-selected="${CLTAB === k}" aria-controls="cbody" tabindex="${CLTAB === k ? 0 : -1}">${l}${extra || ''}</button>`).join('')}</div>`;
+}
+function clanLobby() {
+  if (!['join', 'create', 'rank'].includes(CLTAB)) CLTAB = 'join';
+  const body = CLTAB === 'create' ? clanCreateHTML() : CLTAB === 'rank' ? `<ol class="clist" aria-label="Classement des clans">${rankListHTML()}</ol>`
+    : `<form class="csearch" role="search" data-cl-search><label class="sr" for="cq">Chercher un clan</label><input id="cq" type="search" maxlength="20" placeholder="Nom ou tag" autocomplete="off" value="${esc(CL.q || '')}">
+        <button class="iconbtn" type="submit" aria-label="Chercher">${icon('arrow')}</button></form>
+      <ol class="clist" id="clist" aria-label="Clans">${clanListHTML(CL.list)}</ol>`;
+  return `<div class="clobby">${tabsHTML([['join', 'Rejoindre'], ['create', 'Créer'], ['rank', 'Classement']], 'Clans')}
+    <div class="cpanel" id="cbody" role="tabpanel" aria-labelledby="ctab-${CLTAB}" tabindex="0">${body}</div></div>`;
+}
+function clanRow(c, i, act, mine) {
+  return `<li class="crow ${mine ? 'me' : ''}"><span class="rn" aria-hidden="true">${i + 1}</span><span class="cemb" style="--cc:${cleanCol(c.color) || '#ffc23d'}"><img src="${img(avKey(c.emblem) || 'chip_P')}" alt=""></span>
+    <span class="ct"><b>${esc(c.name)}</b><small>${plaque(c.tag)}${c.members}/30 membres</small></span>
+    <span class="cr" aria-label="${fmtN(c.crowns)} couronnes"><img src="${crownImg()}" alt="">${fmtN(c.crowns)}</span>${act || ''}</li>`;
+}
+function clanListHTML(list) {
+  if (!list) { clanFetch(); return '<li class="cwait" role="status"><span class="spin"></span>Chargement</li>'; }
+  if (!list.length) return `<li class="cnone">${CL.q ? 'Aucun clan à ce nom' : 'Aucun clan pour l\'instant'}<button class="btn ghost sm" data-ctab="create">Créer le premier</button></li>`;
+  return list.map((c, i) => clanRow(c, i, c.members >= 30 ? '<span class="quiet">Complet</span>' : `<button class="btn lac sm" data-join="${esc(c.id)}" aria-label="Rejoindre ${esc(c.name)}">Rejoindre</button>`)).join('');
+}
+function rankListHTML() {
+  if (!CL.ranking) { clanFetchRank(); return '<li class="cwait" role="status"><span class="spin"></span>Chargement</li>'; }
+  if (!CL.ranking.length) return '<li class="cnone">Aucun clan pour l\'instant</li>';
+  return CL.ranking.map((c, i) => { const mine = CL.clan && c.id === CL.clan.id; return clanRow(c, i, mine ? '<span class="quiet">Votre clan</span>' : '', mine); }).join('');
+}
+async function clanFetch() {
+  if (CL.fetching) return; CL.fetching = true;
+  try {
+    const c = await sbAuth(), q = String(CL.q || '').replace(/[^\p{L}\p{N} -]/gu, '').trim();
+    let req = c.from('clan_ranking').select('*').order('crowns', { ascending: false }).limit(30);
+    if (q) req = req.or(`name.ilike.*${q}*,tag.ilike.*${q.toUpperCase()}*`);
+    const r = await req; if (r.error) throw r.error; CL.list = r.data || [];
+  } catch (e) { CL.list = []; toast(sbErr(e)); }
+  CL.fetching = false; clanPaint('list');
+}
+async function clanFetchRank() {
+  if (CL.fetchingR) return; CL.fetchingR = true;
+  try { const c = await sbAuth(), r = await c.from('clan_ranking').select('*').order('crowns', { ascending: false }).limit(50); if (r.error) throw r.error; CL.ranking = r.data || []; CL.rankT = Date.now(); }
+  catch (e) { CL.ranking = []; }
+  CL.fetchingR = false; clanPaint('rank');
+}
+function clanCreateHTML() {
+  const f = CL.form || (CL.form = { name: '', tag: '', emblem: 'chip_P', color: '#ffc23d' });
+  return `<form class="ccreate" data-cl-create novalidate>
+    <div class="cprev" aria-hidden="true"><span class="cemb xl" style="--cc:${f.color}"><img src="${img(f.emblem)}" alt=""></span><b>${esc(f.name || 'Votre clan')}</b>${plaque(f.tag) || '<span class="plaque ghost">TAG</span>'}</div>
+    <div class="cform">
+      <div class="crow2"><label class="fld"><span>Nom du clan</span><input id="cname" maxlength="20" required minlength="3" placeholder="Les As de Paris" value="${esc(f.name)}" aria-describedby="cerr"></label>
+        <label class="fld tagf"><span>Tag (2 à 4)</span><input id="ctag" maxlength="4" required placeholder="ASP" autocapitalize="characters" value="${esc(f.tag)}" aria-describedby="cerr"></label></div>
+      <fieldset><legend>Emblème</legend><div class="embrow">${EMBLEMS.map(([k, l]) => `<button type="button" class="avopt sm" data-emb="${k}" aria-pressed="${f.emblem === k}" aria-label="${l}"><img src="${img(k)}" alt=""></button>`).join('')}</div></fieldset>
+      <fieldset><legend>Couleur</legend><div class="colrow">${CCOLORS.map(([c, l]) => `<button type="button" class="sw" data-col="${c}" aria-pressed="${f.color === c}" aria-label="${l}" style="--sw:${c}"></button>`).join('')}</div></fieldset>
+      <p class="cerr" id="cerr" role="alert"></p>
+      <button class="btn gold" type="submit">${icon('plus')} Créer le clan</button></div></form>`;
+}
+function clanHome() {
+  const c = CL.clan, total = CL.members.reduce((a, m) => a + m.crowns, 0), on = CL.members.filter(m => CL.online.has(m.id)).length;
+  const rk = CL.ranking ? CL.ranking.findIndex(x => x.id === c.id) : -1;
+  if (!CL.ranking) clanFetchRank();
+  if (Date.now() - CL.memT > 20000) loadClan().then(() => clanPaint('members')).catch(() => { });
+  if (!['membres', 'chat', 'rank'].includes(CLTAB)) CLTAB = 'membres';
+  if (CLTAB === 'chat') CL.unread = 0;
+  const body = CLTAB === 'chat' ? `<ol class="chatlog" id="chatlog" role="log" aria-live="polite" aria-relevant="additions" aria-label="Messages du clan">${chatHTML()}</ol>
+      <form class="cinput" data-cl-send><label class="sr" for="cmsg">Écrire au clan</label><input id="cmsg" maxlength="200" placeholder="Message" autocomplete="off" enterkeyhint="send"><button class="btn gold sm" type="submit" aria-label="Envoyer">${icon('send')}</button></form>`
+    : CLTAB === 'rank' ? `<ol class="clist" aria-label="Classement des clans">${rankListHTML()}</ol>`
+    : `<p class="chead"><b>${CL.members.length} membre${CL.members.length > 1 ? 's' : ''}</b><span><i class="dot on" aria-hidden="true"></i>${on} en ligne</span></p><ol class="mlist" id="mlist" aria-label="Membres">${membersHTML()}</ol>`;
+  return `<div class="clanhome">
+      <section class="clancard" style="--cc:${cleanCol(c.color) || '#ffc23d'}" aria-labelledby="clname">
+        <span class="cemb xl"><img src="${img(avKey(c.emblem) || 'chip_P')}" alt=""></span>
+        <h2 id="clname">${esc(c.name)}</h2>${plaque(c.tag)}
+        <dl class="cstats"><div><dt>Membres</dt><dd>${CL.members.length}<small>/30</small></dd></div><div><dt>Couronnes</dt><dd>${fmtN(total)}</dd></div><div><dt>Rang</dt><dd>${rk >= 0 ? rk + 1 : '–'}</dd></div></dl>
+        <button class="btn gold" data-cl="battle">${icon('swords')} Bataille de clan</button>
+        <button class="linkbtn" data-cl="leave">Quitter le clan</button></section>
+      <div class="cside">${tabsHTML([['membres', 'Membres'], ['chat', 'Chat', CL.unread ? ` <i class="bdg sm" aria-label="${CL.unread} non lus">${CL.unread}</i>` : ''], ['rank', 'Classement']], 'Clan')}
+        <div class="cpanel ${CLTAB}" id="cbody" role="tabpanel" aria-labelledby="ctab-${CLTAB}" tabindex="${CLTAB === 'chat' ? -1 : 0}">${body}</div></div></div>`;
+}
+function membersHTML() {
+  const chief = CL.clan.owner === CL.me;
+  return CL.members.map((m, i) => { const live = CL.online.has(m.id), boss = m.id === CL.clan.owner;
+    return `<li class="mrow ${m.id === CL.me ? 'me' : ''}"><span class="rn" aria-hidden="true">${i + 1}</span>${avatarHTML({ av: avKey(m.avatar), fr: frKey(m.frame), cc: CL.clan.color, color: '#5aa9ff', name: m.name })}
+      <span class="ct"><b>${esc(m.name)}${m.id === CL.me ? ' <em>vous</em>' : ''}</b><small>${boss ? 'Chef · ' : ''}Niveau ${m.lvl}</small></span>
+      <span class="st ${live ? 'on' : ''}"><i class="dot ${live ? 'on' : ''}" aria-hidden="true"></i>${live ? 'En ligne' : 'Absent'}</span>
+      <span class="cr" aria-label="${fmtN(m.crowns)} couronnes"><img src="${crownImg()}" alt="">${fmtN(m.crowns)}</span>
+      ${chief && m.id !== CL.me ? `<button class="ibtn" data-kick="${esc(m.id)}" aria-label="Exclure ${esc(m.name)}">${icon('userx')}</button>` : '<span class="ibtn ph" aria-hidden="true"></span>'}</li>`; }).join('');
+}
+function chatItemHTML(x) {
+  const chief = CL.clan.owner === CL.me, a = memberOf(x.author), mine = x.author === CL.me, d = new Date(x.created_at), who = a ? a.name : 'Ancien membre';
+  return `<li class="msg ${mine ? 'me' : ''}" id="m${x.id}">${mine ? '' : avatarHTML(a ? { av: avKey(a.avatar), fr: frKey(a.frame), cc: CL.clan.color, name: a.name, color: '#5aa9ff' } : { name: '?', color: '#555a70' })}
+    <div class="mb"><b>${mine ? 'Vous' : esc(who)}<time datetime="${d.toISOString()}">${d.getHours()} h ${String(d.getMinutes()).padStart(2, '0')}</time></b><p>${esc(x.body)}</p></div>
+    <span class="mact">${mine || chief ? `<button class="ibtn" data-del="${x.id}" aria-label="${mine ? 'Effacer votre message' : 'Effacer le message de ' + esc(who)}">${icon('trash')}</button>` : ''}${mine ? '' : `<button class="ibtn" data-rep="${x.id}" aria-label="Signaler ou masquer le message de ${esc(who)}">${icon('flag')}</button>`}</span></li>`;
+}
+function chatHTML() {
+  if (CL.chatLoaded !== CL.clan.id) { loadChat().then(() => clanPaint('chat')).catch(e => toast(sbErr(e))); return '<li class="cwait" role="status"><span class="spin"></span>Chargement</li>'; }
+  const msgs = CL.chat.filter(x => !S.muted.includes(x.author));
+  return msgs.length ? msgs.map(chatItemHTML).join('') : '<li class="cnone">Aucun message. Dites bonjour à votre clan</li>';
+}
+/* Ajoute un message sans redessiner la liste : le lecteur d'écran n'annonce que le nouveau */
+function chatAppend(x) {
+  const log = $('#chatlog'); if (!log || TAB !== 'clan' || CLTAB !== 'chat' || S.muted.includes(x.author) || $('#m' + x.id)) return false;
+  const empty = log.querySelector('.cnone'); if (empty) empty.remove();
+  log.insertAdjacentHTML('beforeend', chatItemHTML(x)); log.scrollTop = log.scrollHeight; bindClan($('#main')); return true;
+}
+function chatRemove(id) { const li = $('#m' + id); if (li) li.remove(); }
+/* Redessine une seule zone de l'écran Clan, sans perdre la saisie en cours */
+function clanPaint(what) {
+  if (TAB !== 'clan' || !$('#main')) return;
+  if (what === 'chat' && CLTAB === 'chat' && $('#chatlog')) { const l = $('#chatlog'); l.innerHTML = chatHTML(); l.scrollTop = l.scrollHeight; bindClan($('#main')); return; }
+  if (what === 'members' && CLTAB === 'membres' && $('#mlist')) { if ($('.modal')) return; const y = $('#cbody').scrollTop; quietRender(); const b = $('#cbody'); if (b) b.scrollTop = y; return; }
+  if (what === 'list' && $('#clist')) { $('#clist').innerHTML = clanListHTML(CL.list); bindClan($('#main')); return; }
+  if (what === 'rank' && !$('.modal') && !$('#cmsg:focus') && !$('#cq:focus') && !$('#cname:focus') && !$('#ctag:focus')) quietRender();
+}
+function bindClan(main) {
+  const run = async (fn, okMsg) => { try { await fn(); CL.prof = null; await syncProfile(true); CL.ranking = null; CL.list = null; if (okMsg) toast(okMsg); } catch (e) { toast(sbErr(e)); } quietRender(); };
+  const setTab = (k, focus) => { CLTAB = k; quietRender(); if (focus) { const t = $('#ctab-' + k); if (t) t.focus(); } const l = $('#chatlog'); if (l) l.scrollTop = l.scrollHeight; };
+  main.querySelectorAll('[data-ctab]').forEach(b => {
+    b.onclick = () => setTab(b.dataset.ctab);
+    if (b.getAttribute('role') === 'tab') b.onkeydown = e => {
+      const tabs = [...b.parentNode.querySelectorAll('[role=tab]')], i = tabs.indexOf(b);
+      const j = e.key === 'ArrowRight' ? (i + 1) % tabs.length : e.key === 'ArrowLeft' ? (i - 1 + tabs.length) % tabs.length : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : -1;
+      if (j >= 0) { e.preventDefault(); setTab(tabs[j].dataset.ctab, true); }
+    };
+  });
+  main.querySelectorAll('[data-join]').forEach(b => b.onclick = () => { b.disabled = true; CLTAB = 'membres'; run(async () => { const c = await sbAuth(), r = await c.rpc('join_clan', { p_clan: b.dataset.join }); if (r.error) throw r.error; }, 'Bienvenue dans le clan'); });
+  main.querySelectorAll('[data-emb]').forEach(b => b.onclick = () => { clanFormKeep(); CL.form.emblem = b.dataset.emb; quietRender(); const n = $(`[data-emb="${b.dataset.emb}"]`); if (n) n.focus(); });
+  main.querySelectorAll('[data-col]').forEach(b => b.onclick = () => { clanFormKeep(); CL.form.color = b.dataset.col; quietRender(); const n = $(`[data-col="${b.dataset.col}"]`); if (n) n.focus(); });
+  main.querySelectorAll('[data-kick]').forEach(b => b.onclick = () => {
+    const mm = memberOf(b.dataset.kick); if (!mm) return;
+    const s = sheet(`<h3>Exclure ${esc(mm.name)}</h3><p class="muted">Ce joueur ne pourra plus rejoindre le clan</p><div class="row"><button class="btn dark" data-close>Annuler</button><button class="btn red" id="kk">Exclure</button></div>`);
+    $('#kk', s).onclick = () => { s.remove(); run(async () => { const c = await sbAuth(), r = await c.rpc('kick_member', { p_member: mm.id }); if (r.error) throw r.error; }, `${mm.name} a été exclu`); };
+  });
+  main.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { const id = +b.dataset.del; try { const c = await sbAuth(), r = await c.from('clan_messages').delete().eq('id', id); if (r.error) throw r.error; CL.chat = CL.chat.filter(x => x.id !== id); chatRemove(id); const i = $('#cmsg'); if (i) i.focus(); } catch (e) { toast(sbErr(e)); } });
+  main.querySelectorAll('[data-rep]').forEach(b => b.onclick = () => {
+    const x = CL.chat.find(y => y.id === +b.dataset.rep); if (!x) return; const a = memberOf(x.author);
+    const s = sheet(`<h3>Ce message pose problème</h3><p class="muted">« ${esc(x.body)} »</p><div class="row"><button class="btn dark" id="rmute">Masquer ${esc(a ? a.name : 'ce joueur')}</button><button class="btn red" id="rrep">Signaler</button></div><button class="btn ghost sm" data-close>Annuler</button>`);
+    $('#rmute', s).onclick = () => { S.muted = [...new Set([...(S.muted || []), x.author])].slice(-50); save(); s.remove(); clanPaint('chat'); toast('Messages masqués'); };
+    $('#rrep', s).onclick = async () => { s.remove(); try { const c = await sbAuth(), r = await c.from('clan_reports').insert({ message_id: x.id, body: x.body }); if (r.error) throw r.error; toast('Message signalé'); } catch (e) { toast(sbErr(e)); } };
+  });
+  const fs = main.querySelector('[data-cl-send]');
+  if (fs) fs.onsubmit = async e => {
+    e.preventDefault(); const i = $('#cmsg'), body = i.value.replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 200); if (!body) return;
+    i.value = '';
+    try { const c = await sbAuth(), r = await c.from('clan_messages').insert({ clan_id: CL.clan.id, body }).select('id,author,body,created_at').single(); if (r.error) throw r.error;
+      if (!CL.chat.some(x => x.id === r.data.id)) { CL.chat.push(r.data); chatAppend(r.data) || clanPaint('chat'); } }
+    catch (err) { i.value = body; toast(sbErr(err)); }
+    i.focus();
+  };
+  const fq = main.querySelector('[data-cl-search]');
+  if (fq) fq.onsubmit = e => { e.preventDefault(); CL.q = $('#cq').value; CL.list = null; clanPaint('list'); };
+  const fc = main.querySelector('[data-cl-create]');
+  if (fc) fc.onsubmit = e => {
+    e.preventDefault(); clanFormKeep(); const f = CL.form, er = $('#cerr');
+    if (f.name.trim().length < 3) { er.textContent = 'Le nom fait au moins 3 caractères'; $('#cname').setAttribute('aria-invalid', 'true'); $('#cname').focus(); return; }
+    if (!/^[A-Z0-9]{2,4}$/.test(f.tag)) { er.textContent = 'Le tag fait 2 à 4 lettres ou chiffres'; $('#ctag').setAttribute('aria-invalid', 'true'); $('#ctag').focus(); return; }
+    fc.querySelector('[type=submit]').disabled = true; CLTAB = 'membres';
+    run(async () => { const c = await sbAuth(), r = await c.rpc('create_clan', { p_name: f.name.trim(), p_tag: f.tag, p_emblem: f.emblem.toLowerCase(), p_color: f.color }); if (r.error) { CLTAB = 'create'; throw r.error; } CL.form = null; }, 'Clan créé');
+  };
+  const cn = $('#cname'), ct = $('#ctag');   // l'aperçu suit la saisie
+  if (cn) cn.oninput = () => { const b = $('.cprev b'); if (b) b.textContent = cn.value || 'Votre clan'; cn.removeAttribute('aria-invalid'); };
+  if (ct) ct.oninput = () => { ct.value = ct.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); const p = $('.cprev .plaque'); if (p) { p.textContent = ct.value || 'TAG'; p.classList.toggle('ghost', !ct.value); } ct.removeAttribute('aria-invalid'); };
+  main.querySelectorAll('[data-cl]').forEach(b => b.onclick = () => {
+    const k = b.dataset.cl;
+    if (k === 'retry') { CL.err = ''; CL.ready = false; quietRender(); }
+    else if (k === 'battle') clanBattle();
+    else if (k === 'leave') {
+      const s = sheet(`<h3>Quitter ${esc(CL.clan.name)}</h3><p class="muted">${CL.clan.owner === CL.me ? (CL.members.length > 1 ? 'Le membre le plus ancien deviendra chef' : 'Vous êtes le dernier membre : le clan sera dissous') : 'Vous pourrez en rejoindre un autre'}</p><div class="row"><button class="btn dark" data-close>Rester</button><button class="btn red" id="lv">Quitter</button></div>`);
+      $('#lv', s).onclick = () => { s.remove(); CLTAB = 'join'; run(async () => { const c = await sbAuth(), r = await c.rpc('leave_clan'); if (r.error) throw r.error; }, 'Vous avez quitté le clan'); };
+    }
+  });
+}
+function clanFormKeep() { const n = $('#cname'), t = $('#ctag'); if (CL.form && n) { CL.form.name = cleanName(n.value).slice(0, 20); CL.form.tag = (t.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); } }
+
+/* ---------- Classement des joueurs et des clans (vrais joueurs) ---------- */
+async function onlineLeaderboard() {
+  let tab = 'joueurs';
+  const m = sheet(''), draw = async () => {
+    m.firstChild.innerHTML = `<div class="shtop"><h3>Classement</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
+      <div class="seg">${[['joueurs', 'Joueurs'], ['clans', 'Clans']].map(([k, l]) => `<button class="${tab === k ? 'on' : ''}" data-lt="${k}">${l}</button>`).join('')}</div>
+      <div class="panel clist lbon"><div class="cwait"><span class="spin"></span></div></div>`;
+    m.querySelectorAll('[data-lt]').forEach(b => b.onclick = () => { tab = b.dataset.lt; draw(); });
+    const box = $('.lbon', m);
+    try {
+      const c = await sbAuth();
+      if (tab === 'clans') { const r = await c.from('clan_ranking').select('*').order('crowns', { ascending: false }).limit(50); if (r.error) throw r.error; CL.ranking = r.data; box.innerHTML = r.data.length ? r.data.map((x, i) => clanRow(x, i)).join('') : '<p class="small muted cnone">Aucun clan pour l\'instant</p>'; }
+      else { const r = await c.from('profiles').select('id,name,avatar,frame,crowns,lvl').order('crowns', { ascending: false }).limit(50); if (r.error) throw r.error;
+        box.innerHTML = r.data.map((p, i) => `<div class="mrow ${p.id === CL.me ? 'me' : ''}"><span class="rn">${i + 1}</span>${avatarHTML({ av: avKey(p.avatar), fr: frKey(p.frame), name: p.name, color: '#5aa9ff' })}<span class="ct"><b>${esc(p.name)}${p.id === CL.me ? ' <em>vous</em>' : ''}</b><small>Niv. ${p.lvl}</small></span><span class="cr"><img src="${crownImg()}" alt="">${fmtN(p.crowns)}</span></div>`).join(''); }
+    } catch (e) { box.innerHTML = `<p class="small muted cnone">${esc(sbErr(e))}</p>`; }
+  };
+  draw();
 }
 
 /* ================= MINI-JEUX RAPIDES : ÉCLAIR, RÉVISION, PAQUET ================= */
@@ -3416,7 +4131,7 @@ function openTable(def, mode = 'career') {
 }
 function briefing(def, intro) {
   const first = !S.intro, cas = CASINOS.find(c => c.theme === TB.theme);
-  const kicker = TB.mode === 'daily' ? 'Défi du jour' : TB.mode === 'sudden' ? 'Mort subite' : TB.mode === 'asc' ? 'Ascension' : TB.mode === 'race' ? (def.race.online ? 'Entre amis · ' : 'Bataille · ') + def.race.salle.name : TB.mode === 'cash' ? 'Table de jeu · ' + def.cash.city : (def.casino || '') + (def.boss ? ' · Table finale' : def.ti != null ? ` · Table ${def.ti + 1}` : '');
+  const kicker = TB.mode === 'daily' ? 'Défi du jour' : TB.mode === 'sudden' ? 'Mort subite' : TB.mode === 'asc' ? 'Ascension' : TB.mode === 'race' ? (def.race.online ? (FR && FR.game && FR.game.pub ? 'Bataille en ligne · ' : 'Entre amis · ') : 'Bataille · ') + def.race.salle.name : TB.mode === 'cash' ? 'Table de jeu · ' + def.cash.city : (def.casino || '') + (def.boss ? ' · Table finale' : def.ti != null ? ` · Table ${def.ti + 1}` : '');
   sheet(`<div class="brief"><div class="art" style="--brief-img:url(${img('venue_' + TB.theme) || img('hero_' + TB.theme) || img('venue_cercle')})"><span class="kick">${kicker}</span></div>
     <h3>${def.name}</h3>
     <div class="rule">${def.rule || ''}</div>
@@ -4045,7 +4760,7 @@ function openCash(i) {
 let TAB = 'salle';
 let VENUE = null;   // casino affiché sur la scène
 let NOANIM = false; // re-rendu silencieux (pas d'animation d'entrée)
-const TABS = [['salle', 'home', 'Salle'], ['tournee', 'route', 'Tournée'], ['compet', 'swords', 'Défis'], ['boutique', 'bag', 'Boutique'], ['moi', 'user', 'Profil'], ['ecole', 'cap', 'École']];
+const TABS = [['salle', 'home', 'Salle'], ['tournee', 'route', 'Tournée'], ['compet', 'swords', 'Défis'], ['boutique', 'bag', 'Boutique'], ['moi', 'user', 'Profil'], ['ecole', 'cap', 'École'], ['clan', 'users', 'Clan']];
 const TAB_ALIAS = { lobby: 'salle', tables: 'tournee', carriere: 'ecole', defis: 'ecole' };
 /* La tournée : 4 salles, chacune son jeton-monogramme (la signature : où l'on est, où l'on va) */
 const VENUE_L = ['P', 'C', 'B', 'V'], ROMAN = ['I', 'II', 'III', 'IV'];
@@ -4073,13 +4788,14 @@ function render() {
   app.innerHTML = `<div class="ambient" aria-hidden="true"></div>
     <header class="hud-top">
       ${home ? `<button class="avatar" data-tab-go="moi" aria-label="Profil, niveau ${r.lvl}">
-        <span class="ring" style="--p:${r.pct.toFixed(3)}"><b>${r.lvl}</b></span>
-        <span class="who"><b>${r.name}</b><span class="xpbar"><i style="width:${(r.pct * 100).toFixed(1)}%"></i></span></span></button>`
+        <span class="ring pp" style="--p:${r.pct.toFixed(3)}">${avatarHTML({ you: true }, 'hud')}<b class="lv">${r.lvl}</b></span>
+        <span class="who"><b>${esc(S.pseudo || r.name)}</b><span class="xpbar"><i style="width:${(r.pct * 100).toFixed(1)}%"></i></span></span></button>
+        ${canSocial() ? `<button class="clanpill" data-tab-go="clan" aria-label="Clan">${CL.clan ? `<span class="cemb sm" style="--cc:${cleanCol(CL.clan.color) || '#ffc23d'}"><img src="${img(avKey(CL.clan.emblem) || 'chip_P')}" alt=""></span><b>${esc(cleanTag(CL.clan.tag))}</b>` : `${icon('users')}<b>Clan</b>`}${CL.unread ? `<i class="bdg">${CL.unread}</i>` : ''}</button>` : ''}`
       : `<button class="backbtn" data-tab-go="salle" aria-label="Retour à la salle">${icon('back')}</button><h1 class="ptitle">${title}</h1>`}
       <span class="money crowns" data-go="road" role="button" tabindex="0" aria-label="${fmtN(S.crowns)} couronnes : route des couronnes"><img src="${crownImg()}" alt="">${fmtN(S.crowns)}</span>
       <button class="money coins" data-caisse aria-label="Caisse : ${fmtN(S.coins)} jetons"><img src="${chipImg('1000')}" alt="">${fmtN(S.coins)}<span class="plus">${icon('plus')}</span></button>
     </header>
-    <main class="scroll ${NOANIM ? 'still' : ''} v-${TAB}" id="main">${home ? salleView(pending) : TAB === 'tournee' ? tourneeView() : TAB === 'compet' ? competView() : TAB === 'ecole' ? ecoleView() : TAB === 'boutique' ? shopView() : profileView()}</main>`;
+    <main class="scroll ${NOANIM ? 'still' : ''} v-${TAB}" id="main">${home ? salleView(pending) : TAB === 'tournee' ? tourneeView() : TAB === 'compet' ? competView() : TAB === 'ecole' ? ecoleView() : TAB === 'boutique' ? shopView() : TAB === 'clan' ? clanView() : profileView()}</main>`;
   app.querySelectorAll('[data-tab],[data-tab-go]').forEach(b => b.onclick = () => go(b.dataset.tab || b.dataset.tabGo));
   app.querySelectorAll('[data-caisse]').forEach(b => b.onclick = () => caisseSheet());
   app.querySelectorAll('.hud-top [data-go="road"]').forEach(b => b.onclick = () => crownRoadSheet());
@@ -4101,6 +4817,7 @@ function todayInfo() {
     chest: S.chestDay !== today(), held: S.mallettes.filter(Boolean).length, malReady: S.mallettes.some(m => m && m.prog >= MAL[m.kind].need) };
 }
 function salleView() {
+  if (canSocial() && S.pseudo && CL.prof && CL.prof.crowns !== S.crowns) syncProfile().catch(() => { });
   const si = salleIdx(), sa = SALLES[si], nx = SALLES[si + 1], [mn, mx] = CASH[si], T = todayInfo();
   const pct = nx ? Math.min(1, (S.crowns - sa.min) / (nx.min - sa.min)) : 1;
   const badge = n => n ? `<i class="bdg">${n}</i>` : '';
@@ -4359,8 +5076,8 @@ function profileView() {
   const mist = Object.entries(S.mistakes).sort((a, b) => b[1] - a[1]).slice(0, 5);
   const stars = Object.values(S.stars).reduce((a, b) => a + b, 0);
   const keyLabel = k => { const m = k.match(/^([hsp])(\d+)v(\d+)$/); if (!m) return k; const u = +m[3] === 11 ? 'As' : m[3], n = +m[2]; return (m[1] === 'p' ? 'Paire de ' + (n === 11 ? 'As' : n) : (m[1] === 's' ? 'Souple ' : 'Dur ') + n) + ' contre ' + u; };
-  return `<div class="cols"><div class="col"><section class="panel pcard"><span class="ring" style="--p:${r.pct.toFixed(3)}"><b>${r.lvl}</b></span>
-      <div class="pinfo"><span class="label">Niveau ${r.lvl} · ${fmtN(S.xp)} XP</span><h2>${r.name}</h2><div class="pbar"><i style="width:${r.pct * 100}%"></i></div><p>${r.next ? `${fmtN(r.toNext)} XP avant « ${r.next} »` : 'Rang maximum atteint'}</p></div></section>
+  return `<div class="cols"><div class="col"><section class="panel pcard"><button class="pcav" data-go="profile" aria-label="Modifier le profil"><span class="ring pp" style="--p:${r.pct.toFixed(3)}">${avatarHTML({ you: true }, 'xxl')}<b class="lv">${r.lvl}</b></span><span class="pen">${icon('edit')}</span></button>
+      <div class="pinfo"><span class="label">Niveau ${r.lvl} · ${r.name} · ${fmtN(S.xp)} XP</span><h2>${esc(S.pseudo || 'Joueur')}${CL.clan ? ` <em class="ctagi">${esc(cleanTag(CL.clan.tag))}</em>` : ''}</h2><div class="pbar"><i style="width:${r.pct * 100}%"></i></div><p>${r.next ? `${fmtN(r.toNext)} XP avant « ${r.next} »` : 'Rang maximum atteint'}</p></div></section>
     <section class="panel week" hidden>${days.map(d => { const on = (S.days[d] || 0) >= S.settings.goal; return `<div><i class="${on ? 'on' : ''} ${d === t ? 'today' : ''}">${on ? icon('flame') : ''}</i>${dn[new Date(d + 'T12:00:00').getDay()]}</div>`; }).join('')}</section>
     <section class="kgrid"><div class="kpi"><div class="v">${S.crowns}</div><div class="k">Couronnes</div></div><div class="kpi"><div class="v">${S.battle.won}<small> / ${S.battle.played}</small></div><div class="k">Victoires</div></div>
       <div class="kpi"><div class="v">${acc} %</div><div class="k">Bons coups</div></div></section>
@@ -4431,6 +5148,7 @@ function bindView() {
     else if (g === 'modes') modeSheet();
     else if (g === 'play') playMode();
     else if (g === 'mal') malSheet();
+    else if (g === 'profile') profileSheet();
   });
   main.querySelectorAll('[data-cash]').forEach(b => b.onclick = () => openCash(+b.dataset.cash));
   main.querySelectorAll('[data-ecole]').forEach(b => b.onclick = () => { ECOLE = b.dataset.ecole; NOANIM = true; render(); NOANIM = false; $('#main').scrollTop = 0; });
@@ -4438,6 +5156,7 @@ function bindView() {
   main.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { const i = +b.dataset.slot; if (S.mallettes[i]) openMallette(i); else battleSheet(); });
   bindClaims(main, quietRender);
   if (TAB === 'boutique') bindShop(main);
+  if (TAB === 'clan') bindClan(main);
   if (TAB === 'moi') main.querySelectorAll('[data-coll]').forEach(b => b.onclick = () => collSheet(b.dataset.coll));
 }
 function scrollCar(smooth) {
@@ -4464,6 +5183,7 @@ function boot() {
   const h0 = (location.hash || '').slice(1), h = TAB_ALIAS[h0] || h0; if (TAB_ALIAS[h0] === 'ecole' && h0 === 'defis') ECOLE = 'exercices'; if (TABS.some(t => t[0] === h)) TAB = h;
   render();
   frDeepLink();
+  if (canSocial() && S.pseudo) syncProfile().then(() => { if (!TB && !$('.screen') && !$('.modal')) quietRender(); }).catch(() => { });
   window.addEventListener('hashchange', () => { const x = location.hash.slice(1); if (TABS.some(t => t[0] === x) && x !== TAB) go(x); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden && !Q && !TB && !$('.screen') && !$('.modal')) quietRender(); });
 }
