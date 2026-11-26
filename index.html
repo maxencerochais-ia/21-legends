@@ -1991,6 +1991,105 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
 @media (max-height:430px){.frcol{padding:16px;gap:8px}.frcol>img{width:44px;height:44px}}
 @media (max-height:360px){.frcol>img{display:none}}
 
+/* ================= v26 : chaque fenêtre tient sur un écran de téléphone en paysage ================= */
+/* Missions : trois cartes côte à côte, puis le coffre et l'objectif du jour */
+.modal .missions.plain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:980px;margin:0 auto}
+.modal .missions.plain>.sec-h{grid-column:1/-1;margin:0}
+.modal .missions.plain .mis{display:grid;grid-template-columns:36px minmax(0,1fr);grid-template-rows:auto auto;gap:8px 10px;align-items:start;padding:12px;margin:0;border-radius:14px;background:#121730;border:1px solid var(--hair)}
+.modal .missions.plain .mis>.mt{grid-column:1/-1;grid-row:2}
+.modal .missions.plain .mis>.mt b{display:block;font-size:13px;line-height:1.3;min-height:34px}
+.modal .missions.plain .mis>.mic{grid-row:1}
+.modal .missions.plain .mis>.claim,.modal .missions.plain .mis>.mrew,.modal .missions.plain .mis>.mok{grid-column:2;grid-row:1;justify-self:end}
+.modal .missions.plain .mbonus{grid-column:1/3;margin:0;min-height:56px}
+.modal .missions.plain .goalrow{grid-column:3;margin:0;padding:8px 12px;border-radius:14px;background:#121730;border:1px solid var(--hair);gap:10px}
+.modal .missions.plain .goalrow p{font-size:12px;line-height:1.35;margin:0}
+.modal .missions.plain .goalrow .goalring{width:40px;height:40px;flex:none}
+/* Route des couronnes : les quatre salles de gauche à droite */
+.modal .road{display:flex;flex-direction:row-reverse;gap:8px;width:100%;max-width:980px;margin:0 auto}
+.modal .road .rstep{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:10px;margin:0}
+.modal .road .rstep>img{width:100%;height:clamp(56px,calc(100vh - 230px),120px);object-fit:cover;border-radius:10px}
+.modal .road .rstep>div b{font-size:15px}
+.modal .road .rstep>div span{font-size:11px}
+.modal .road .rstep>svg{position:absolute;top:16px;right:16px}
+.modal .road .rstep{position:relative}
+/* Salle d'attente entre amis : réglages à gauche, joueurs à droite */
+.frroom .frbox{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);grid-template-rows:auto 1fr;gap:12px;align-items:start;width:100%;max-width:980px;text-align:left}
+.frroom .frbox>.frleft{grid-column:1;grid-row:1}
+.frroom .frbox>.frleft2{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:8px}
+.frroom .frbox>.mmgrid.fr{grid-column:2;grid-row:1/3;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0}
+.frroom .frcode{width:100%;padding:10px 12px;gap:2px}
+.frroom .frcode b{font-size:30px}
+.frroom .frmodes{display:grid;grid-template-columns:1fr;gap:6px;margin:0}
+.frroom .frmodes .bmode{min-height:52px;padding:6px 10px;gap:10px}
+.frroom .frmodes .bmode img{width:36px;height:36px}
+.frroom .frmodes .bmode span{font-size:11px}
+.frroom .frleft2 .btn{min-height:48px}
+.frroom .mmgrid.fr .mmp{min-height:0;padding:8px 6px;gap:4px}
+.frroom .mmgrid.fr .av.xl{width:40px;height:40px;font-size:18px}
+/* Ascension : la tour à gauche (elle défile), le bouton toujours visible à droite */
+.ascgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start;width:100%;max-width:980px;margin:0 auto}
+.ascgrid .tower{max-height:calc(100vh - 96px);overflow-y:auto;margin:0}
+.ascside{display:flex;flex-direction:column;gap:12px}
+.ascside p{margin:0}
+.ascside .btn{width:100%}
+/* Réglages et table libre : choix à gauche, interrupteurs à droite */
+.setgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 24px;align-items:start;width:100%;max-width:980px;margin:0 auto}
+.sgcol{display:flex;flex-direction:column;min-width:0}
+.sgcol>.btn{margin-top:12px}
+.setgrid .setrow{padding:8px 0}
+.setgrid .setcol{padding:8px 0}
+/* Profil : l'aperçu et le bouton restent visibles, les avatars défilent à côté */
+.pedit{height:calc(100vh - 88px);min-height:0}
+.ppick{height:100%;overflow-y:auto;padding-right:4px;overscroll-behavior:contain}
+.pprev{position:sticky;top:0}
+/* Compte : explication à gauche, champs à droite */
+.accform{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px 24px;max-width:880px;align-items:start}
+.accintro{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.accintro .linkbtn{align-self:flex-start;padding:0}
+.accfields{display:flex;flex-direction:column;gap:8px}
+.pwrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px}
+.accform .fld input{padding:10px 14px;font-size:16px}
+.accgo{display:flex;align-items:center;gap:12px}
+.accgo .btn{flex:1;min-height:48px}
+.accgo .showpw{min-height:44px}
+@media (max-height:360px){
+  .modal .missions.plain .mis{padding:8px 10px;gap:6px 8px}
+  .modal .missions.plain .mis>.mt b{min-height:0}
+  .frroom .frcode b{font-size:24px}
+}
+/* Salle entre amis : code et bouton à gauche ; joueurs puis choix du mode à droite */
+.frroom .frbox{grid-template-rows:minmax(0,1fr) auto}
+.frroom .frbox>.frleft2{display:contents}
+.frroom .frbox>.mmgrid.fr{grid-row:1}
+.frroom .frbox .frmodes{grid-column:2;grid-row:2;grid-template-columns:1fr 1fr}
+.frroom .frbox .frleft2>p,.frroom .frbox #frgo,.frroom .frbox .frwait{grid-column:1;grid-row:2;align-self:end}
+.frroom .frbox>.frleft{align-self:stretch;display:flex}
+.frroom .frbox>.frleft .frcode{flex:1;justify-content:center}
+.frroom .frbox{grid-template-columns:240px minmax(0,1fr);grid-template-rows:auto auto;align-items:stretch}
+.frroom .frbox>.frleft{display:block;align-self:start}
+.frroom .frbox>.frleft .frcode{flex:none}
+.frroom .frbox .frmodes .bmode{min-height:48px;padding:6px 8px;gap:8px;align-items:center}
+.frroom .frbox .frmodes .bmode img{width:30px;height:30px}
+.frroom .frbox .frmodes .bmode b{font-size:13px;line-height:1.15}
+.frroom .frbox .frmodes .bmode span{font-size:10px;line-height:1.2}
+.frroom .frbox #frgo,.frroom .frbox .frwait{min-height:48px;align-self:stretch}
+.setgrid .setcol .btn.sm{width:auto;align-self:flex-start}
+.setcol.resetrow{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.setcol.resetrow #resetc{flex-basis:100%}
+.setgrid .setrow{padding:6px 0}
+.frroom .frbox #frgo{white-space:nowrap;font-size:14px}
+@media (max-width:700px){
+  .frroom .frbox{grid-template-columns:200px minmax(0,1fr)}
+  .frroom .frbox>.mmgrid.fr .mmp small{display:none}
+  .frroom .frbox .frmodes .bmode span{display:none}
+}
+@media (max-height:360px){
+  .setgrid .setrow{padding:4px 0}.setgrid .setcol{padding:4px 0;gap:6px}
+  .setgrid .seg button{min-height:36px}
+  .frroom .frbox>.mmgrid.fr .mmp small{display:none}
+  .frroom .frbox .frmodes .bmode span{display:none}
+}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
 <script>
@@ -2999,8 +3098,7 @@ function crownRoadSheet() {
   const si = salleIdx();
   sheet(`<div class="shtop"><h3>Route des couronnes</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
     
-    <div class="road">${SALLES.map((s, i) => `<div class="rstep ${i <= si ? 'on' : ''} ${i === si ? 'cur' : ''}"><img src="${img('arena_' + s.theme)}" alt=""><div><small>${s.min} couronnes</small><b>${s.name}</b><span>Mise d'entrée ${fmtN(s.fee)} · ${i < 2 ? 'Mallette classique' : 'Mallette prestige'}</span></div>${i <= si ? icon('check') : icon('lock')}</div>`).reverse().join('')}</div>
-    <button class="btn ghost" data-close>Fermer</button>`);
+    <div class="road">${SALLES.map((s, i) => `<div class="rstep ${i <= si ? 'on' : ''} ${i === si ? 'cur' : ''}"><img src="${img('arena_' + s.theme)}" alt=""><div><small>${s.min} couronnes</small><b>${s.name}</b><span>Mise d'entrée ${fmtN(s.fee)} · ${i < 2 ? 'Mallette classique' : 'Mallette prestige'}</span></div>${i <= si ? icon('check') : icon('lock')}</div>`).reverse().join('')}</div>`);
 }
 function leaderboardSheet() {
   if (canSocial()) return onlineLeaderboard();
@@ -3023,10 +3121,10 @@ function ascSheet() {
   const cur = S.asc.floor, f = ascFloor(cur), rows = [];
   for (let n = cur + 3; n >= Math.max(1, cur - 2); n--) { const x = ascFloor(n); rows.push(`<div class="floor ${n === cur ? 'cur' : n < cur ? 'done' : ''} ${x.boss ? 'boss' : ''}"><span class="fn">${n}</span><div><b>${x.boss ? 'Étage du patron' : 'Étage ' + n}</b><small>${x.hands} mains${x.spots > 1 ? ' · 2 places' : ''}${x.countChecks ? ' · comptage' : ''} · ${Math.round(x.pass * 100)} % juste</small></div><span class="price"><img src="${chipImg('1000')}" alt="">${fmtN(x.fee)}</span></div>`); }
   const m = sheet(`<div class="shtop"><h3>Ascension</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
+    <div class="ascgrid"><div class="tower">${rows.join('')}</div><div class="ascside">
     <p class="small muted">L'entrée devient votre tapis. Jouez juste pour monter et gagner une prime</p>
-    <div class="tower">${rows.join('')}</div>
     <div class="row"><div class="kpi"><div class="v">${S.asc.best}</div><div class="k">Record</div></div><div class="kpi"><div class="v">${fmtN(Math.round(f.fee * .6))}</div><div class="k">Prime de l'étage</div></div></div>
-    <button class="btn gold shine" id="ascgo" ${S.coins < f.fee ? 'disabled' : ''}>${icon('play')} Monter · ${fmtN(f.fee)} jetons</button>
+    <button class="btn gold shine" id="ascgo" ${S.coins < f.fee ? 'disabled' : ''}>${icon('play')} Monter · ${fmtN(f.fee)} jetons</button></div></div>
     `);
   const b = $('#ascgo', m); if (b) b.onclick = () => { m.remove(); startAscension(); };
 }
@@ -3394,16 +3492,16 @@ function frRoom() {
   const hostP = L.find(p => p.id === frHostId()), mode = host ? FR.mode : (hostP && hostP.mode) || 'race';
   const slots = Array.from({ length: FR_MAX }, (_, i) => L[i]);
   el.innerHTML = `<div class="shead"><button class="iconbtn" id="frx" aria-label="Quitter la table">${icon('x')}</button><div class="ttl"><b>Entre amis</b><small class="mono">${L.length} / ${FR_MAX} joueurs</small></div><span></span></div>
-    <div class="mmbox">
+    <div class="mmbox frbox"><div class="frleft">
       <button class="frcode" id="frsh" aria-label="Partager le code"><small>Code de la table</small><b>${FR.code}</b><span>${icon('gift')} Inviter des amis</span></button>
-      <div class="mmgrid fr">${slots.map(p => p ? `<div class="mmp in ${p.you ? 'me' : ''}">${avatarHTML({ ...p, you: false }, 'xl')}<b>${esc(p.name)}${p.you ? ' <em>vous</em>' : ''}</b><small>${p.id === frHostId() ? 'Hôte' : p.status === 'play' ? 'En partie' : 'Prêt'}</small></div>` : '<div class="mmp"><span class="av xl ghost"></span><small>Place libre</small></div>').join('')}</div>
+      </div><div class="mmgrid fr">${slots.map(p => p ? `<div class="mmp in ${p.you ? 'me' : ''}">${avatarHTML({ ...p, you: false }, 'xl')}<b>${esc(p.name)}${p.you ? ' <em>vous</em>' : ''}</b><small>${p.id === frHostId() ? 'Hôte' : p.status === 'play' ? 'En partie' : 'Prêt'}</small></div>` : '<div class="mmp"><span class="av xl ghost"></span><small>Place libre</small></div>').join('')}</div><div class="frleft2">
       <div class="frmodes">
-        <button class="bmode race ${mode === 'race' ? 'on' : ''}" data-fm="race" ${host ? '' : 'disabled'}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>3 minutes, mises libres : le plus gros tapis gagne.</span></div></button>
-        <button class="bmode duel ${mode === 'duel' ? 'on' : ''}" data-fm="duel" ${host ? '' : 'disabled'}><img src="${img('bolt')}" alt=""><div><b>Duel des réflexes</b><span>10 situations en direct. Le premier à trouver le bon coup marque 3 points, les suivants 1, une erreur coûte 1.</span></div></button>
+        <button class="bmode race ${mode === 'race' ? 'on' : ''}" data-fm="race" ${host ? '' : 'disabled'}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>3 min · le plus gros tapis gagne</span></div></button>
+        <button class="bmode duel ${mode === 'duel' ? 'on' : ''}" data-fm="duel" ${host ? '' : 'disabled'}><img src="${img('bolt')}" alt=""><div><b>Duel des réflexes</b><span>10 situations · le plus rapide marque</span></div></button>
       </div>
       ${busy ? '<p class="small muted">Une partie est en cours : vous jouerez la suivante.</p>' : ''}
-      ${host ? `<button class="btn gold shine" id="frgo" ${lobby.length < 2 ? 'disabled' : ''}>${icon('play')} ${lobby.length < 2 ? 'En attente d\'un ami…' : `Lancer · ${lobby.length} joueurs`}</button>`
-        : `<div class="frwait"><span class="spin"></span>${esc(hostP ? hostP.name : 'L\'hôte')} va lancer la partie</div>`}
+      ${host ? `<button class="btn gold shine" id="frgo" ${lobby.length < 2 ? 'disabled' : ''}>${icon('play')} ${lobby.length < 2 ? 'En attente d’amis' : `Lancer · ${lobby.length} joueurs`}</button>`
+        : `<div class="frwait"><span class="spin"></span>${esc(hostP ? hostP.name : 'L\'hôte')} va lancer la partie</div>`}</div>
     </div>`;
   $('#frx', el).onclick = () => frLeave();
   $('#frsh', el).onclick = frShare;
@@ -4128,15 +4226,14 @@ function bindAccount(root) {
 function accountSheet(mode, then) {
   const create = mode === 'create';
   const m = sheet(`<div class="shtop"><h3>${create ? 'Créer un compte' : 'Se connecter'}</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-    <form class="accform" novalidate>
+    <form class="accform" novalidate><div class="accintro">
       <p class="muted small">${create ? 'Votre progression sera sauvegardée en ligne automatiquement. Aucun e-mail n’est demandé : notez bien votre mot de passe, il ne peut pas être récupéré' : 'La progression du compte remplacera celle de cet appareil'}</p>
+      <button class="linkbtn" type="button" id="aswap">${create ? 'J’ai déjà un compte' : 'Créer un compte'}</button></div><div class="accfields">
       <label class="fld"><span>Identifiant (3 à 16 lettres, chiffres, . _ -)</span><input id="alog" name="username" maxlength="16" autocomplete="username" autocapitalize="none" spellcheck="false" required aria-describedby="aerr"></label>
-      <label class="fld"><span>Mot de passe (8 caractères minimum)</span><input id="apw" name="password" type="password" minlength="8" maxlength="72" autocomplete="${create ? 'new-password' : 'current-password'}" required aria-describedby="aerr"></label>
-      ${create ? '<label class="fld"><span>Confirmer le mot de passe</span><input id="apw2" type="password" maxlength="72" autocomplete="new-password" required aria-describedby="aerr"></label>' : ''}
-      <label class="showpw"><input type="checkbox" id="ashow"> Afficher le mot de passe</label>
-      <p class="cerr" id="aerr" role="alert"></p>
-      <button class="btn gold" type="submit">${create ? 'Créer le compte' : 'Se connecter'}</button>
-      <button class="linkbtn" type="button" id="aswap">${create ? 'J’ai déjà un compte' : 'Créer un compte'}</button></form>`);
+      <div class="pwrow"><label class="fld"><span>Mot de passe (8 minimum)</span><input id="apw" name="password" type="password" minlength="8" maxlength="72" autocomplete="${create ? 'new-password' : 'current-password'}" required aria-describedby="aerr"></label>
+      ${create ? '<label class="fld"><span>Confirmer</span><input id="apw2" type="password" maxlength="72" autocomplete="new-password" required aria-describedby="aerr"></label>' : ''}</div>
+      <div class="accgo"><label class="showpw"><input type="checkbox" id="ashow"> Afficher</label><button class="btn gold" type="submit">${create ? 'Créer le compte' : 'Se connecter'}</button></div>
+      <p class="cerr" id="aerr" role="alert"></p></div></form>`);
   const f = $('form', m), err = $('#aerr', m), btn = $('[type=submit]', m);
   $('#aswap', m).onclick = () => { m.remove(); accountSheet(create ? 'login' : 'create', then); };
   $('#ashow', m).onchange = e => m.querySelectorAll('input[type=password],input.pwshown').forEach(i => { i.type = e.target.checked ? 'text' : 'password'; i.classList.toggle('pwshown', e.target.checked); });
@@ -5341,11 +5438,11 @@ function freeSheet() {
   const m = sheet('');
   const draw = () => {
     m.firstChild.innerHTML = `<i class="grab"></i><div class="shtop"><h3>Table libre</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-      <div class="setcol" style="border:0;padding-top:0"><b>Mains jouées</b>${seg('spots', [1, 2, 3], ['1', '2', '3'])}</div>
+      <div class="setgrid"><div class="sgcol"><div class="setcol" style="border:0;padding-top:0"><b>Mains jouées</b>${seg('spots', [1, 2, 3], ['1', '2', '3'])}</div>
       <div class="setcol"><b>Voisins de table</b>${seg('bots', [0, 1, 2, 3, 4], ['0', '1', '2', '3', '4'])}</div>
-      <div class="setcol"><b>Vitesse du croupier</b>${seg('speed', ['lent', 'normal', 'rapide', 'casino'], ['Lent', 'Normal', 'Rapide', 'Casino'])}</div>
-      ${tog('coach', 'Coach', 'Corrige chaque coup en direct')}${tog('count', 'Comptage', 'Compte demandé de temps en temps, écarts actifs')}${tog('bet', 'Mises libres', 'Vous misez selon le compte')}
-      <button class="btn gold shine" id="fgo">${icon('play')} S'asseoir</button>`;
+      <div class="setcol"><b>Vitesse du croupier</b>${seg('speed', ['lent', 'normal', 'rapide', 'casino'], ['Lent', 'Normal', 'Rapide', 'Casino'])}</div></div>
+      <div class="sgcol">${tog('coach', 'Coach', 'Corrige chaque coup en direct')}${tog('count', 'Comptage', 'Compte demandé de temps en temps, écarts actifs')}${tog('bet', 'Mises libres', 'Vous misez selon le compte')}
+      <button class="btn gold shine" id="fgo">${icon('play')} S'asseoir</button></div></div>`;
     m.querySelectorAll('[data-fk]').forEach(b => b.onclick = () => { f[b.dataset.fk] = JSON.parse(b.dataset.fv); save(); draw(); });
     m.querySelectorAll('[data-ft]').forEach(b => b.onclick = () => { f[b.dataset.ft] = !f[b.dataset.ft]; save(); draw(); });
     $('#fgo', m).onclick = () => { m.remove(); openTable({ name: 'Table libre', spots: f.spots, bots: f.bots, speed: f.speed, coach: f.coach, countChecks: f.count ? 'rc' : false, devs: f.count, bet: f.bet }, 'free'); };
@@ -5391,11 +5488,10 @@ function settingsSheet() {
   const seg = (k, vals, labels, l, d) => `<div class="setcol"><b>${l}</b>${d ? `<small class="muted small">${d}</small>` : ''}<div class="seg">${vals.map((v, i) => `<button class="${s[k] === v ? 'on' : ''}" data-sk="${k}" data-sv='${JSON.stringify(v)}'>${labels[i]}</button>`).join('')}</div></div>`;
   const draw = () => {
     m.firstChild.innerHTML = `<i class="grab"></i><div class="shtop"><h3>Réglages</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-      ${seg('goal', [30, 50, 100, 200], ['30', '50', '100', '200'], 'Objectif XP par jour')}
-      ${tog('sound', 'Sons')}${tog('ambience', 'Ambiance de salle', 'Brouhaha et jetons au loin pendant les parties')}${tog('voice', 'Voix du croupier', 'Annonces en français (voix de votre appareil)')}${tog('haptics', 'Vibrations', 'Sur téléphone, à chaque erreur')}
-      ${seg('decks', [6, 8], ['6 jeux', '8 jeux'], 'Taille du sabot', 'Règles européennes : le croupier reçoit une carte, reste sur 17, pas d\'abandon.')}
-      <div class="setcol"><b>Progression</b><button class="btn ghost sm" id="reset">Tout effacer</button><div id="resetc"></div></div>
-      <button class="btn gold" data-close>Terminé</button>`;
+      <div class="setgrid"><div class="sgcol">${seg('goal', [30, 50, 100, 200], ['30', '50', '100', '200'], 'Objectif XP par jour')}
+      ${seg('decks', [6, 8], ['6 jeux', '8 jeux'], 'Taille du sabot', 'Le croupier reçoit une carte et reste sur 17')}
+      <div class="setcol resetrow"><b>Progression</b><button class="btn ghost sm" id="reset">Tout effacer</button><div id="resetc"></div></div></div>
+      <div class="sgcol">${tog('sound', 'Sons')}${tog('ambience', 'Ambiance de salle', 'Brouhaha et jetons au loin pendant les parties')}${tog('voice', 'Voix du croupier', 'Annonces en français (voix de votre appareil)')}${tog('haptics', 'Vibrations', 'Sur téléphone, à chaque erreur')}</div></div>`;
     m.querySelectorAll('[data-tog]').forEach(b => b.onclick = () => { s[b.dataset.tog] = !s[b.dataset.tog]; save(); draw(); });
     m.querySelectorAll('[data-sk]').forEach(b => b.onclick = () => { s[b.dataset.sk] = JSON.parse(b.dataset.sv); save(); draw(); });
     $('#reset', m).onclick = () => {
