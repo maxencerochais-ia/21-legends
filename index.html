@@ -942,6 +942,60 @@ body{width:100%;height:min(100%,100vw / 1.55);max-width:calc(100dvh * 2.4);margi
 .peekpop small{font-size:9.5px;color:var(--text-3);letter-spacing:.08em}
 @media (max-height:430px){.peekpop{--cw:54px;gap:6px;padding:8px 14px 6px}}
 
+/* ================= v10 : jeu d'abord, École en retrait ================= */
+.tabs .tsep{display:block;width:34px;height:1px;margin:6px auto;background:rgba(214,176,100,.25)}
+.tabs button.sec{opacity:.72}
+.tabs button.sec.on{opacity:1}
+.tabs button.sec svg{width:18px;height:18px}
+.li.tableslink{border-radius:14px;background:linear-gradient(180deg,#1c1713,#141110);border:1px solid var(--hair-2)}
+.page-h .ci{width:18px;height:18px;object-fit:contain}
+.ecseg{min-width:230px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tcard{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;min-height:150px;padding:14px;border-radius:16px;overflow:hidden;isolation:isolate;text-align:left;border:1px solid rgba(214,176,100,.3);box-shadow:0 18px 30px -22px #000}
+.tcard>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.tcard::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,8,7,.1) 20%,rgba(10,8,7,.92))}
+.tcard .tc-b{display:flex;flex-direction:column;gap:3px;min-width:0}
+.tcard b{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1}
+.tcard small{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--text-2)}
+.tcard small svg{width:13px;height:13px}
+.tcard.lock>img{filter:grayscale(1) brightness(.45)}
+.tcard.lock b{opacity:.7}
+.tcard:active{transform:scale(.985)}
+.pill.no{background:rgba(255,240,210,.08);color:var(--text-3);box-shadow:none}
+/* mises libres (dock de la table) */
+.betbox{display:flex;align-items:baseline;justify-content:space-between;padding:6px 12px;border-radius:10px;background:rgba(0,0,0,.4);border:1px solid var(--hair-2)}
+.betbox b{font-family:var(--f-display);font-size:22px;color:var(--gold-hi)}
+.tablescreen .row.fb{flex-direction:row;gap:6px}
+.tablescreen .row.fb .btn{min-height:34px;padding:0 2px;font-size:9.5px;letter-spacing:.04em}
+.tablescreen .row.fb .btn::before{inset:2px}
+.stack-pill.clock.hot{background:linear-gradient(180deg,#a8352c,#6e1d18);border-color:rgba(255,200,190,.4);animation:bump 1s infinite}
+/* enjeu de bataille */
+.stakes{display:flex;flex-direction:column;gap:8px}
+.stakes .seg button{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.1}
+.stakes .seg small{font-size:10px;font-weight:700;opacity:.8}
+.seg button:disabled{opacity:.35}
+
+/* Les fenêtres s'affichent en pleine page, dans le cadre de l'appli */
+.modal{padding:0;background:var(--ink);backdrop-filter:none;-webkit-backdrop-filter:none;align-items:stretch}
+.sheet{max-width:none;width:100%;height:100%;max-height:none;border:0;border-radius:0;animation:fade .2s;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(22px,env(safe-area-inset-right,0px)) max(14px,env(safe-area-inset-bottom,0px)) max(22px,env(safe-area-inset-left,0px));
+  background:radial-gradient(90% 50% at 50% 0%,rgba(var(--venue-rgb),.12),transparent 70%),var(--ink)}
+.sheet::before{display:none}
+.sheet>*{width:100%;max-width:980px;margin-left:auto;margin-right:auto}
+.sheet>:first-child:not(.grab),.sheet>.grab+*{margin-top:auto}
+.sheet>:last-child{margin-bottom:auto}
+.sheet:has(> .bmode){align-content:center}
+.sheet .shtop{position:sticky;top:0;z-index:3;padding:4px 0 8px;background:linear-gradient(180deg,var(--ink) 70%,transparent)}
+.sheet:has(.brief){max-width:none}
+.brief{width:100%;max-width:1080px}
+.brief .art{margin:0;border-radius:16px;min-height:100%}
+@media (max-height:430px){
+  .sheet{padding-top:8px;padding-bottom:10px}
+  .tgrid{gap:10px}.tcard{min-height:118px;padding:10px 12px}.tcard b{font-size:20px}
+  .betbox b{font-size:18px}.betbox{padding:3px 10px}
+  .tablescreen .rack button{width:44px}
+}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
 <script>
@@ -1620,7 +1674,8 @@ function numpad(host, onOk) {
 }
 function sheet(html, opts = {}) {
   const m = document.createElement('div'); m.className = 'modal';
-  m.innerHTML = `<div class="sheet"><i class="grab" aria-hidden="true"></i>${html}</div>`;
+  const closer = !opts.locked && !/data-close/.test(html) ? `<div class="shtop pg"><span></span><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>` : '';
+  m.innerHTML = `<div class="sheet"><i class="grab" aria-hidden="true"></i>${closer}${html}</div>`;
   document.body.appendChild(m);
   m.onclick = e => { if ((e.target === m && !opts.locked) || e.target.closest('[data-close]')) { m.remove(); opts.onClose && opts.onClose(); } };
   return m;
@@ -1849,18 +1904,22 @@ function startAscension() {
 }
 
 /* ----- Batailles ----- */
+const STAKES = [[1, 'Classique'], [4, 'Haute'], [10, 'Prestige']];
+const battleStake = () => SALLES[salleIdx()].fee * STAKES[Math.min(S.battle.stake || 0, 2)][0];
 function battleSheet() {
-  const s = SALLES[salleIdx()], poor = S.coins < s.fee;
+  const s = SALLES[salleIdx()], fee = battleStake(), poor = S.coins < fee;
   const m = sheet(`<div class="shtop"><h3>Bataille</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-    <p class="small muted">4 joueurs, ${s.name}. Mise d'entrée <b>${fmtN(s.fee)} jetons</b>. Le 1<sup>er</sup> remporte ${fmtN(s.fee * 3)} jetons, des couronnes et une mallette ; le 2<sup>e</sup> récupère sa mise. Adversaires IA.</p>
-    <button class="bmode race" data-bm="race" ${poor ? 'disabled' : ''}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>Table en miroir : tout le monde reçoit les mêmes cartes. Seules vos décisions font la différence. Premier à 1 500 ou meilleur tapis après 10 mains, égalité départagée à la vitesse.</span></div></button>
+    <div class="stakes"><span class="label">Enjeu</span><div class="seg">${STAKES.map(([k, l], i) => `<button class="${(S.battle.stake || 0) === i ? 'on' : ''}" data-stake="${i}" ${S.coins < s.fee * k ? 'disabled' : ''}>${l}<small>${fmtN(s.fee * k)}</small></button>`).join('')}</div>
+      <p class="small muted">4 joueurs, ${s.name}. Le 1<sup>er</sup> remporte <b>${fmtN(fee * 3)} jetons</b>, des couronnes et une mallette ; le 2<sup>e</sup> récupère sa mise.</p></div>
+    <button class="bmode race" data-bm="race" ${poor ? 'disabled' : ''}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>3 minutes, mêmes cartes pour tous, mises libres. Le plus gros tapis au gong remporte la cagnotte.</span></div></button>
     <button class="bmode duel" data-bm="duel" ${poor ? 'disabled' : ''}><img src="${img('bolt')}" alt=""><div><b>Duel des réflexes</b><span>10 situations. Le premier à trouver le bon coup marque 3 points, les suivants 1, une erreur en coûte 1.</span></div></button>
-    ${poor ? `<p class="small" style="color:var(--ko);text-align:center">Il vous faut ${fmtN(s.fee)} jetons pour entrer.</p>` : ''}
+    ${poor ? `<p class="small" style="color:var(--ko);text-align:center">Il vous faut ${fmtN(fee)} jetons pour cet enjeu.</p>` : ''}
     <button class="bmode friends" data-bm="friends"><img src="${img('cards')}" alt=""><div><b>Entre amis</b><span>Créez une table, partagez le code, et affrontez vos amis en direct. Gratuit, sans couronnes en jeu.</span></div></button>`);
   m.querySelectorAll('[data-bm]').forEach(b => b.onclick = () => { m.remove(); b.dataset.bm === 'friends' ? friendsSheet() : matchmaking(b.dataset.bm); });
+  m.querySelectorAll('[data-stake]').forEach(b => b.onclick = () => { S.battle.stake = +b.dataset.stake; save(); m.remove(); battleSheet(); });
 }
 function matchmaking(kind) {
-  const s = SALLES[salleIdx()]; if (S.coins < s.fee) return;
+  const s = { ...SALLES[salleIdx()] }; s.fee = battleStake(); if (S.coins < s.fee) return;
   const opps = makeOpps(3), me = { name: 'Vous', you: true, color: '#e8c26a', lvl: rankInfo().lvl, crowns: S.crowns };
   const el = document.createElement('div'); el.className = 'screen mm'; setTheme(s.theme);
   el.innerHTML = `<div class="mmbox"><div class="label">${kind === 'race' ? 'Course au magot' : 'Duel des réflexes'} · ${s.name}</div><h2 id="mmt">Recherche de joueurs…</h2>
@@ -1892,19 +1951,22 @@ function battleEndHTML(title, rankList, r, s, scoreLabel) {
       ${r.mal && r.mal !== 'full' ? `<div class="reward"><img src="${img('mallette_' + r.mal)}" alt=""><b>+1</b><small>${MAL[r.mal].name.toLowerCase()}</small></div>` : ''}</div>
     ${r.mal === 'full' ? '<p class="small muted">Vos 4 emplacements de mallette étaient pleins : pas de mallette cette fois.</p>' : ''}
     ${r.up ? `<div class="errs perfect">Nouvelle salle débloquée : ${SALLES[salleIdx()].name}</div>` : ''}
-    <div class="endbtns"><button class="btn gold shine" id="bagain">${icon('refresh')} Rejouer · ${fmtN(SALLES[salleIdx()].fee)}</button><button class="btn ghost" id="bback">Retour au salon</button></div></div>`;
+    <div class="endbtns"><button class="btn gold shine" id="bagain" ${S.coins < battleStake() ? 'disabled' : ''}>${icon('refresh')} Rejouer · ${fmtN(battleStake())}</button><button class="btn ghost" id="bback">Retour au salon</button></div></div>`;
 }
 
 /* Course au magot : table en miroir, jouée sur la vraie table immersive */
 function startRace(opps, s) {
-  opps.forEach(o => { o.stack = 1000; o.time = 0; o.last = ''; });
-  openTable({ name: 'Course au magot', hands: 10, spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 100, race: { opps, salle: s, target: 1500 }, theme: s.theme,
-    rule: 'Tout le monde reçoit <b>les mêmes cartes</b>. Mise fixe de 100. Premier à <b>1 500</b> jetons, ou meilleur tapis après 10 mains.' }, 'race');
+  opps.forEach(o => { o.stack = 1000; o.time = 0; o.last = ''; o.style = pick([.06, .1, .15, .22]); });
+  openTable({ name: 'Course au magot', spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 25, freeBet: true, race: { opps, salle: s, target: 2000, dur: 180 }, theme: s.theme,
+    rule: 'Chacun part avec <b>1 000 jetons</b> et reçoit <b>les mêmes cartes</b>. Misez ce que vous voulez à chaque main : au bout de <b>3 minutes</b>, le plus gros tapis remporte la cagnotte.' }, 'race');
+  TB.bets = [100]; drawTable();
 }
 /* Joue la même main pour un adversaire IA : mêmes cartes de départ, mêmes cartes tirées, même croupier. */
-function mirrorPlay(o, start, draws, dealer, up, rules) {
+function mirrorPlay(o, start, draws, dealer, up, rules, bet = 100) {
+  if (o.stack < 25) { o.last = ''; o.lastAct = 'éliminé'; return; }
+  bet = Math.max(25, Math.min(o.stack, Math.round(bet / 25) * 25));
   let k = 0; const next = () => draws[k++] || cardOfVal(rnd(2, 11));
-  const hands = [{ cards: start.slice(), bet: 100 }]; let t = 0, acts = [];
+  const hands = [{ cards: start.slice(), bet }]; let t = 0, acts = [];
   for (let i = 0; i < hands.length; i++) {
     const h = hands[i]; if (h.cards.length === 1) h.cards.push(next());
     for (let g = 0; g < 8; g++) {
@@ -1916,7 +1978,7 @@ function mirrorPlay(o, start, draws, dealer, up, rules) {
       if (a === 'S') break;
       if (a === 'H') { h.cards.push(next()); continue; }
       if (a === 'D') { h.bet *= 2; h.cards.push(next()); break; }
-      if (a === 'P') { hands.push({ cards: [h.cards.pop()], bet: 100 }); h.cards.push(next()); continue; }
+      if (a === 'P') { hands.push({ cards: [h.cards.pop()], bet }); h.cards.push(next()); continue; }
     }
   }
   const di = handInfo(dealer), dbj = di.bj; let net = 0;
@@ -1925,24 +1987,31 @@ function mirrorPlay(o, start, draws, dealer, up, rules) {
     if (dbj) net += bj ? 0 : -h.bet; else if (bj) net += h.bet * 1.5; else if (hi.total > 21) net -= h.bet;
     else if (di.total > 21 || hi.total > di.total) net += h.bet; else if (hi.total < di.total) net -= h.bet;
   }
-  o.stack += net; o.time += t; o.last = (net > 0 ? '+' : net < 0 ? '−' : '') + Math.abs(net); o.lastAct = acts.map(a => ACT_LABEL[a]).join(', ') || 'Blackjack';
+  o.stack = Math.max(0, o.stack + net); o.time += t; o.last = (net > 0 ? '+' : net < 0 ? '−' : '') + Math.abs(net); o.lastAct = acts.map(a => ACT_LABEL[a]).join(', ') || 'Blackjack';
 }
 function raceRanking() {
   const R = TB.cfg.race, me = { name: 'Vous', you: true, color: '#e8c26a', stack: TB.stack, time: TB.decT || 0, reach: R.reach || 0 };
   if (R.online) return [me, ...R.opps].sort(frRaceCmp);
   return [me, ...R.opps].sort((a, b) => b.stack - a.stack || a.time - b.time);
 }
+/* Mise d'un adversaire IA : selon son tempérament, plus agressif s'il est mené en fin de course */
+function aiBet(o, R) {
+  const left = TB ? raceLeft() : 99, lead = Math.max(TB ? TB.stack : 0, ...R.opps.map(x => x.stack));
+  let f = o.style * (.7 + Math.random() * .6);
+  if (left < 45 && o.stack < lead) f = Math.min(.6, f * 2.4);
+  return Math.max(25, Math.min(o.stack, o.stack * f));
+}
 function raceHUD() {
   const R = TB.cfg.race; if (!R) return '';
   const list = raceRanking();
-  return `<div class="racehud">${list.map((p, i) => `<div class="${p.you ? 'me' : ''}">${avatarHTML(p)}<div><b>${esc(p.name)}${p.ai ? ' <em>IA</em>' : ''}${p.remote ? ` <em>${p.gone ? 'parti' : p.done ? 'fini' : 'main ' + Math.min(R.hands || 10, (p.hand || 0) + 1)}</em>` : ''}</b><div class="pbar"><i style="width:${Math.min(100, Math.max(0, p.stack / R.target * 100))}%"></i></div></div><span class="mono">${fmtN(p.stack)}</span>${p.last && !p.you ? `<span class="delta ${p.last[0] === '+' ? 'up' : p.last[0] === '−' ? 'dn' : ''}" title="${p.lastAct}">${p.last}</span>` : ''}</div>`).join('')}</div>`;
+  return `<div class="racehud">${list.map((p, i) => `<div class="${p.you ? 'me' : ''}">${avatarHTML(p)}<div><b>${esc(p.name)}${p.ai ? ' <em>IA</em>' : ''}${p.remote ? ` <em>${p.gone ? 'parti' : p.done ? 'fini' : 'main ' + ((p.hand || 0) + 1)}</em>` : ''}</b><div class="pbar"><i style="width:${Math.min(100, Math.max(0, p.stack / R.target * 100))}%"></i></div></div><span class="mono">${fmtN(p.stack)}</span>${p.last && !p.you ? `<span class="delta ${p.last[0] === '+' ? 'up' : p.last[0] === '−' ? 'dn' : ''}" title="${p.lastAct}">${p.last}</span>` : ''}</div>`).join('')}</div>`;
 }
 function raceAfterRound() { // appelé après le règlement d'un tour
   const R = TB.cfg.race, h = TB.hands[0]; if (!R || !TB.roundLog) return false;
   if (R.online) return frRaceTick();
   const L = TB.roundLog;
-  R.opps.forEach(o => mirrorPlay(o, L.start, L.draws.concat(TB.shoe.cards.slice(-8).reverse()), TB.dealer, L.up, TB.cfg.rules));
-  return [TB.stack, ...R.opps.map(o => o.stack)].some(v => v >= R.target);
+  R.opps.forEach(o => mirrorPlay(o, L.start, L.draws.concat(TB.shoe.cards.slice(-8).reverse()), TB.dealer, L.up, TB.cfg.rules, aiBet(o, R)));
+  return false;
 }
 function raceEnd(quit) {
   if (TB.cfg.race.online) return frRaceEnd(quit);
@@ -2137,7 +2206,7 @@ function frRoom() {
       <button class="frcode" id="frsh" aria-label="Partager le code"><small>Code de la table</small><b>${FR.code}</b><span>${icon('gift')} Inviter des amis</span></button>
       <div class="mmgrid fr">${slots.map(p => p ? `<div class="mmp in ${p.you ? 'me' : ''}">${avatarHTML({ ...p, you: false }, 'xl')}<b>${esc(p.name)}${p.you ? ' <em>vous</em>' : ''}</b><small>${p.id === frHostId() ? 'Hôte' : p.status === 'play' ? 'En partie' : 'Prêt'}</small></div>` : '<div class="mmp"><span class="av xl ghost"></span><small>Place libre</small></div>').join('')}</div>
       <div class="frmodes">
-        <button class="bmode race ${mode === 'race' ? 'on' : ''}" data-fm="race" ${host ? '' : 'disabled'}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>Mêmes cartes pour tous, croupier compris. 10 mains, mise fixe 100 : premier à 1 500 ou meilleur tapis.</span></div></button>
+        <button class="bmode race ${mode === 'race' ? 'on' : ''}" data-fm="race" ${host ? '' : 'disabled'}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>3 minutes, mêmes cartes pour tous, mises libres : le plus gros tapis gagne.</span></div></button>
         <button class="bmode duel ${mode === 'duel' ? 'on' : ''}" data-fm="duel" ${host ? '' : 'disabled'}><img src="${img('bolt')}" alt=""><div><b>Duel des réflexes</b><span>10 situations en direct. Le premier à trouver le bon coup marque 3 points, les suivants 1, une erreur coûte 1.</span></div></button>
       </div>
       ${busy ? '<p class="small muted">Une partie est en cours : vous jouerez la suivante.</p>' : ''}
@@ -2203,26 +2272,24 @@ function frEndHTML(title, list, pos, rw, scoreLabel, note = '') {
 function frStartRace() {
   const g = FR.game, opps = g.players.filter(p => p.id !== FR.me.id).map(p => ({ id: p.id, name: p.name, color: p.color, remote: true, stack: 1000, time: 0, hand: 0, reach: 0, last: '', done: false }));
   FR.prevStack = 1000; FR.waiting = false; FR.raceOpps = null; FR.me.result = null;
-  openTable({ name: 'Course au magot', hands: 10, spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 100, theme: S.shop.felt,
-    race: { opps, salle: { name: 'Table ' + FR.code }, target: 1500, hands: 10, online: true, seed: g.seed, reach: 0 },
-    rule: 'Entre amis : tout le monde reçoit <b>les mêmes cartes</b>, croupier compris. Mise fixe de 100. Premier à <b>1 500</b> jetons (en le moins de mains), sinon meilleur tapis après 10 mains.' }, 'race');
+  openTable({ name: 'Course au magot', spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 25, freeBet: true, theme: S.shop.felt,
+    race: { opps, salle: { name: 'Table ' + FR.code }, target: 2000, online: true, seed: g.seed, reach: 0, dur: 180 },
+    rule: 'Entre amis : tout le monde reçoit <b>les mêmes cartes</b>, croupier compris. Misez ce que vous voulez : au bout de <b>3 minutes</b>, le plus gros tapis gagne.' }, 'race');
+  TB.bets = [100]; drawTable();
 }
-function frRaceCmp(a, b) { // atteint 1 500 en moins de mains > meilleur tapis > plus rapide
-  if (!!a.reach !== !!b.reach) return a.reach ? -1 : 1;
-  if (a.reach && b.reach && a.reach !== b.reach) return a.reach - b.reach;
+function frRaceCmp(a, b) { // plus gros tapis au gong, puis le plus rapide
   return b.stack - a.stack || a.time - b.time;
 }
 function frRaceTick() {
   const R = TB.cfg.race, n = TB.sess.rounds, d = TB.stack - FR.prevStack; FR.prevStack = TB.stack;
-  if (!R.reach && TB.stack >= R.target) R.reach = n;
   frEmit({ t: 'rs', gid: FR.game.gid, stack: TB.stack, time: TB.decT || 0, hand: n, reach: R.reach, last: (d > 0 ? '+' : d < 0 ? '−' : '') + Math.abs(d), done: false });
-  return TB.stack >= R.target;
+  return false;
 }
 function frRaceRemote(m) {
   if (m.from === FR.me.id) return;
   const opps = (FR.raceOpps || (TB && TB.cfg.race && TB.cfg.race.opps)); if (!opps) return;
   const o = opps.find(x => x.id === m.from); if (!o) return;
-  o.stack = num(m.stack, 0, 1e6, o.stack); o.time = num(m.time, 0, 1e8); o.hand = num(m.hand, 0, 10); o.reach = num(m.reach, 0, 10);
+  o.stack = num(m.stack, 0, 1e6, o.stack); o.time = num(m.time, 0, 1e8); o.hand = num(m.hand, 0, 999); o.reach = 0;
   o.last = /^[+−]?\d{1,5}$/.test(m.last) ? m.last : ''; o.lastAct = ''; if (m.done) o.done = true;
   frRaceHUD(); if (FR.waiting) frRaceCheck();
 }
@@ -2254,7 +2321,7 @@ function frRaceCheck() {
   }
   FR.waiting = false;
   const pos = list.findIndex(p => p.you), rw = frRewards(FR.me.result.quit ? list.length - 1 : pos, list.length);
-  T.innerHTML = frEndHTML('Course au magot', list, pos, rw, p => fmtN(p.stack) + (p.reach ? ` <small>· main ${p.reach}</small>` : ''));
+  T.innerHTML = frEndHTML('Course au magot', list, pos, rw, p => fmtN(p.stack));
   if (pos === 0) { SFX.big(); say('Victoire !'); }
   $('#fragain').onclick = () => { closeTable(); frBackToRoom(); };
   $('#frquit').onclick = () => { closeTable(); frLeave(); };
@@ -2505,7 +2572,7 @@ function openTable(def, mode = 'career') {
     spots: def.spots || 1, bots: def.bots != null ? def.bots : 2, coach: def.coach !== false, speed: def.speed || 'normal',
     focus: def.focus || null, countChecks: def.countChecks || false, showCount: !!def.showCount, bet: !!def.bet, heat: !!def.heat, devs: !!def.devs,
     rules: def.rules ? { ...baseRules(), ...def.rules } : baseRules(), hands: def.hands || Infinity, pass: def.pass || .8, preplay: def.preplay || null, sudden: mode === 'sudden',
-    race: def.race || null, asc: def.asc || null,
+    race: def.race || null, asc: def.asc || null, freeBet: !!def.freeBet, cash: def.cash || null,
   };
   TB = {
     def, mode, cfg: c, shoe: new Shoe(c.rules.decks, S.settings.pen), stack: def.stack || (c.bet ? 2000 : 1000), unit: def.unit || UNIT, bets: Array(c.spots).fill(def.unit || UNIT), sel: 0, hands: [], active: -1, dealer: [], insured: false, insCost: 0,
@@ -2526,6 +2593,7 @@ function openTable(def, mode = 'career') {
     <div id="tmain" style="display:contents"></div><div id="tover"></div><div id="peek"></div><div id="tfx" style="position:absolute;inset:0;pointer-events:none;z-index:9"></div>`;
   document.body.appendChild(el);
   document.addEventListener('keydown', tableKeys);
+  if (c.race && c.race.dur) TB.clock = setInterval(raceClock, 400);
   TB.onResize = () => { clearTimeout(TB.rz); TB.rz = setTimeout(() => TB && drawTable(), 80); }; window.addEventListener('resize', TB.onResize);
   ambience(true);
   drawTable();
@@ -2533,17 +2601,17 @@ function openTable(def, mode = 'career') {
 }
 function briefing(def, intro) {
   const first = !S.intro, cas = CASINOS.find(c => c.theme === TB.theme);
-  const kicker = TB.mode === 'daily' ? 'Défi du jour' : TB.mode === 'sudden' ? 'Mort subite' : TB.mode === 'asc' ? 'Ascension' : TB.mode === 'race' ? (def.race.online ? 'Entre amis · ' : 'Bataille · ') + def.race.salle.name : (def.casino || '') + (def.boss ? ' · Table finale' : def.ti != null ? ` · Table ${def.ti + 1}` : '');
+  const kicker = TB.mode === 'daily' ? 'Défi du jour' : TB.mode === 'sudden' ? 'Mort subite' : TB.mode === 'asc' ? 'Ascension' : TB.mode === 'race' ? (def.race.online ? 'Entre amis · ' : 'Bataille · ') + def.race.salle.name : TB.mode === 'cash' ? 'Table de jeu · ' + def.cash.city : (def.casino || '') + (def.boss ? ' · Table finale' : def.ti != null ? ` · Table ${def.ti + 1}` : '');
   sheet(`<div class="brief"><div class="art" style="--brief-img:url(${img('hero_' + TB.theme)})"><span class="kick">${kicker}</span></div>
     <h3>${def.name}</h3>
     <div class="rule">${def.rule || ''}</div>
     ${intro ? `<div class="rule hot">${intro}</div>` : ''}
-    <div class="goal-tags">${TB.mode === 'race' ? `<span>10 mains max</span><span>Mise fixe 100</span><span>${def.race.online ? 'Vrais joueurs' : 'Adversaires IA'}</span>` : TB.mode === 'sudden' ? '<span>Une seule erreur et c\'est fini</span>' : `${tableTags(def).map(t => `<span>${t}</span>`).join('')}<span class="g">${icon('target')} ${Math.round(TB.cfg.pass * 100)} % de bons coups</span>`}</div>
+    <div class="goal-tags">${TB.mode === 'race' ? `<span>${icon('timer')} 3 minutes</span><span>Mises libres</span><span>${def.race.online ? 'Vrais joueurs' : 'Adversaires IA'}</span>` : TB.mode === 'cash' ? `<span>Mise ${fmtN(def.cash.min)} – ${fmtN(def.cash.max)}</span><span>Vos jetons</span><span>Sans coach</span>` : TB.mode === 'sudden' ? '<span>Une seule erreur et c\'est fini</span>' : `${tableTags(def).map(t => `<span>${t}</span>`).join('')}<span class="g">${icon('target')} ${Math.round(TB.cfg.pass * 100)} % de bons coups</span>`}</div>
     ${first ? `<p class="hint">Touchez <b>Distribuer</b>, puis choisissez <b>Tirer</b>, <b>Rester</b>, <b>Doubler</b> ou <b>Séparer</b>. Ici, le croupier ne reçoit qu'une carte : il tire la seconde après vous. Les bons coups d'affilée font monter votre combo.</p>` : ''}
     <button class="btn gold shine" data-close>${icon('play')} S'asseoir</button></div>`, { locked: true, onClose: () => { S.intro = true; save(); } });
 }
 function speedMs() { return SPEEDS[TB.cfg.speed] || 450; }
-function closeTable() { if (!TB) return; TB.token++; ambience(false); window.removeEventListener('resize', TB.onResize); setTheme(LOBBY_THEME()); document.removeEventListener('keydown', tableKeys); const el = $('#table'); if (el) el.remove(); TB = null; render(); }
+function closeTable() { if (!TB) return; TB.token++; clearInterval(TB.clock); ambience(false); window.removeEventListener('resize', TB.onResize); setTheme(LOBBY_THEME()); document.removeEventListener('keydown', tableKeys); const el = $('#table'); if (el) el.remove(); TB = null; render(); }
 function tableKeys(e) {
   if (!TB || document.querySelector('.modal')) return;
   const k = e.key.toLowerCase();
@@ -2558,6 +2626,7 @@ function headHTML() {
   const prog = isFinite(c.hands) ? Math.min(1, s.rounds / c.hands) : 0;
   return `<div class="shead"><button class="iconbtn" id="tquit" aria-label="Quitter la table">${icon('back')}</button>
     <div class="ttl"><b>${TB.def.name}</b>${isFinite(c.hands) ? `<div class="pbar"><i style="width:${prog * 100}%"></i></div><small class="mono">Tour ${Math.min(s.rounds + 1, c.hands)} / ${c.hands}</small>` : `<small class="mono">${s.ok} bon${s.ok > 1 ? 's' : ''} coup${s.ok > 1 ? 's' : ''}</small>`}</div>
+    ${c.race && c.race.dur ? `<div class="stack-pill clock ${raceLeft() <= 30 ? 'hot' : ''}" id="rclock">${icon('timer')}<span>${fmtClock(raceLeft())}</span></div>` : ''}
     <div class="combo ${mult > 1 ? 'hot' : ''}" id="combo" title="Combo">${icon('flame')}<span>${TB.combo}${mult > 1 ? `<em>×${mult}</em>` : ''}</span></div>
     <div class="stack-pill" title="Votre tapis"><img src="${chipImg('gold')}" alt="">${Math.round(TB.stack).toLocaleString('fr-FR')}</div></div>
     ${c.heat ? `<div class="heat"><span>${icon('eye')}Surveillance</span><div class="pbar"><i style="width:${TB.heat}%"></i></div></div>` : ''}`;
@@ -2649,7 +2718,7 @@ function drawTable() {
     });
   }
   const lp = g.P(-1.62, .36), np = g.P(0, .36);
-  out.push(`<div class="plate" style="${at(lp)}"><small>Table</small><b>${fmtN(TB.unit)} – ${fmtN(TB.unit * 40)}</b></div><div class="dname" style="${at(np)}">Croupière · ${TB.dealerName || (TB.dealerName = pick(['Hélène', 'Camille', 'Sofia', 'Margaux', 'Inès']))}</div>`);
+  out.push(`<div class="plate" style="${at(lp)}"><small>Table</small><b>${c.cash ? `${fmtN(c.cash.min)} – ${fmtN(c.cash.max)}` : `${fmtN(TB.unit)} – ${fmtN(TB.unit * 40)}`}</b></div><div class="dname" style="${at(np)}">Croupière · ${TB.dealerName || (TB.dealerName = pick(['Hélène', 'Camille', 'Sofia', 'Margaux', 'Inès']))}</div>`);
   felt.innerHTML = flat.join('');
   $('#layer').innerHTML = out.join('');
   const sp = g.P(1.38, -.38); $('#shoe').style.cssText = at(sp);
@@ -2677,7 +2746,8 @@ function drawPeek() {
 function dockHTML() {
   const p = TB.phase, c = TB.cfg;
   if (p === 'bet') {
-    if (!c.bet) return `<div class="say">Mise : <b>${fmtN(TB.unit)} jetons</b>${c.spots > 1 ? ' par main' : ''}</div><button class="btn gold shine" id="deal">${icon('cards')} Distribuer</button>`;
+    if (!c.bet && !c.freeBet) return `<div class="say">Mise : <b>${fmtN(TB.unit)} jetons</b>${c.spots > 1 ? ' par main' : ''}</div><button class="btn gold shine" id="deal">${icon('cards')} Distribuer</button>`;
+    if (c.freeBet) return freeBetDock();
     const tot = TB.bets.reduce((a, b) => a + b, 0);
     return `<div class="say">${c.spots > 1 ? 'Touchez une place, puis ' : ''}misez selon le compte</div>
       <div class="rack">${[25, 100, 500].map(v => `<button data-chip="${v}" ${TB.stack - tot < v ? 'disabled' : ''} aria-label="Jeton de ${v}"><img src="${chipImg(v)}" alt=""><span>${v}</span></button>`).join('')}</div>
@@ -2698,14 +2768,23 @@ function bindTable() {
   const el = $('#table');
   $('#tquit').onclick = () => leaveTable();
   el.querySelectorAll('[data-spot]').forEach(b => b.onclick = () => { if (TB.phase !== 'bet') return; TB.sel = +b.dataset.spot; drawTable(); });
-  el.querySelectorAll('[data-chip]').forEach(b => b.onclick = () => { if (!TB.betTouched) { TB.bets = TB.bets.map(() => 0); TB.betTouched = true; } TB.bets[TB.sel] += +b.dataset.chip; SFX.chip(); drawTable(); });
+  el.querySelectorAll('[data-chip]').forEach(b => b.onclick = () => {
+    if (!TB.betTouched) { TB.bets = TB.bets.map(() => 0); TB.betTouched = true; }
+    TB.bets[TB.sel] += +b.dataset.chip; if (TB.cfg.freeBet) TB.bets[TB.sel] = Math.min(TB.bets[TB.sel], betLimits()[1]);
+    SFX.chip(); drawTable();
+  });
   const bc = $('#bclear'); if (bc) bc.onclick = () => { TB.bets[TB.sel] = 0; TB.betTouched = true; drawTable(); };
   const dl = $('#deal'); if (dl) dl.onclick = () => playRound();
   el.querySelectorAll('[data-peek]').forEach(b => b.onclick = e => { e.stopPropagation(); TB.peek = TB.peek === b.dataset.peek ? null : b.dataset.peek; SFX.tick(); drawPeek(); });
   const pk = $('#peek'); if (pk) pk.onclick = () => { TB.peek = null; drawPeek(); };
   el.querySelectorAll('[data-ins]').forEach(b => b.onclick = () => TB.resolver && TB.resolver(b.dataset.ins === '1'));
   el.querySelectorAll('#dock [data-a]').forEach(b => b.onclick = () => TB.resolver && TB.resolver(b.dataset.a));
-  const ch = $('#cheat'); if (ch) ch.onclick = () => { TB.assist = true; chartSheet(TB.cfg.rules, TB.hands[TB.active], TB.dealer[0]); };
+  const ch = $('#cheat'); if (ch) ch.onclick = () => {
+    const cost = cheatCost();
+    if (cost) { if (TB.stack < cost) { toast(`L'antisèche coûte ${fmtN(cost)} jetons`); return; } TB.stack -= cost; if (TB.cfg.cash) S.coins = Math.round(TB.stack); save(); note('info', `Antisèche · −${fmtN(cost)}`, 'En mode jeu, le conseil se paie.', 1800); }
+    TB.assist = true; chartSheet(TB.cfg.rules, TB.hands[TB.active], TB.dealer[0]); drawTable();
+  };
+  el.querySelectorAll('[data-fb]').forEach(b => b.onclick = () => freeBetAction(b.dataset.fb));
 }
 function animateNew(g) {
   if (!g) return;
@@ -2768,9 +2847,11 @@ function makePlan(spots) {
 async function playRound() {
   if (TB.phase !== 'bet') return;
   const tok = ++TB.token, alive = () => TB && TB.token === tok, c = TB.cfg, d = speedMs();
-  const bets = c.bet ? TB.bets.slice() : TB.bets.map(() => TB.unit);
+  const bets = c.bet || c.freeBet ? TB.bets.slice() : TB.bets.map(() => TB.unit);
   const total = bets.reduce((a, b) => a + b, 0);
   if (!total || total > TB.stack || bets.some(b => !b)) return;
+  if (c.cash && bets.some(b => b < c.cash.min || b > c.cash.max)) return;
+  if (c.race && c.race.dur && !TB.raceT0) TB.raceT0 = Date.now();
   TB.phase = 'deal';
   const tc0 = TB.shoe.tc();
   if (c.bet) {
@@ -2952,6 +3033,7 @@ async function settle(dealerBJ) {
   TB.sess.net += net; TB.sess.rounds++;
   S.totals.hands += TB.hands.length; if (TB.cfg.spots >= 3) S.totals.multi3++; mission('hands', TB.hands.length);
   if (TB.cfg.race) TB.raceDone = raceAfterRound();
+  if (TB.cfg.cash) { S.coins = Math.max(0, Math.round(TB.stack)); }
   TB.phase = 'done'; TB.say = net > 0 ? `Vous gagnez <b>${money(net)}</b>` : net < 0 ? `Vous perdez <b>${money(-net)}</b>` : 'Égalité';
   drawTable();
   if (net > 0) SFX.win();
@@ -2959,7 +3041,8 @@ async function settle(dealerBJ) {
   await sleep(Math.max(1100, speedMs() * 2.6));
   if (!TB) return;
   if (TB.dead) { splash('Erreur fatale', 'lose', 1300); await sleep(1300); return endSession(); }
-  if (TB.cfg.race && (TB.raceDone || TB.sess.rounds >= TB.cfg.hands || TB.stack < TB.unit)) return endSession();
+  if (TB.cfg.race && (TB.raceDone || TB.timeUp || TB.sess.rounds >= TB.cfg.hands || TB.stack < TB.unit)) { if (TB.stack < TB.unit && !TB.timeUp) { splash('Tapis vide', 'lose', 1300); await sleep(1300); } return endSession(); }
+  if (TB.cfg.cash && TB.stack < TB.cfg.cash.min) { splash('Plus assez de jetons', 'lose', 1500); await sleep(1500); return endSession(); }
   if (TB.cfg.asc && TB.stack < TB.unit * TB.cfg.spots) { splash('Tapis vide', 'lose', 1300); await sleep(1300); return endSession(); }
   TB.sinceCheck++;
   if (TB.shoe.needShuffle) {
@@ -2975,8 +3058,8 @@ async function settle(dealerBJ) {
   if (TB.sess.rounds >= TB.cfg.hands) return endSession();
   TB.hands = []; TB.dealer = []; TB.bots.forEach(b => { b.cards = []; b.res = null; });
   TB.phase = 'bet'; TB.say = ''; TB.betTouched = false;
-  if (TB.cfg.bet && TB.bets.reduce((a, b) => a + b, 0) > TB.stack) TB.bets = TB.bets.map(() => UNIT);
-  if (!TB.cfg.race && !TB.cfg.asc && TB.stack < TB.unit * TB.cfg.spots) { TB.stack += 1000; note('info', 'Recave', 'Votre tapis était vide : 1 000 € de jetons ajoutés.', 3000); }
+  if ((TB.cfg.bet || TB.cfg.freeBet) && TB.bets.reduce((a, b) => a + b, 0) > TB.stack) TB.bets = TB.bets.map(() => Math.min(TB.unit, Math.floor(TB.stack)));
+  if (!TB.cfg.race && !TB.cfg.asc && !TB.cfg.cash && TB.stack < TB.unit * TB.cfg.spots) { TB.stack += 1000; note('info', 'Recave', 'Votre tapis était vide : 1 000 € de jetons ajoutés.', 3000); }
   drawTable();
 }
 function leaveTable() {
@@ -2987,8 +3070,9 @@ function leaveTable() {
 }
 function endSession(quit) {
   if (!TB) return;
-  TB.token++; document.removeEventListener('keydown', tableKeys);
+  TB.token++; clearInterval(TB.clock); document.removeEventListener('keydown', tableKeys);
   if (TB.mode === 'race') return raceEnd(quit);
+  if (TB.mode === 'cash') return cashEnd();
   if (TB.mode === 'asc') return ascEnd(quit);
   const c = TB.cfg, s = TB.sess, def = TB.def, mode = TB.mode;
   const acc = s.dec ? s.ok / s.dec : 1;
@@ -3059,11 +3143,70 @@ function ascEnd(quit) {
   $('#anext').onclick = () => { closeTable(); startAscension(); };
 }
 
+/* ---------- Mode jeu : mises libres, chrono de course, tables en argent réel ---------- */
+const fmtClock = t => { const n = Math.max(0, Math.ceil(t)); return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`; };
+function raceLeft() { const R = TB && TB.cfg.race; if (!R || !R.dur) return 0; return TB.raceT0 ? R.dur - (Date.now() - TB.raceT0) / 1000 : R.dur; }
+function raceClock() {
+  if (!TB || !TB.cfg.race) return;
+  const left = raceLeft(), el = $('#rclock');
+  if (el) { el.querySelector('span').textContent = fmtClock(left); el.classList.toggle('hot', left <= 30); }
+  if (left <= 0 && !TB.timeUp && TB.raceT0) {
+    TB.timeUp = true; SFX.ko && SFX.ko();
+    if (TB.phase === 'bet') endSession(); else note('info', 'Temps écoulé', 'Cette main est la dernière.', 2400);
+  }
+}
+function cheatCost() { return TB.mode === 'cash' ? TB.cfg.cash.min : TB.mode === 'race' ? 25 : 0; }
+function betLimits() { const c = TB.cfg; return c.cash ? [c.cash.min, Math.min(c.cash.max, Math.floor(TB.stack))] : [TB.unit, Math.floor(TB.stack)]; }
+function freeBetDock() {
+  const c = TB.cfg, [lo, hi] = betLimits(), bet = TB.bets[0] || 0;
+  const chips = [25, 100, 500, 1000, 5000].filter(v => v >= lo / 2 && v <= Math.max(hi, lo)).slice(0, 3);
+  const ok = bet >= lo && bet <= hi;
+  return `<div class="say">${c.cash ? `Table <b>${fmtN(c.cash.min)} – ${fmtN(c.cash.max)}</b>` : 'Misez <b>ce que vous voulez</b>'}</div>
+    <div class="betbox"><span class="label">Mise</span><b class="mono">${fmtN(bet)}</b></div>
+    <div class="rack">${chips.map(v => `<button data-chip="${v}" ${bet + v > hi ? 'disabled' : ''} aria-label="Ajouter ${v}"><img src="${chipImg(v)}" alt=""></button>`).join('')}</div>
+    <div class="row fb"><button class="btn ghost sm" data-fb="clear">Effacer</button><button class="btn ghost sm" data-fb="half">Moitié</button><button class="btn ghost sm" data-fb="max">Max</button></div>
+    <button class="btn gold shine" id="deal" ${ok ? '' : 'disabled'}>${icon('cards')} Distribuer</button>`;
+}
+function freeBetAction(k) {
+  const [lo, hi] = betLimits(), b = TB.bets[0] || 0;
+  TB.betTouched = true;
+  TB.bets[0] = k === 'clear' ? 0 : k === 'half' ? Math.max(lo, Math.floor(b / 2 / 5) * 5) : hi;
+  SFX.chip(); drawTable();
+}
+function cashEnd() {
+  const s = TB.sess, c = TB.cfg, def = TB.def, acc = s.dec ? s.ok / s.dec : 1;
+  S.coins = Math.max(0, Math.round(TB.stack)); const xp = Math.min(40, s.rounds * 2);
+  if (xp) addXP(xp); if (s.net > S.best.profit) S.best.profit = s.net; save(); checkAch();
+  if (s.net > 0) SFX.big();
+  $('#table').innerHTML = `<div class="end ${s.net > 0 ? 'won' : ''}"><div class="label">Table de jeu · ${def.cash.city}</div>
+    ${s.net > 0 ? `<img class="trophy" src="${img('stack')}" alt="">` : ''}<h2>${s.net > 0 ? 'Belle séance' : s.net < 0 ? 'La banque gagne' : 'Séance nulle'}</h2>
+    <p class="muted">${s.rounds} main${s.rounds > 1 ? 's' : ''} jouée${s.rounds > 1 ? 's' : ''} · ${def.name}</p>
+    <div class="rewards"><div class="reward ${s.net < 0 ? 'neg' : ''}"><img src="${chipImg('gold')}" alt=""><b>${s.net > 0 ? '+' : s.net < 0 ? '−' : ''}${fmtN(Math.abs(s.net))}</b><small>jetons</small></div>${xp ? `<div class="reward xp"><span>XP</span><b>+${xp}</b><small>expérience</small></div>` : ''}</div>
+    <div class="kpis"><div class="kpi"><div class="v">${fmtN(S.coins)}</div><div class="k">Vos jetons</div></div><div class="kpi"><div class="v">${Math.round(acc * 100)} %</div><div class="k">Bons coups</div></div><div class="kpi"><div class="v">${s.bestCombo}</div><div class="k">Combo max</div></div></div>
+    ${s.errors.length ? `<div class="errs"><div class="label">Coups à revoir</div>${s.errors.slice(-6).map(e => `<div><span>${e.t}</span><em>${e.good}</em><s>${e.bad}</s></div>`).join('')}</div>` : ''}
+    <div class="endbtns">${S.coins >= def.cash.min ? `<button class="btn gold" id="eagain">${icon('refresh')} Rejouer</button>` : ''}<button class="btn ghost" id="eback">Retour au salon</button></div></div>`;
+  $('#eback').onclick = closeTable;
+  const ag = $('#eagain'); if (ag) ag.onclick = () => { const i = def.cash.si; closeTable(); openCash(i); };
+}
+/* Les 4 tables de jeu : vos propres jetons, limites croissantes, ouvertes avec les salles */
+const CASH = [[10, 500], [50, 2000], [200, 5000], [1000, 25000]];
+function openCash(i) {
+  const sa = SALLES[i], [min, max] = CASH[i];
+  if (salleIdx() < i) { toast(`Débloquée à ${fmtN(sa.min)} couronnes`); return; }
+  if (S.coins < min) { toast(`Il faut au moins ${fmtN(min)} jetons pour s'asseoir`); return; }
+  openTable({ name: sa.name, cash: { min, max, si: i, city: sa.city }, freeBet: true, coach: false, spots: 1, bots: 3, speed: 'normal', stack: S.coins, unit: min, theme: sa.theme,
+    rule: `Ici, vous jouez <b>vos propres jetons</b> : chaque gain et chaque perte comptent. Mise de <b>${fmtN(min)}</b> à <b>${fmtN(max)}</b>. Pas de coach : l'antisèche coûte ${fmtN(min)} jetons.` }, 'cash');
+  TB.bets = [Math.min(max, Math.max(min, min * 2))];
+  drawTable();
+}
+
 /* ================= LOBBY ================= */
 let TAB = 'lobby';
 let VENUE = null;   // casino affiché sur la scène
 let NOANIM = false; // re-rendu silencieux (pas d'animation d'entrée)
-const TABS = [['boutique', 'bag', 'Boutique'], ['carriere', 'route', 'Carrière'], ['lobby', 'home', 'Salon'], ['defis', 'dumbbell', 'Pratique'], ['moi', 'user', 'Profil']];
+const TABS = [['lobby', 'home', 'Salon'], ['tables', 'cards', 'Tables'], ['boutique', 'bag', 'Boutique'], ['moi', 'user', 'Profil'], ['ecole', 'route', 'École']];
+const TAB_ALIAS = { carriere: 'ecole', defis: 'ecole' };
+let ECOLE = 'parcours';   // sous-onglet de l'École : parcours | exercices
 const LOBBY_THEME = () => SALLES[salleIdx()].theme;
 const fmtN = n => Math.round(n).toLocaleString('fr-FR');
 function untilMidnight() {
@@ -3084,16 +3227,17 @@ function render() {
       <div class="money streak ${S.streak ? '' : 'off'}" title="Jours d'affilée">${icon('flame')}${S.streak}</div>
       <button class="money coins" data-tab-go="boutique" title="Vos jetons"><img src="${chipImg('1000')}" alt="">${fmtN(S.coins)}<span class="plus">${icon('plus')}</span></button>
     </header>
-    <main class="scroll ${NOANIM ? 'still' : ''} ${TAB === 'lobby' ? 'homepage' : ''}" id="main">${TAB === 'lobby' ? lobbyView() : TAB === 'carriere' ? careerView() : TAB === 'defis' ? modesView() : TAB === 'boutique' ? shopView() : profileView()}</main>
-    <nav class="tabs t5" aria-label="Navigation">${TABS.map(([k, ic, l]) => `<button class="${TAB === k ? 'on' : ''}" data-tab="${k}" ${TAB === k ? 'aria-current="page"' : ''}><span class="tic">${icon(ic)}</span><span>${l}</span>${k === 'lobby' && TAB !== 'lobby' && pending ? '<i class="badge"></i>' : ''}</button>`).join('')}</nav>`;
+    <main class="scroll ${NOANIM ? 'still' : ''} ${TAB === 'lobby' ? 'homepage' : ''}" id="main">${TAB === 'lobby' ? lobbyView() : TAB === 'tables' ? tablesView() : TAB === 'ecole' ? ecoleView() : TAB === 'boutique' ? shopView() : profileView()}</main>
+    <nav class="tabs t5" aria-label="Navigation">${TABS.map(([k, ic, l]) => `${k === 'ecole' ? '<i class="tsep" aria-hidden="true"></i>' : ''}<button class="${TAB === k ? 'on' : ''} ${k === 'ecole' ? 'sec' : ''}" data-tab="${k}" ${TAB === k ? 'aria-current="page"' : ''}><span class="tic">${icon(ic)}</span><span>${l}</span>${k === 'lobby' && TAB !== 'lobby' && pending ? '<i class="badge"></i>' : ''}</button>`).join('')}</nav>`;
   app.querySelectorAll('[data-tab],[data-tab-go]').forEach(b => b.onclick = () => go(b.dataset.tab || b.dataset.tabGo));
   bindView();
 }
 function go(tab) {
+  if (TAB_ALIAS[tab]) { ECOLE = tab === 'defis' ? 'exercices' : 'parcours'; tab = TAB_ALIAS[tab]; }
   TAB = tab; try { history.replaceState(null, '', '#' + TAB); } catch (e) { }
   render();
   const m = $('#main'); if (!m) return; m.scrollTop = 0;
-  if (tab === 'carriere') { const c = m.querySelector('.node.cur'); if (c) c.scrollIntoView({ block: 'center' }); }
+  if (tab === 'ecole' && ECOLE === 'parcours') { const c = m.querySelector('.node.cur'); if (c) c.scrollIntoView({ block: 'center' }); }
 }
 function quietRender() { const m = $('#main'), top = m ? m.scrollTop : 0; NOANIM = true; render(); NOANIM = false; const n = $('#main'); if (n) n.scrollTop = top; }
 
@@ -3118,9 +3262,9 @@ function lobbyView() {
       <button class="btn lac" data-go="asc"><span class="l1">${icon('stairs')}Ascension</span><small>Étage ${S.asc.floor} · ${chip}${fmtN(f.fee)}</small></button>
       <button class="btn lac" data-go="lb"><span class="l1">${icon('trophy')}Classement</span><small>${sa.name}</small></button>
     </div>
+    <button class="li tableslink" data-tab-go="tables"><img src="${img('stack')}" alt=""><span class="lt"><b>Tables de jeu</b><small>Jouez vos jetons · mise ${fmtN(CASH[si][0])} à ${fmtN(CASH[si][1])}</small></span>${icon('chev')}</button>
     <section class="block"><div class="eyebrow"><span>Aujourd'hui</span></div>
       <div class="list">
-        <button class="li" data-go="daily"><img src="${img('ticket')}" alt=""><span class="lt"><b>Défi du jour</b><small>${dl.name}</small></span>${ds ? starsHTML(ds) : '<span class="pill">Nouveau</span>'}</button>
         <button class="li" data-go="missions"><span class="lic">${icon('target')}</span><span class="lt"><b>Missions</b><small>${mOk} sur 3 terminées · ${untilMidnight()}</small></span>${mDone ? `<span class="pill">${mDone} à récupérer</span>` : icon('chev')}</button>
         <button class="li ${chestReady ? 'ready' : ''}" data-go="chest"><img src="${img('chest')}" alt=""><span class="lt"><b>Coffre du jour</b><small>${chestReady ? 'Prêt à ouvrir' : 'Nouveau coffre dans ' + untilMidnight()}</small></span>${chestReady ? '<span class="pill">Ouvrir</span>' : icon('chev')}</button>
       </div></section>
@@ -3185,6 +3329,24 @@ function openChest() {
   rewardSheet('Coffre du jour', gain, bonus ? `Dont ${bonus} jetons de bonus de série` : 'Jouez chaque jour pour un bonus de série');
 }
 
+/* ----- Tables de jeu : vos propres jetons ----- */
+function tablesView() {
+  const si = salleIdx();
+  return `<div class="page-h"><div><h1>Tables de jeu</h1><p>Vos propres jetons sur le tapis : gains et pertes sont réels. Pas de coach.</p></div><span class="starbadge"><img class="ci" src="${chipImg('1000')}" alt="">${fmtN(S.coins)}</span></div>
+    <div class="tgrid">${SALLES.map((sa, i) => {
+      const [mn, mx] = CASH[i], open = i <= si, poor = S.coins < mn;
+      return `<button class="tcard ${open ? '' : 'lock'}" data-cash="${i}"><img src="${img('hero_' + sa.theme)}" alt=""><span class="tc-b"><span class="kick">${sa.city}</span><b>${sa.name}</b>
+        <small>${open ? `Mise ${fmtN(mn)} – ${fmtN(mx)}` : `${icon('lock')} Débloquée à ${fmtN(sa.min)} couronnes`}</small></span>${open ? `<span class="pill ${poor ? 'no' : ''}">${poor ? `${fmtN(mn)} min.` : 'Jouer'}</span>` : ''}</button>`;
+    }).join('')}</div>
+    <p class="foot">Les couronnes gagnées en bataille ouvrent les tables plus prestigieuses. Plus de jetons ? Le coffre du jour, les missions et les mallettes.</p>`;
+}
+
+/* ----- École : apprentissage, en second plan ----- */
+function ecoleView() {
+  return `<div class="page-h"><div><span class="kick">Apprendre</span><h1>École</h1><p>Le parcours guidé et les exercices pour progresser avant de jouer.</p></div>
+      <div class="seg ecseg"><button class="${ECOLE === 'parcours' ? 'on' : ''}" data-ecole="parcours">Parcours</button><button class="${ECOLE === 'exercices' ? 'on' : ''}" data-ecole="exercices">Exercices</button></div></div>
+    ${ECOLE === 'parcours' ? careerView().replace(/^<div class="page-h">[\s\S]*?<\/div><span class="starbadge">[\s\S]*?<\/span><\/div>/, '') : modesView().replace(/^<div class="page-h">[\s\S]*?<\/div><\/div>/, '')}`;
+}
 /* ----- Carrière ----- */
 const PATH_X = [0, -30, -8, 28, 0];
 function careerView() {
@@ -3307,6 +3469,9 @@ function bindView() {
     else if (g === 'asc') ascSheet();
     else if (g === 'battle') battleSheet();
   });
+  main.querySelectorAll('[data-cash]').forEach(b => b.onclick = () => openCash(+b.dataset.cash));
+  main.querySelectorAll('[data-ecole]').forEach(b => b.onclick = () => { ECOLE = b.dataset.ecole; NOANIM = true; render(); NOANIM = false; $('#main').scrollTop = 0; });
+  main.querySelectorAll('[data-tab-go]').forEach(b => b.onclick = () => go(b.dataset.tabGo));
   main.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { const i = +b.dataset.slot; if (S.mallettes[i]) openMallette(i); else battleSheet(); });
   bindClaims(main, quietRender);
   if (TAB === 'boutique') bindShop(main);
@@ -3328,7 +3493,7 @@ function boot() {
   const rt = document.createElement('div'); rt.className = 'rotate'; rt.innerHTML = `<i class="ph"></i><b>Tournez votre téléphone</b><small>Vingt-et-Un se joue à l'horizontale, comme à une vraie table.</small>`; document.body.appendChild(rt);
   bootScreen();
   load();
-  const h = (location.hash || '').slice(1); if (TABS.some(t => t[0] === h)) TAB = h;
+  const h0 = (location.hash || '').slice(1), h = TAB_ALIAS[h0] || h0; if (TAB_ALIAS[h0] === 'ecole' && h0 === 'defis') ECOLE = 'exercices'; if (TABS.some(t => t[0] === h)) TAB = h;
   render();
   frDeepLink();
   window.addEventListener('hashchange', () => { const x = location.hash.slice(1); if (TABS.some(t => t[0] === x) && x !== TAB) go(x); });
