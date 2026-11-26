@@ -1325,6 +1325,27 @@ h1,h2,h3{font-weight:600}
 .vbody dl{grid-template-columns:1.5fr 1fr}.vbody dd{white-space:nowrap;font-size:12.5px}
 .stage-t p,.page-h p{text-wrap:pretty}
 
+/* ================= v15 : moins de texte, une bataille lisible ================= */
+.brief .rule:empty{display:none}
+.kgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.brule{display:flex;gap:8px}
+.brule span{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 12px;border-radius:12px;background:rgba(255,240,210,.04);border:1px solid var(--hair)}
+.brule svg{width:18px;height:18px;color:var(--gold);stroke-width:1.7;flex:none}
+.brule b{font-size:14px;font-weight:600}
+.bstakes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.bstake{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 12px;border-radius:16px;text-align:center;background:linear-gradient(180deg,#1d1814,#131010);border:1px solid var(--hair-2);transition:transform .12s var(--ease)}
+.bstake.main{border-color:rgba(214,176,100,.6);background:linear-gradient(180deg,#241d16,#151110)}
+.bstake:active{transform:scale(.98)}
+.bstake:disabled{opacity:.35}
+.bstake small{font-size:13px;color:var(--text-2)}
+.bstake .bm{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:32px;font-weight:600;line-height:1}
+.bstake .bm img{width:28px;height:28px;object-fit:contain}
+.bstake .bg{font-size:13px;font-weight:600;color:var(--ok)}
+.bnote{text-align:center;font-size:12px;color:var(--text-3)}
+@media (max-height:430px){.bstake{padding:12px 10px;gap:6px}.bstake .bm{font-size:26px}.brule span{min-height:40px}}
+.week[hidden]{display:none}
+.brief .goal-tags:empty{display:none}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="config.js"></script></head><body><div id="app"></div>
 <script>
@@ -2221,7 +2242,7 @@ function priceOf(t, id) { const o = dailyOffer(), base = itemInfo(t, id).price; 
 const priceTag = (n, extra = '') => `<span class="price ${S.coins < n ? 'no' : ''} ${extra}"><img src="${chipImg('1000')}" alt="">${fmtN(n)}</span>`;
 function shopView() {
   const tabs = [['vitrine', 'Vitrine'], ['collection', 'Collection'], ['cartes', 'Cartes'], ['tapis', 'Tapis'], ['bonus', 'Bonus'], ['mallettes', 'Mallettes']];
-  return `<div class="page-h"><div><h1>Boutique</h1><p>Tout se paie en jetons gagnés en jouant. Aucun achat réel.</p></div></div>
+  return `<div class="page-h"><div><h1>Boutique</h1></div></div>
     <div class="shoptabs">${tabs.map(([k, l]) => `<button class="${SHOP_TAB === k ? 'on' : ''}" data-stab="${k}">${l}</button>`).join('')}</div>
     ${SHOP_TAB === 'vitrine' ? shopVitrine() : SHOP_TAB === 'collection' ? shopCollection() : SHOP_TAB === 'cartes' ? shopBacks() : SHOP_TAB === 'tapis' ? shopFelts() : SHOP_TAB === 'bonus' ? shopBonus() : shopMallettes()}`;
 }
@@ -2313,7 +2334,7 @@ function esc(t) { return String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<'
 function crownRoadSheet() {
   const si = salleIdx();
   sheet(`<div class="shtop"><h3>Route des couronnes</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-    <p class="small muted">Gagnez des couronnes en bataille pour ouvrir des salles plus prestigieuses : mises plus hautes, adversaires plus forts, meilleures mallettes.</p>
+    
     <div class="road">${SALLES.map((s, i) => `<div class="rstep ${i <= si ? 'on' : ''} ${i === si ? 'cur' : ''}"><img src="${img('arena_' + s.theme)}" alt=""><div><small>${s.min} couronnes</small><b>${s.name}</b><span>Mise d'entrée ${fmtN(s.fee)} · ${i < 2 ? 'Mallette classique' : 'Mallette prestige'}</span></div>${i <= si ? icon('check') : icon('lock')}</div>`).reverse().join('')}</div>
     <button class="btn ghost" data-close>Fermer</button>`);
 }
@@ -2322,7 +2343,7 @@ function leaderboardSheet() {
   for (let i = 0; i < 14; i++) { h = (h * 1103515245 + 12345) >>> 0; rows.push({ name: AI_NAMES[h % AI_NAMES.length] + (i > 9 ? ' ' + (h % 90 + 10) : ''), crowns: Math.max(0, S.crowns + 420 - i * 60 + (h % 50)), ai: true }); }
   rows.push({ name: 'Vous', crowns: S.crowns, you: true }); rows.sort((a, b) => b.crowns - a.crowns);
   sheet(`<div class="shtop"><h3>Classement</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-    <p class="small muted">Joueurs de votre salle, adversaires IA compris. Mis à jour chaque jour.</p>
+    
     <div class="lb">${rows.map((r, i) => `<div class="${r.you ? 'me' : ''}"><span class="mono">${i + 1}</span>${avatarHTML({ name: r.name, you: r.you, color: AI_COLORS[i % AI_COLORS.length] })}<b>${r.name}${r.ai ? ' <em>IA</em>' : ''}</b><span class="cr"><img src="${crownImg()}" alt="">${r.crowns}</span></div>`).join('')}</div>
     <button class="btn ghost" data-close>Fermer</button>`);
 }
@@ -2337,11 +2358,11 @@ function ascSheet() {
   const cur = S.asc.floor, f = ascFloor(cur), rows = [];
   for (let n = cur + 3; n >= Math.max(1, cur - 2); n--) { const x = ascFloor(n); rows.push(`<div class="floor ${n === cur ? 'cur' : n < cur ? 'done' : ''} ${x.boss ? 'boss' : ''}"><span class="fn">${n}</span><div><b>${x.boss ? 'Étage du patron' : 'Étage ' + n}</b><small>${x.hands} mains${x.spots > 1 ? ' · 2 places' : ''}${x.countChecks ? ' · comptage' : ''} · ${Math.round(x.pass * 100)} % juste</small></div><span class="price"><img src="${chipImg('1000')}" alt="">${fmtN(x.fee)}</span></div>`); }
   const m = sheet(`<div class="shtop"><h3>Ascension</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-    <p class="small muted">Payez l'entrée : elle devient votre tapis pour l'étage. Vous repartez avec ce qu'il reste, plus une <b>prime de 60 %</b> si vous jouez juste assez pour monter. Tous les 5 étages : un patron et une mallette.</p>
+    <p class="small muted">L'entrée devient votre tapis. Jouez juste pour monter et gagner une prime</p>
     <div class="tower">${rows.join('')}</div>
     <div class="row"><div class="kpi"><div class="v">${S.asc.best}</div><div class="k">Record</div></div><div class="kpi"><div class="v">${fmtN(Math.round(f.fee * .6))}</div><div class="k">Prime de l'étage</div></div></div>
     <button class="btn gold shine" id="ascgo" ${S.coins < f.fee ? 'disabled' : ''}>${icon('play')} Monter · ${fmtN(f.fee)} jetons</button>
-    ${S.coins < f.fee ? '<p class="small muted" style="text-align:center">Pas assez de jetons : ouvrez le coffre, une mallette, ou gagnez une bataille.</p>' : ''}`);
+    `);
   const b = $('#ascgo', m); if (b) b.onclick = () => { m.remove(); startAscension(); };
 }
 function startAscension() {
@@ -2356,16 +2377,18 @@ function startAscension() {
 const STAKES = [[1, 'Classique'], [4, 'Haute'], [10, 'Prestige']];
 const battleStake = () => SALLES[salleIdx()].fee * STAKES[Math.min(S.battle.stake || 0, 2)][0];
 function battleSheet() {
-  const s = SALLES[salleIdx()], fee = battleStake(), poor = S.coins < fee;
+  const s = SALLES[salleIdx()];
   const m = sheet(`<div class="shtop"><h3>Bataille</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-    <div class="stakes"><span class="label">Enjeu</span><div class="seg">${STAKES.map(([k, l], i) => `<button class="${(S.battle.stake || 0) === i ? 'on' : ''}" data-stake="${i}" ${S.coins < s.fee * k ? 'disabled' : ''}>${l}<small>${fmtN(s.fee * k)}</small></button>`).join('')}</div>
-      <p class="small muted">4 joueurs, ${s.name}. Le 1<sup>er</sup> remporte <b>${fmtN(fee * 3)} jetons</b>, des couronnes et une mallette ; le 2<sup>e</sup> récupère sa mise.</p></div>
-    <button class="bmode race" data-bm="race" ${poor ? 'disabled' : ''}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>3 minutes, mêmes cartes pour tous, mises libres. Le plus gros tapis au gong remporte la cagnotte.</span></div></button>
-    <button class="bmode duel" data-bm="duel" ${poor ? 'disabled' : ''}><img src="${img('bolt')}" alt=""><div><b>Duel des réflexes</b><span>10 situations. Le premier à trouver le bon coup marque 3 points, les suivants 1, une erreur en coûte 1.</span></div></button>
-    ${poor ? `<p class="small" style="color:var(--ko);text-align:center">Il vous faut ${fmtN(fee)} jetons pour cet enjeu.</p>` : ''}
-    <button class="bmode friends" data-bm="friends"><img src="${img('cards')}" alt=""><div><b>Entre amis</b><span>Créez une table, partagez le code, et affrontez vos amis en direct. Gratuit, sans couronnes en jeu.</span></div></button>`);
-  m.querySelectorAll('[data-bm]').forEach(b => b.onclick = () => { m.remove(); b.dataset.bm === 'friends' ? friendsSheet() : matchmaking(b.dataset.bm); });
-  m.querySelectorAll('[data-stake]').forEach(b => b.onclick = () => { S.battle.stake = +b.dataset.stake; save(); m.remove(); battleSheet(); });
+    <div class="brule"><span>${icon('user')}<b>4 joueurs</b></span><span>${icon('timer')}<b>3 minutes</b></span><span>${icon('trophy')}<b>Le plus gros tapis gagne</b></span></div>
+    <div class="bstakes">${STAKES.map(([k, l], i) => { const fee = s.fee * k, poor = S.coins < fee;
+      return `<button class="bstake ${i === 0 ? 'main' : ''}" data-stake="${i}" ${poor ? 'disabled' : ''}><small>${l}</small><span class="bm"><img src="${chipImg('1000')}" alt="">${fmtN(fee)}</span><span class="bg">1<sup>er</sup> : +${fmtN(fee * 3)}</span></button>`; }).join('')}</div>
+    <p class="bnote">${S.coins < s.fee ? `Il vous faut ${fmtN(s.fee)} jetons` : 'Touchez une mise pour lancer la partie'}</p>`);
+  m.querySelectorAll('[data-stake]').forEach(b => b.onclick = () => { S.battle.stake = +b.dataset.stake; save(); m.remove(); matchmaking('race'); });
+}
+function duelSheet() {   // le duel éclair, séparé de la bataille
+  const s = SALLES[salleIdx()];
+  if (S.coins < s.fee) { toast(`Il vous faut ${fmtN(s.fee)} jetons`); return; }
+  S.battle.stake = 0; save(); matchmaking('duel');
 }
 function matchmaking(kind) {
   const s = { ...SALLES[salleIdx()] }; s.fee = battleStake(); if (S.coins < s.fee) return;
@@ -2401,7 +2424,7 @@ function battleEndHTML(title, rankList, r, s, scoreLabel) {
     <div class="rewards">${r.coins ? `<div class="reward"><img src="${chipImg('gold')}" alt=""><b>+${fmtN(r.coins)}</b><small>jetons</small></div>` : ''}<div class="reward ${r.dc >= 0 ? '' : 'neg'}"><img src="${crownImg()}" alt=""><b>${r.dc >= 0 ? '+' : ''}${r.dc}</b><small>couronnes</small></div>
       ${r.mal && r.mal !== 'full' ? `<div class="reward"><img src="${img('mallette_' + r.mal)}" alt=""><b>+1</b><small>${MAL[r.mal].name.toLowerCase()}</small></div>` : ''}</div>
     ${r.joker ? `<div class="errs perfect">Joker de bataille utilisé : mise de ${fmtN(s.fee)} remboursée.</div>` : ''}
-    ${r.mal === 'full' ? '<p class="small muted">Vos 4 emplacements de mallette étaient pleins : pas de mallette cette fois.</p>' : ''}
+    ${r.mal === 'full' ? '<p class="small muted">Mallettes pleines</p>' : ''}
     ${r.up ? `<div class="errs perfect">Nouvelle salle débloquée : ${SALLES[salleIdx()].name}</div>` : ''}
     <div class="endbtns"><button class="btn gold shine" id="bagain" ${S.coins < battleStake() ? 'disabled' : ''}>${icon('refresh')} Rejouer · ${fmtN(battleStake())}</button><button class="btn ghost" id="bback">Retour au salon</button></div></div>`;
 }
@@ -2410,7 +2433,7 @@ function battleEndHTML(title, rankList, r, s, scoreLabel) {
 function startRace(opps, s) {
   opps.forEach(o => { o.stack = 1000; o.time = 0; o.last = ''; o.style = pick([.06, .1, .15, .22]); });
   openTable({ name: 'Course au magot', spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 25, freeBet: true, race: { opps, salle: s, target: 2000, dur: 180 }, theme: s.theme,
-    rule: 'Chacun part avec <b>1 000 jetons</b> et reçoit <b>les mêmes cartes</b>. Misez ce que vous voulez à chaque main : au bout de <b>3 minutes</b>, le plus gros tapis remporte la cagnotte.' }, 'race');
+    rule: 'Tout le monde part avec <b>1 000 jetons</b>. Au bout de 3 minutes, <b>le plus gros tapis gagne</b>.' }, 'race');
   TB.bets = [100]; drawTable();
 }
 /* Joue la même main pour un adversaire IA : mêmes cartes de départ, mêmes cartes tirées, même croupier. */
@@ -3058,11 +3081,11 @@ function openTable(def, mode = 'career') {
 function briefing(def, intro) {
   const first = !S.intro, cas = CASINOS.find(c => c.theme === TB.theme);
   const kicker = TB.mode === 'daily' ? 'Défi du jour' : TB.mode === 'sudden' ? 'Mort subite' : TB.mode === 'asc' ? 'Ascension' : TB.mode === 'race' ? (def.race.online ? 'Entre amis · ' : 'Bataille · ') + def.race.salle.name : TB.mode === 'cash' ? 'Table de jeu · ' + def.cash.city : (def.casino || '') + (def.boss ? ' · Table finale' : def.ti != null ? ` · Table ${def.ti + 1}` : '');
-  sheet(`<div class="brief"><div class="art" style="--brief-img:url(${img('hero_' + TB.theme)})"><span class="kick">${kicker}</span></div>
+  sheet(`<div class="brief"><div class="art" style="--brief-img:url(${img('venue_' + TB.theme) || img('hero_' + TB.theme) || img('venue_cercle')})"><span class="kick">${kicker}</span></div>
     <h3>${def.name}</h3>
     <div class="rule">${def.rule || ''}</div>
     ${intro ? `<div class="rule hot">${intro}</div>` : ''}
-    <div class="goal-tags">${TB.mode === 'race' ? `<span>${icon('timer')} 3 minutes</span><span>Mises libres</span><span>${def.race.online ? 'Vrais joueurs' : 'Adversaires IA'}</span>` : TB.mode === 'cash' ? `<span>Mise ${fmtN(def.cash.min)} – ${fmtN(def.cash.max)}</span><span>Vos jetons</span><span>Sans coach</span>` : TB.mode === 'sudden' ? '<span>Une seule erreur et c\'est fini</span>' : `${tableTags(def).map(t => `<span>${t}</span>`).join('')}<span class="g">${icon('target')} ${Math.round(TB.cfg.pass * 100)} % de bons coups</span>`}</div>
+    <div class="goal-tags">${TB.mode === 'race' ? '' : TB.mode === 'cash' ? `<span>Mise ${fmtN(def.cash.min)} – ${fmtN(def.cash.max)}</span><span>Vos jetons</span><span>Sans coach</span>` : TB.mode === 'sudden' ? '<span>Une seule erreur et c\'est fini</span>' : `${tableTags(def).map(t => `<span>${t}</span>`).join('')}<span class="g">${icon('target')} ${Math.round(TB.cfg.pass * 100)} % de bons coups</span>`}</div>
     ${first ? `<p class="hint">Touchez <b>Distribuer</b>, puis choisissez <b>Tirer</b>, <b>Rester</b>, <b>Doubler</b> ou <b>Séparer</b>. Ici, le croupier ne reçoit qu'une carte : il tire la seconde après vous. Les bons coups d'affilée font monter votre combo.</p>` : ''}
     <button class="btn gold shine" data-close>${icon('play')} S'asseoir</button></div>`, { locked: true, onClose: () => { S.intro = true; save(); } });
 }
@@ -3669,7 +3692,7 @@ function openCash(i) {
   if (salleIdx() < i) { toast(`Débloquée à ${fmtN(sa.min)} couronnes`); return; }
   if (S.coins < min) { toast(`Il faut au moins ${fmtN(min)} jetons pour s'asseoir`); return; }
   openTable({ name: sa.name, cash: { min, max, si: i, city: sa.city }, freeBet: true, coach: false, spots: 1, bots: 3, speed: 'normal', stack: S.coins, unit: min, theme: sa.theme,
-    rule: `Ici, vous jouez <b>vos propres jetons</b> : chaque gain et chaque perte comptent. Mise de <b>${fmtN(min)}</b> à <b>${fmtN(max)}</b>. Pas de coach : l'antisèche coûte ${fmtN(min)} jetons.` }, 'cash');
+    rule: '' }, 'cash');
   TB.bets = [Math.min(max, Math.max(min, min * 2))];
   drawTable();
 }
@@ -3733,7 +3756,7 @@ function salleView() {
   return `<section class="stage">
       <img class="stage-img" src="${venueImg(sa.theme)}" alt="${sa.name} à ${sa.city} : la salle et sa table de blackjack">
       <div class="stage-t"><span class="vk"><img src="${vchip(si)}" alt="">Salle ${ROMAN[si]} · ${sa.city}</span>
-        <h1>${sa.name}</h1><p>${VENUE_TXT[si]}</p>
+        <h1>${sa.name}</h1>
         <div class="stage-a"><button class="btn gold" data-cash="${si}">${icon('play')}<span>S'asseoir<small>Table ${fmtN(mn)} – ${fmtN(mx)}</small></span></button>
           <button class="btn lac" data-go="battle">${icon('swords')}<span>Bataille<small>Entrée ${fmtN(sa.fee)}</small></span></button></div></div>
     </section>
@@ -3748,7 +3771,7 @@ function salleView() {
 /* ----- Tournée : les 4 salles sur une même route ----- */
 function tourneeView() {
   const si = salleIdx(), last = SALLES[SALLES.length - 1];
-  return `<div class="page-h"><div><h1>La tournée</h1><p>De Paris à Venise. Les couronnes gagnées en bataille ouvrent la salle suivante</p></div>
+  return `<div class="page-h"><div><h1>La tournée</h1><p>Gagnez des batailles pour ouvrir la salle suivante</p></div>
       <button class="crownsb" data-go="road"><img src="${crownImg()}" alt=""><b class="mono">${fmtN(S.crowns)}</b><small>couronnes</small>${icon('chev')}</button></div>
     <div class="route" style="--p:${Math.min(1, S.crowns / last.min).toFixed(3)}">${SALLES.map((sa, i) => {
       const [mn, mx] = CASH[i], open = i <= si, here = i === si, poor = S.coins < mn;
@@ -3756,7 +3779,7 @@ function tourneeView() {
         <div class="vpic"><img src="${venueImg(sa.theme)}" alt="${sa.name}, ${sa.city}"></div>
         <img class="vmark" src="${vchip(i)}" alt="">
         <div class="vbody"><small>${ROMAN[i]} · ${sa.city}</small><b>${sa.name}</b>
-          <dl><div><dt>Table</dt><dd class="mono">${fmtN(mn)} – ${fmtN(mx)}</dd></div><div><dt>Bataille</dt><dd class="mono">${fmtN(sa.fee)}</dd></div></dl>
+          <dl><div><dt>Mises</dt><dd class="mono">${fmtN(mn)} – ${fmtN(mx)}</dd></div></dl>
           ${open ? `<button class="btn ${here ? 'gold' : 'lac'} sm" data-cash="${i}" ${poor ? 'disabled' : ''}>${poor ? `${fmtN(mn)} jetons min.` : here ? "S'asseoir" : 'Jouer ici'}</button>`
             : `<span class="vlock">${icon('lock')}${fmtN(sa.min)} couronnes</span>`}</div></article>`;
     }).join('')}</div>`;
@@ -3764,14 +3787,15 @@ function tourneeView() {
 /* ----- Compétition : bataille, ascension, entre amis, classement, mallettes ----- */
 function competView() {
   const si = salleIdx(), sa = SALLES[si], f = ascFloor(S.asc.floor), chip = `<img class="ci" src="${chipImg('1000')}" alt="">`;
-  return `<div class="page-h"><div><h1>Compétition</h1><p>Affrontez d'autres joueurs pour des couronnes, des jetons et des mallettes</p></div></div>
+  return `<div class="page-h"><div><h1>Compétition</h1></div></div>
     <div class="cgrid2">
-      <button class="battle" data-go="battle"><img src="${img('trophy')}" alt=""><span class="bt"><small>4 joueurs · 3 minutes · mises libres</small><b>Bataille</b>
-        <span>Le plus gros tapis au gong remporte la cagnotte de ${sa.name}</span><span class="btn gold">${icon('swords')}<span>Trouver une table<small>Entrée ${fmtN(sa.fee)}</small></span></span></span></button>
+      <button class="battle" data-go="battle"><img src="${img('trophy')}" alt=""><span class="bt"><b>Bataille</b>
+        <span>3 minutes contre 3 joueurs : le plus gros tapis gagne</span><span class="btn gold">${icon('swords')}<span>Jouer<small>Dès ${fmtN(sa.fee)}</small></span></span></span></button>
       <div class="list">
-        <button class="li" data-go="asc"><span class="lic">${icon('stairs')}</span><span class="lt"><b>Ascension</b><small>Étage ${S.asc.floor} · record ${S.asc.best} · entrée ${fmtN(f.fee)}</small></span>${icon('chev')}</button>
-        <button class="li" data-go="friends"><span class="lic">${icon('user')}</span><span class="lt"><b>Entre amis</b><small>Une table privée, un code à partager</small></span>${icon('chev')}</button>
-        <button class="li" data-go="lb"><span class="lic">${icon('trophy')}</span><span class="lt"><b>Classement</b><small>${sa.name} · ${S.battle.won} victoire${S.battle.won > 1 ? 's' : ''} sur ${S.battle.played}</small></span>${icon('chev')}</button>
+        <button class="li" data-go="asc"><span class="lic">${icon('stairs')}</span><span class="lt"><b>Ascension</b><small>Étage ${S.asc.floor}</small></span>${icon('chev')}</button>
+        <button class="li" data-go="duel"><span class="lic">${icon('bolt')}</span><span class="lt"><b>Duel éclair</b><small>Le plus rapide à trouver le bon coup</small></span>${icon('chev')}</button>
+        <button class="li" data-go="friends"><span class="lic">${icon('user')}</span><span class="lt"><b>Entre amis</b><small>Une table privée avec vos amis</small></span>${icon('chev')}</button>
+        <button class="li" data-go="lb"><span class="lic">${icon('trophy')}</span><span class="lt"><b>Classement</b><small>${sa.name}</small></span>${icon('chev')}</button>
       </div>
     </div>
     ${slotsHTML()}`;
@@ -3783,12 +3807,11 @@ function caisseSheet() {
     <div class="caisse">
       <div class="cbal"><img src="${chipImg('1000')}" alt=""><div><small>Vos jetons</small><b class="mono">${fmtN(S.coins)}</b></div></div>
       <div class="list">
-        <button class="li" data-k="chest"><img src="${img('chest')}" alt=""><span class="lt"><b>Coffre du jour</b><small>${T.chest ? 'Prêt à ouvrir · bonus de série inclus' : 'Nouveau coffre dans ' + untilMidnight()}</small></span>${T.chest ? '<span class="pill">Ouvrir</span>' : icon('chev')}</button>
-        <button class="li" data-k="missions"><span class="lic">${icon('target')}</span><span class="lt"><b>Missions du jour</b><small>${T.mOk} sur 3 terminées · jusqu'à ${fmtN(MISSION_REWARD.reduce((a, b) => a + b, 0) + MISSION_BONUS)} jetons</small></span>${T.mDone ? `<span class="pill">${T.mDone} à récupérer</span>` : icon('chev')}</button>
-        <button class="li" data-k="mal"><img src="${img('mallette_classique')}" alt=""><span class="lt"><b>Mallettes</b><small>${T.held} sur 4 · s'ouvrent avec des bons coups</small></span>${icon('chev')}</button>
-        <button class="li" data-k="shop"><span class="lic">${icon('bag')}</span><span class="lt"><b>Boutique</b><small>Dépensez vos jetons : tapis, dos de cartes, collection</small></span>${icon('chev')}</button>
+        <button class="li" data-k="chest"><img src="${img('chest')}" alt=""><span class="lt"><b>Coffre du jour</b><small>${T.chest ? 'Prêt' : 'Dans ' + untilMidnight()}</small></span>${T.chest ? '<span class="pill">Ouvrir</span>' : icon('chev')}</button>
+        <button class="li" data-k="missions"><span class="lic">${icon('target')}</span><span class="lt"><b>Missions du jour</b><small>${T.mOk} sur 3</small></span>${T.mDone ? `<span class="pill">${T.mDone} à récupérer</span>` : icon('chev')}</button>
+        <button class="li" data-k="mal"><img src="${img('mallette_classique')}" alt=""><span class="lt"><b>Mallettes</b><small>${T.held} sur 4</small></span>${icon('chev')}</button>
+        <button class="li" data-k="shop"><span class="lic">${icon('bag')}</span><span class="lt"><b>Boutique</b><small>Tapis, cartes, collection</small></span>${icon('chev')}</button>
       </div>
-      <p class="foot">Tapis vide en table libre : la maison vous remet 1 000 jetons. Aux tables de la tournée, vous jouez votre propre caisse.</p>
     </div>`);
   m.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
     const k = b.dataset.k; m.remove();
@@ -3856,7 +3879,7 @@ function openChest() {
 
 /* ----- École : apprentissage, en second plan ----- */
 function ecoleView() {
-  return `<div class="page-h"><div><span class="kick">Apprendre</span><h1>École</h1><p>Le parcours guidé et les exercices pour progresser avant de jouer</p></div>
+  return `<div class="page-h"><div><h1>École</h1></div>
       <div class="seg ecseg"><button class="${ECOLE === 'parcours' ? 'on' : ''}" data-ecole="parcours">Parcours</button><button class="${ECOLE === 'exercices' ? 'on' : ''}" data-ecole="exercices">Exercices</button></div></div>
     ${ECOLE === 'parcours' ? careerView().replace(/^<div class="page-h">[\s\S]*?<\/div><span class="starbadge">[\s\S]*?<\/span><\/div>/, '') : modesView().replace(/^<div class="page-h">[\s\S]*?<\/div><\/div>/, '')}`;
 }
@@ -3927,16 +3950,15 @@ function profileView() {
   const keyLabel = k => { const m = k.match(/^([hsp])(\d+)v(\d+)$/); if (!m) return k; const u = +m[3] === 11 ? 'As' : m[3], n = +m[2]; return (m[1] === 'p' ? 'Paire de ' + (n === 11 ? 'As' : n) : (m[1] === 's' ? 'Souple ' : 'Dur ') + n) + ' contre ' + u; };
   return `<div class="cols"><div class="col"><section class="panel pcard"><span class="ring" style="--p:${r.pct.toFixed(3)}"><b>${r.lvl}</b></span>
       <div class="pinfo"><span class="label">Niveau ${r.lvl} · ${fmtN(S.xp)} XP</span><h2>${r.name}</h2><div class="pbar"><i style="width:${r.pct * 100}%"></i></div><p>${r.next ? `${fmtN(r.toNext)} XP avant « ${r.next} »` : 'Rang maximum atteint'}</p></div></section>
-    <section class="panel week">${days.map(d => { const on = (S.days[d] || 0) >= S.settings.goal; return `<div><i class="${on ? 'on' : ''} ${d === t ? 'today' : ''}">${on ? icon('flame') : ''}</i>${dn[new Date(d + 'T12:00:00').getDay()]}</div>`; }).join('')}</section>
-    <section class="kgrid"><div class="kpi"><div class="v">${S.crowns}</div><div class="k">Couronnes</div></div><div class="kpi"><div class="v">${S.battle.won}<small> / ${S.battle.played}</small></div><div class="k">Batailles gagnées</div></div>
-      <div class="kpi"><div class="v">${S.asc.best}</div><div class="k">Étage record</div></div><div class="kpi"><div class="v">${acc} %</div><div class="k">Bons coups</div></div><div class="kpi"><div class="v">${stars}</div><div class="k">Étoiles</div></div>
-      <div class="kpi"><div class="v">${S.best.combo}</div><div class="k">Meilleur combo</div></div></section>
+    <section class="panel week" hidden>${days.map(d => { const on = (S.days[d] || 0) >= S.settings.goal; return `<div><i class="${on ? 'on' : ''} ${d === t ? 'today' : ''}">${on ? icon('flame') : ''}</i>${dn[new Date(d + 'T12:00:00').getDay()]}</div>`; }).join('')}</section>
+    <section class="kgrid"><div class="kpi"><div class="v">${S.crowns}</div><div class="k">Couronnes</div></div><div class="kpi"><div class="v">${S.battle.won}<small> / ${S.battle.played}</small></div><div class="k">Victoires</div></div>
+      <div class="kpi"><div class="v">${acc} %</div><div class="k">Bons coups</div></div></section>
     <section class="row"><button class="btn ghost sm" data-go="chart">${icon('sheet')} Antisèche</button><button class="btn ghost sm" data-go="settings">${icon('gear')} Réglages</button></section></div><div class="col">
     <section class="block"><div class="sec-h"><h2>Dernières parties</h2><span class="meta"></span></div>
       <div class="panel hist">${(S.hist || []).length ? S.hist.slice(0, 6).map(g => `<div class="hrow"><span class="hd mono">${histDate(g.t)}</span><span class="hn"><b>${MODE_LABEL[g.m] || 'Partie'}</b><small>${g.v ? g.v + ' · ' : ''}${g.r} main${g.r > 1 ? 's' : ''}${g.acc != null ? ` · ${g.acc} % de bons coups` : ''}</small></span><span class="hv mono ${g.net > 0 ? 'up' : g.net < 0 ? 'dn' : ''}">${g.net > 0 ? '+' : g.net < 0 ? '−' : ''}${fmtN(Math.abs(g.net))}</span></div>`).join('')
-        : '<p class="small muted" style="padding:14px 0">Vos parties terminées apparaîtront ici, avec leur résultat.</p>'}</div></section>
-    <section class="block"><div class="sec-h"><h2>Votre niveau</h2><span class="meta">par type de coup</span></div><div class="panel skills">${cats.map(([k, l]) => { const c = S.stats.cat[k] || [0, 0], p = c[0] ? c[1] / c[0] : 0; return `<div class="catrow"><span>${l}</span><div class="pbar ${p >= .9 ? 'ok' : ''}"><i style="width:${p * 100}%"></i></div><span class="mono">${c[0] ? Math.round(p * 100) + ' %' : '—'}</span></div>`; }).join('')}</div></section>
-    <section class="block"><div class="sec-h"><h2>À travailler</h2></div><div class="panel mistl">${mist.length ? mist.map(([k]) => `<div class="mist"><span>${keyLabel(k)}</span><span>Raté</span></div>`).join('') + `<div style="padding:12px 0 14px"><button class="btn ghost sm" data-go="review">${icon('refresh')} Réviser ces coups</button></div>` : '<p class="small muted" style="padding:14px 0">Rien pour l\'instant. Les coups ratés apparaîtront ici.</p>'}</div></section>
+        : '<p class="small muted" style="padding:14px 0">Aucune partie pour l\'instant</p>'}</div></section>
+    <section class="block"><div class="sec-h"><h2>Votre niveau</h2></div><div class="panel skills">${cats.filter(([k]) => (S.stats.cat[k] || [0])[0]).length ? '' : '<p class="small muted" style="padding:14px 0">Jouez quelques mains pour voir votre niveau</p>'}${cats.filter(([k]) => (S.stats.cat[k] || [0])[0]).map(([k, l]) => { const c = S.stats.cat[k] || [0, 0], p = c[0] ? c[1] / c[0] : 0; return `<div class="catrow"><span>${l}</span><div class="pbar ${p >= .9 ? 'ok' : ''}"><i style="width:${p * 100}%"></i></div><span class="mono">${c[0] ? Math.round(p * 100) + ' %' : '—'}</span></div>`; }).join('')}</div></section>
+    <section class="block"><div class="sec-h"><h2>À travailler</h2></div><div class="panel mistl">${mist.length ? mist.map(([k]) => `<div class="mist"><span>${keyLabel(k)}</span><span>Raté</span></div>`).join('') + `<div style="padding:12px 0 14px"><button class="btn ghost sm" data-go="review">${icon('refresh')} Réviser ces coups</button></div>` : '<p class="small muted" style="padding:14px 0">Aucun coup raté</p>'}</div></section>
     <section class="block"><div class="sec-h"><h2>Vitrine</h2><span class="meta">${COLL.filter(c => ownedColl(c.id)).length} / ${COLL.length} objets</span></div>
       ${COLL_SETS.some(setDone) ? `<div class="titles">${COLL_SETS.filter(setDone).map(st => `<span>${icon('crown')}${st.title}</span>`).join('')}</div>` : ''}
       <div class="vitrine">${COLL.map(c => `<button class="vt ${ownedColl(c.id) ? '' : 'miss'}" data-coll="${c.id}" aria-label="${c.name}"><img src="${img('coll_' + c.id)}" alt=""></button>`).join('')}</div></section>
@@ -3994,6 +4016,7 @@ function bindView() {
     else if (g === 'asc') ascSheet();
     else if (g === 'battle') battleSheet();
     else if (g === 'friends') friendsSheet();
+    else if (g === 'duel') duelSheet();
   });
   main.querySelectorAll('[data-cash]').forEach(b => b.onclick = () => openCash(+b.dataset.cash));
   main.querySelectorAll('[data-ecole]').forEach(b => b.onclick = () => { ECOLE = b.dataset.ecole; NOANIM = true; render(); NOANIM = false; $('#main').scrollTop = 0; });
