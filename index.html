@@ -3242,7 +3242,7 @@ function friendsSheet(code = '') {
     return;
   }
   const m = sheet(`<div class="shtop"><h3>Entre amis</h3><button class="iconbtn" data-close aria-label="Fermer">${icon('x')}</button></div>
-    <p class="small muted">Jusqu'à ${FR_MAX} joueurs, en direct. Chacun joue sur son téléphone, avec les mêmes cartes.${mode === 'local' ? ' <b>Mode test local</b> : ouvrez un 2<sup>e</sup> onglet pour simuler un ami.' : ''}</p>
+    <p class="small muted">Jusqu'à ${FR_MAX} joueurs, en direct. Chacun joue sur son téléphone, avec ses propres cartes.${mode === 'local' ? ' <b>Mode test local</b> : ouvrez un 2<sup>e</sup> onglet pour simuler un ami.' : ''}</p>
     <label class="fld"><span>Votre pseudo</span><input id="frname" maxlength="14" autocomplete="nickname" placeholder="Ex. : Max" value="${esc(S.pseudo || '')}"></label>
     <button class="btn gold shine" id="frnew">${icon('plus')} Créer une table</button>
     <div class="or"><span>ou</span></div>
@@ -3298,7 +3298,7 @@ function frRoom() {
       <button class="frcode" id="frsh" aria-label="Partager le code"><small>Code de la table</small><b>${FR.code}</b><span>${icon('gift')} Inviter des amis</span></button>
       <div class="mmgrid fr">${slots.map(p => p ? `<div class="mmp in ${p.you ? 'me' : ''}">${avatarHTML({ ...p, you: false }, 'xl')}<b>${esc(p.name)}${p.you ? ' <em>vous</em>' : ''}</b><small>${p.id === frHostId() ? 'Hôte' : p.status === 'play' ? 'En partie' : 'Prêt'}</small></div>` : '<div class="mmp"><span class="av xl ghost"></span><small>Place libre</small></div>').join('')}</div>
       <div class="frmodes">
-        <button class="bmode race ${mode === 'race' ? 'on' : ''}" data-fm="race" ${host ? '' : 'disabled'}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>3 minutes, mêmes cartes pour tous, mises libres : le plus gros tapis gagne.</span></div></button>
+        <button class="bmode race ${mode === 'race' ? 'on' : ''}" data-fm="race" ${host ? '' : 'disabled'}><img src="${img('stack')}" alt=""><div><b>Course au magot</b><span>3 minutes, mises libres : le plus gros tapis gagne.</span></div></button>
         <button class="bmode duel ${mode === 'duel' ? 'on' : ''}" data-fm="duel" ${host ? '' : 'disabled'}><img src="${img('bolt')}" alt=""><div><b>Duel des réflexes</b><span>10 situations en direct. Le premier à trouver le bon coup marque 3 points, les suivants 1, une erreur coûte 1.</span></div></button>
       </div>
       ${busy ? '<p class="small muted">Une partie est en cours : vous jouerez la suivante.</p>' : ''}
@@ -3367,8 +3367,8 @@ function frStartRace() {
   (g.bots || []).forEach(b => opps.push({ ...b, ai: true, bot: true, stack: 1000, time: 0, last: '', nextAt: 0 }));
   FR.prevStack = 1000; FR.waiting = false; FR.raceOpps = null; FR.me.result = null;
   openTable({ name: 'Course au magot', spots: 1, bots: 0, coach: false, speed: 'rapide', stack: 1000, unit: 25, freeBet: true, theme: g.pub ? SALLES[g.si].theme : S.shop.felt,
-    race: { opps, salle: g.pub ? SALLES[g.si] : { name: 'Table ' + FR.code }, target: 2000, online: true, seed: g.seed, reach: 0, dur: 180 },
-    rule: g.pub ? 'Bataille en ligne : tout le monde reçoit <b>les mêmes cartes</b>. Au bout de <b>3 minutes</b>, le plus gros tapis gagne.' : 'Entre amis : tout le monde reçoit <b>les mêmes cartes</b>, croupier compris. Misez ce que vous voulez : au bout de <b>3 minutes</b>, le plus gros tapis gagne.' }, 'race');
+    race: { opps, salle: g.pub ? SALLES[g.si] : { name: 'Table ' + FR.code }, target: 2000, online: true, reach: 0, dur: 180 },   // chacun son sabot : pas de graine commune
+    rule: (g.pub ? 'Bataille en ligne' : 'Entre amis') + ' : chacun joue ses propres cartes et mise ce qu’il veut. Au bout de <b>3 minutes</b>, le plus gros tapis gagne.' }, 'race');
   TB.bets = [100]; drawTable();
 }
 function frRaceCmp(a, b) { // plus gros tapis au gong, puis le plus rapide
@@ -3528,7 +3528,7 @@ function frDuelEnd(note = '') {
 
 /* ---------- Bataille en ligne : de vrais joueurs de la même salle et de la même mise ----------
    Chacun annonce sa présence sur le canal de recherche. Le plus ancien en attente forme la table dès qu'il y a 4 joueurs
-   ou après 15 secondes, et complète avec des IA. La partie se joue ensuite comme entre amis : mêmes cartes pour tous. */
+   ou après 15 secondes, et complète avec des IA. La partie se joue ensuite comme entre amis : chacun ses cartes, le plus gros tapis gagne. */
 const MM_WAIT = 15000;
 let MM = null;
 async function mmSearch() {
@@ -4407,7 +4407,7 @@ async function playRound() {
     }
   }
   TB.stack -= total;
-  if (c.race && c.race.seed) { // entre amis : chaque main sort du même sabot pour tout le monde, croupier compris
+  if (c.race && c.race.seed) { // sabot commun tiré d'une graine (n'est plus utilisé en ligne : chacun a ses cartes)
     TB.shoe = new Shoe(c.rules.decks, 1, seedRng(c.race.seed + ':j' + TB.sess.rounds));
     TB.dshoe = new Shoe(c.rules.decks, 1, seedRng(c.race.seed + ':c' + TB.sess.rounds));
   }
