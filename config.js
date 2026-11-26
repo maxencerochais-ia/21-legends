@@ -1,4 +1,4 @@
-/* Vingt-et-Un : réglages du mode « Entre amis ».
+/* 21 Legends : réglages du mode « Entre amis ».
    Collez ici les deux valeurs de votre projet Supabase (Project Settings → API).
    La clé « anon / publishable » est faite pour être publique : aucun secret ici. */
 window.BJ_ONLINE = {

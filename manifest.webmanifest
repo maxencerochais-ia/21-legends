@@ -1,14 +1,14 @@
 {
-  "name": "Vingt-et-Un",
-  "short_name": "Vingt-et-Un",
-  "description": "Apprendre le blackjack européen et jouer entre amis",
+  "name": "21 Legends",
+  "short_name": "21 Legends",
+  "description": "Blackjack européen : la tournée des salles, en ligne",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "landscape",
-  "background_color": "#0d0b0a",
-  "theme_color": "#0d0b0a",
+  "background_color": "#0b0f1c",
+  "theme_color": "#0b0f1c",
   "icons": [
     {
       "src": "icon-192.png",

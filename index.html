@@ -1,9 +1,9 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-select=none"><title>Vingt-et-Un</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-select=none"><title>21 Legends</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0d0b0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Vingt-et-Un">
+<meta name="apple-mobile-web-app-title" content="21 Legends">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500..800;1,6..96,500..800&family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;600;700&display=swap">
@@ -3279,8 +3279,8 @@ function frLeave(silent) {
 }
 function frShare() {
   const url = location.origin + location.pathname + '?table=' + FR.code + (netMode() === 'local' ? '&net=local' : '');
-  const text = `Rejoins ma table de blackjack sur Vingt-et-Un ! Code : ${FR.code}`;
-  if (navigator.share) navigator.share({ title: 'Vingt-et-Un', text, url }).catch(() => { });
+  const text = `Rejoins ma table de blackjack sur 21 Legends. Code : ${FR.code}`;
+  if (navigator.share) navigator.share({ title: '21 Legends', text, url }).catch(() => { });
   else if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Lien copié'), () => toast('Code : ' + FR.code));
   else toast('Code : ' + FR.code);
 }
@@ -5166,7 +5166,7 @@ function scrollCar(smooth) {
 
 function bootScreen() {
   const b = document.createElement('div'); b.className = 'boot';
-  b.innerHTML = `<img src="${chipImg('gold')}" alt=""><h1>Vingt-et-Un</h1><div class="line"><i></i></div><small>Blackjack européen · la tournée des salles</small>`;
+  b.innerHTML = `<img src="${chipImg('gold')}" alt=""><h1>21 Legends</h1><div class="line"><i></i></div><small>Blackjack européen · la tournée des salles</small>`;
   document.body.appendChild(b);
   requestAnimationFrame(() => requestAnimationFrame(() => { b.querySelector('.line i').style.width = '100%'; }));
   setTimeout(() => { b.classList.add('out'); setTimeout(() => b.remove(), 520); }, 1150);
@@ -5177,7 +5177,7 @@ function boot() {
     e.dataset.cols = '1'; const L = document.createElement('div'), Rr = document.createElement('div'); L.className = 'endL'; Rr.className = 'endR';
     [...e.children].forEach(c => (c.matches('.kpis,.errs,.endbtns,.podium,.lb') ? Rr : L).appendChild(c)); e.append(L, Rr);
   })).observe(document.body, { childList: true, subtree: true });
-  const rt = document.createElement('div'); rt.className = 'rotate'; rt.innerHTML = `<i class="ph"></i><b>Tournez votre téléphone</b><small>Vingt-et-Un se joue à l'horizontale, comme à une vraie table.</small>`; document.body.appendChild(rt);
+  const rt = document.createElement('div'); rt.className = 'rotate'; rt.innerHTML = `<i class="ph"></i><b>Tournez votre téléphone</b><small>21 Legends se joue à l'horizontale, comme à une vraie table.</small>`; document.body.appendChild(rt);
   bootScreen();
   load();
   const h0 = (location.hash || '').slice(1), h = TAB_ALIAS[h0] || h0; if (TAB_ALIAS[h0] === 'ecole' && h0 === 'defis') ECOLE = 'exercices'; if (TABS.some(t => t[0] === h)) TAB = h;
